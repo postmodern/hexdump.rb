@@ -1,1 +1,1 @@
-require 'hexdump/version'
+require 'hexdump/hexdump'
