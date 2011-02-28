@@ -25,13 +25,13 @@ module Hexdump
         index,
         hex_segment.join(' ').ljust(47).insert(23,' '),
         print_segment
-    )
+      )
 
-    if block_given?
-      yield line
-    else
-      output << line
-    end
+      if block_given?
+        yield line
+      else
+        output << line
+      end
     }
 
     object.each_byte do |b|
@@ -43,11 +43,11 @@ module Hexdump
       hex_segment << ("%.2x" % b)
 
       print_segment << case b
-      when (0x20..0x7e)
-        b.chr
-      else
-        '.'
-      end
+                       when (0x20..0x7e)
+                         b.chr
+                       else
+                         '.'
+                       end
 
       offset += 1
 
