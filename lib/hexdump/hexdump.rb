@@ -1,15 +1,21 @@
 module Hexdump
   #
-  # Hexdumps an object.
+  # Hexdumps the object.
   #
   # @param [#<<] output
-  #   The output stream to print the hexdump to.
+  #   The output to print the hexdump to.
   #
-  # @yield [line]
-  #   The given block will be passed each line of the hexdump.
+  # @yield [index,hex_segment,print_segment]
+  #   The given block will be passed the hexdump break-down of each segment.
   #
-  # @yieldparam [String] line
-  #   A line of the hexdump.
+  # @yieldparam [Integer] index
+  #   The index of the hexdumped segment.
+  #
+  # @yieldparam [Array<String>] hex_segment
+  #   The hexadecimal-byte representation of the segment.
+  #
+  # @yieldparam [Array<String>] print_segment
+  #   The print-character representation of the segment.
   #
   # @return [nil]
   #
@@ -20,17 +26,15 @@ module Hexdump
     print_segment = ''
 
     segment = lambda {
-      line = sprintf(
-        "%.8x  %s  |%s|\n",
-        index,
-        hex_segment.join(' ').ljust(47).insert(23,' '),
-        print_segment
-      )
-
       if block_given?
-        yield line
+        yield(index,hex_segment,print_segment)
       else
-        output << line
+        output << sprintf(
+          "%.8x  %s  |%s|\n",
+          index,
+          hex_segment.join(' ').ljust(47).insert(23,' '),
+          print_segment
+        )
       end
     }
 
