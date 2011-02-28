@@ -1,0 +1,14 @@
+name: hexdump
+summary: Hexdump Strings and IO objects.
+description:
+  Hexdump adds the 'hexdump' method to String and IO objects.
+
+license: MIT
+authors: hal
+homepage: http://github.com/postmodern/hexdump
+has_yard: true
+
+development_dependencies:
+  ore-tasks: ~> 0.4
+  rspec: ~> 2.4
+  yard: ~> 0.6.0
