@@ -38,7 +38,7 @@ module Hexdump
       end
     }
 
-    object.each_byte do |b|
+    each_byte do |b|
       if offset == 0
         hex_segment.clear
         print_segment.clear
