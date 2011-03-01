@@ -1,6 +1,6 @@
 require 'hexdump/hexdump'
 
-module IO
+class IO
 
   include Hexdump
 
