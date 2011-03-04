@@ -41,16 +41,16 @@ module Hexdump
     width = options.fetch(:width,16)
     base = options.fetch(:base,:hexadecimal)
     ascii = options.fetch(:ascii,false)
-    byte_format = case base
-                  when :hexadecimal, :hex, 16
-                    "%.2x"
-                  when :decimal, :dec, 10
-                    "%.d"
-                  when :octal, :oct, 8
-                    "%.3o"
-                  when :binary, :bin, 2
-                    "%.8b"
-                  end
+    byte_width, byte_format = case base
+                              when :hexadecimal, :hex, 16
+                                [2, "%.2x"]
+                              when :decimal, :dec, 10
+                                [3, "%3.d"]
+                              when :octal, :oct, 8
+                                [4, "0%.3o"]
+                              when :binary, :bin, 2
+                                [8, "%.8b"]
+                              end
 
     index = 0
     offset = 0
@@ -80,7 +80,7 @@ module Hexdump
         output << sprintf(
           "%.8x  %s  |%s|\n",
           index,
-          hex_segment.join(' ').ljust(47).insert(23,' '),
+          hex_segment.join(' ').ljust((width * byte_width) + (width - 1)),
           print_segment.join
         )
       end
