@@ -8,6 +8,9 @@ module Hexdump
   # @param [Hash] options
   #   Additional options.
   #
+  # @option options [Integer] :width (16)
+  #   The number of bytes to dump for each line.
+  #
   # @option options [Symbol, Integer] :base (:hexadecimal)
   #   The base to print bytes in. Supported bases include, `:hexadecimal`,
   #   `:hex`, `16, `:decimal`, `:dec`, `10, `:octal`, `:oct`, `8`, `:binary`,
@@ -35,6 +38,7 @@ module Hexdump
   #
   def Hexdump.dump(data,options={})
     output = options.fetch(:output,STDOUT)
+    width = options.fetch(:width,16)
     base = options.fetch(:base,:hexadecimal)
     ascii = options.fetch(:ascii,false)
     byte_format = case base
@@ -93,11 +97,11 @@ module Hexdump
 
       offset += 1
 
-      if (offset >= 16)
+      if (offset >= width)
         segment.call
 
         offset = 0
-        index += 16
+        index += width
       end
     end
 
