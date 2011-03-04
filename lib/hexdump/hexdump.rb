@@ -1,6 +1,9 @@
 module Hexdump
   #
-  # Hexdumps the object.
+  # Hexdumps the given data.
+  #
+  # @param [#each_byte] data
+  #   The data to be hexdumped.
   #
   # @param [#<<] output
   #   The output to print the hexdump to.
@@ -19,7 +22,7 @@ module Hexdump
   #
   # @return [nil]
   #
-  def hexdump(output=STDOUT)
+  def Hexdump.dump(data,output=STDOUT)
     index = 0
     offset = 0
     hex_segment = []
@@ -38,7 +41,7 @@ module Hexdump
       end
     }
 
-    each_byte do |b|
+    data.each_byte do |b|
       if offset == 0
         hex_segment.clear
         print_segment.clear
@@ -66,5 +69,31 @@ module Hexdump
     # flush the hexdump buffer
     segment.call unless offset == 0
     return nil
+  end
+
+  #
+  # Hexdumps the object.
+  #
+  # @param [#<<] output
+  #   The output to print the hexdump to.
+  #
+  # @yield [index,hex_segment,print_segment]
+  #   The given block will be passed the hexdump break-down of each segment.
+  #
+  # @yieldparam [Integer] index
+  #   The index of the hexdumped segment.
+  #
+  # @yieldparam [Array<String>] hex_segment
+  #   The hexadecimal-byte representation of the segment.
+  #
+  # @yieldparam [Array<String>] print_segment
+  #   The print-character representation of the segment.
+  #
+  # @return [nil]
+  #
+  # @see Hexdump.dump
+  #
+  def hexdump(output=STDOUT,&block)
+    Hexdump.dump(self,output,&block)
   end
 end
