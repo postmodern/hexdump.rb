@@ -5,7 +5,10 @@ module Hexdump
   # @param [#each_byte] data
   #   The data to be hexdumped.
   #
-  # @param [#<<] output
+  # @param [Hash] options
+  #   Additional options.
+  #
+  # @option options [#<<] :output (STDOUT)
   #   The output to print the hexdump to.
   #
   # @yield [index,hex_segment,print_segment]
@@ -22,7 +25,9 @@ module Hexdump
   #
   # @return [nil]
   #
-  def Hexdump.dump(data,output=STDOUT)
+  def Hexdump.dump(data,options={})
+    output = options.fetch(:output,STDOUT)
+
     index = 0
     offset = 0
     hex_segment = []

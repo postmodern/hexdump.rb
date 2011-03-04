@@ -8,12 +8,11 @@ describe Hexdump do
   let(:data) { print.join }
 
   it "should append each line of the hexdump to the output" do
-    output = []
+    lines = []
+    subject.dump(data, :output => lines)
 
-    subject.dump(data,output)
-
-    output.length.should == 1
-    output[0].should include(hex.join(' '))
+    lines.length.should == 1
+    lines[0].should include(hex.join(' '))
   end
 
   it "should yield the parts of each hexdump line to the given block" do
