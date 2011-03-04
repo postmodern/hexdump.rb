@@ -73,14 +73,16 @@ module Hexdump
       end
     }
 
+    segment_width = ((width * byte_width) + (width - 1))
+    segment_format = "%.8x  %-#{segment_width}s  |%s|\n"
     segment = lambda {
       if block_given?
         yield(index,hex_segment,print_segment)
       else
         output << sprintf(
-          "%.8x  %s  |%s|\n",
+          segment_format,
           index,
-          hex_segment.join(' ').ljust((width * byte_width) + (width - 1)),
+          hex_segment.join(' '),
           print_segment.join
         )
       end
