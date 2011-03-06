@@ -52,10 +52,6 @@ module Hexdump
                                 [8, "%.8b"]
                               end
 
-    index = 0
-    hex_segment = []
-    print_segment = []
-
     hex_byte = lambda { |byte|
       if (ascii && (byte >= 0x20 && byte <= 0x7e))
         byte.chr
@@ -72,20 +68,12 @@ module Hexdump
       end
     }
 
-    segment_width = ((width * byte_width) + (width - 1))
-    segment_format = "%.8x  %-#{segment_width}s  |%s|\n"
-    segment = if block_given?
-                lambda { yield(index,hex_segment,print_segment) }
-              else
-                lambda {
-                  output << sprintf(
-                    segment_format,
-                    index,
-                    hex_segment.join(' '),
-                    print_segment.join
-                  )
-                }
-              end
+    hex_segment = []
+    print_segment = []
+    index = 0
+
+    hex_segment_width = ((width * byte_width) + (width - 1))
+    line_format = "%.8x  %-#{hex_segment_width}s  |%s|\n"
 
     data.each_byte.each_slice(width) do |bytes|
       hex_segment.clear
@@ -96,7 +84,17 @@ module Hexdump
         print_segment << print_byte[b]
       end
 
-      segment.call
+      if block_given?
+        yield(index,hex_segment,print_segment)
+      else
+        output << sprintf(
+          line_format,
+          index,
+          hex_segment.join(' '),
+          print_segment.join
+        )
+      end
+
       index += width
     end
 
