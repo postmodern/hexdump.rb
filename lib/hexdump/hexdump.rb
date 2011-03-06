@@ -68,21 +68,14 @@ module Hexdump
       end
     }
 
-    hex_segment = []
-    print_segment = []
     index = 0
 
     hex_segment_width = ((width * byte_width) + (width - 1))
     line_format = "%.8x  %-#{hex_segment_width}s  |%s|\n"
 
     data.each_byte.each_slice(width) do |bytes|
-      hex_segment.clear
-      print_segment.clear
-
-      bytes.each do |b|
-        hex_segment << hex_byte[b]
-        print_segment << print_byte[b]
-      end
+      hex_segment = bytes.map(&hex_byte)
+      print_segment = bytes.map(&print_byte)
 
       if block_given?
         yield(index,hex_segment,print_segment)
