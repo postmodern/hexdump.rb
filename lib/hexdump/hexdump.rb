@@ -118,6 +118,6 @@ module Hexdump
   # @see Hexdump.dump
   #
   def hexdump(output=STDOUT,&block)
-    Hexdump.dump(self,output,&block)
+    Hexdump.dump(self,:output => output,&block)
   end
 end
