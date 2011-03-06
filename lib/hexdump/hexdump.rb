@@ -13,8 +13,8 @@ module Hexdump
   #
   # @option options [Symbol, Integer] :base (:hexadecimal)
   #   The base to print bytes in. Supported bases include, `:hexadecimal`,
-  #   `:hex`, `16, `:decimal`, `:dec`, `10, `:octal`, `:oct`, `8`, `:binary`,
-  #   `:bin` and `2`.
+  #   `:hex`, `16, `:decimal`, `:dec`, `10, `:octal`, `:oct`, `8`,
+  #   `:binary`, `:bin` and `2`.
   #
   # @option options [Boolean] :ascii (false)
   #   Print ascii characters when possible.
