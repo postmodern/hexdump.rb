@@ -74,6 +74,10 @@ Benchmarks show {Hexdump.dump} processing 2.4M of data.
     data.hexdump
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
 
+    File.open('dump.txt','w') do |file|
+      data.hexdump(:output => file)
+    end
+
     # iterate over the hexdump lines
     data.hexdump do |index,hex,printable|
       index     # => 0
