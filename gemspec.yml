@@ -1,9 +1,7 @@
 name: hexdump
 version: 0.1.0
-summary: Hexdump Strings and IO objects.
-description:
-  Hexdump adds the 'hexdump' method to String and IO objects.
-
+summary: Simple and Fast hexdumping for Ruby.
+description: Simple and Fast hexdumping for Ruby.
 license: MIT
 authors: hal
 email: postmodern.mod3@gmail.com
