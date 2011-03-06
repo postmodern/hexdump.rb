@@ -6,6 +6,10 @@ describe "Hexdump extensions" do
     String.should include(Hexdump)
   end
 
+  it "should include Hexdump into StringIO" do
+    StringIO.should include(Hexdump)
+  end
+
   it "should include Hexdump into IO" do
     IO.should include(Hexdump)
   end
