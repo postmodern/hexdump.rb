@@ -54,7 +54,8 @@ module Hexdump
   # @return [nil]
   #
   # @raise [ArgumentError]
-  #   The given data does not define the `#each_byte` method.
+  #   The given data does not define the `#each_byte` method, or
+  #   the `:output` value does not support the `#<<` method.
   #
   def Hexdump.dump(data,options={})
     unless data.respond_to?(:each_byte)
@@ -62,6 +63,11 @@ module Hexdump
     end
 
     output = options.fetch(:output,STDOUT)
+
+    unless output.respond_to?(:<<)
+      raise(ArgumentError,":output must support the #<< method")
+    end
+
     width = options.fetch(:width,16)
     base = options.fetch(:base,:hexadecimal)
     ascii = options.fetch(:ascii,false)

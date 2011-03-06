@@ -17,6 +17,12 @@ describe Hexdump do
       }.should raise_error(ArgumentError)
     end
 
+    it "should check if the :output supports the '#<<' method" do
+      lambda {
+        subject.dump(data, :output => Object.new)
+      }.should raise_error(ArgumentError)
+    end
+
     it "should append each line of the hexdump to the output" do
       lines = []
       subject.dump(data, :output => lines)
