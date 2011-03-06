@@ -1,6 +1,6 @@
 name: hexdump
 version: 0.1.0
-summary: Simple and Fast hexdumping for Ruby.
+summary: Hexdump Strings and IO objects.
 description: Simple and Fast hexdumping for Ruby.
 license: MIT
 authors: hal
