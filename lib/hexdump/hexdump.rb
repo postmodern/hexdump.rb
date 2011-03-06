@@ -98,10 +98,9 @@ module Hexdump
       end
     }
 
-    index = 0
-
     hex_segment_width = ((width * byte_width) + (width - 1))
     line_format = "%.8x  %-#{hex_segment_width}s  |%s|\n"
+    index = 0
 
     data.each_byte.each_slice(width) do |bytes|
       hex_segment = bytes.map(&hex_byte)
