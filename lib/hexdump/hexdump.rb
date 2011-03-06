@@ -121,7 +121,6 @@ module Hexdump
       index += width
     end
 
-    # flush the hexdump buffer
     return nil
   end
 
