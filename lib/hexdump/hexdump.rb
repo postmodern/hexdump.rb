@@ -53,7 +53,6 @@ module Hexdump
                               end
 
     index = 0
-    offset = 0
     hex_segment = []
     print_segment = []
 
@@ -88,27 +87,20 @@ module Hexdump
       end
     }
 
-    data.each_byte do |b|
-      if offset == 0
-        hex_segment.clear
-        print_segment.clear
+    data.each_byte.each_slice(width) do |bytes|
+      hex_segment.clear
+      print_segment.clear
+
+      bytes.each do |b|
+        hex_segment << hex_byte[b]
+        print_segment << print_byte[b]
       end
 
-      hex_segment << hex_byte[b]
-      print_segment << print_byte[b]
-
-      offset += 1
-
-      if (offset >= width)
-        segment.call
-
-        offset = 0
-        index += width
-      end
+      segment.call
+      index += width
     end
 
     # flush the hexdump buffer
-    segment.call unless offset == 0
     return nil
   end
 
