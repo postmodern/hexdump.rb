@@ -53,7 +53,14 @@ module Hexdump
   #
   # @return [nil]
   #
+  # @raise [ArgumentError]
+  #   The given data does not define the `#each_byte` method.
+  #
   def Hexdump.dump(data,options={})
+    unless data.respond_to?(:each_byte)
+      raise(ArgumentError,"the data to hexdump must define #each_byte")
+    end
+
     output = options.fetch(:output,STDOUT)
     width = options.fetch(:width,16)
     base = options.fetch(:base,:hexadecimal)

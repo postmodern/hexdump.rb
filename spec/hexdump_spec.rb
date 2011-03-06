@@ -11,6 +11,12 @@ describe Hexdump do
   let(:data) { print_chars.join }
 
   describe "dump" do
+    it "should check if the data defines '#each_byte'" do
+      lambda {
+        subject.dump(Object.new)
+      }.should raise_error(ArgumentError)
+    end
+
     it "should append each line of the hexdump to the output" do
       lines = []
       subject.dump(data, :output => lines)
