@@ -1,3 +1,20 @@
+#
+# Provides the {Hexdump.dump} method and can add hexdumping to other classes
+# by including the {Hexdump} module.
+#
+#     class AbstractData
+#     
+#       include Hexdump
+#       
+#       def each_byte
+#         # ...
+#       end
+#     
+#     end
+#     
+#     data = AbstractData.new
+#     data.hexdump
+#
 module Hexdump
   #
   # Hexdumps the given data.
