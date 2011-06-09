@@ -82,7 +82,7 @@ module Hexdump
                                 [8, "%.8b"]
                               end
 
-    hex_byte = lambda { |byte|
+    format_byte = lambda { |byte|
       if (ascii && (byte >= 0x20 && byte <= 0x7e))
         byte.chr
       else
@@ -103,7 +103,7 @@ module Hexdump
     index = 0
 
     data.each_byte.each_slice(width) do |bytes|
-      hex_segment = bytes.map(&hex_byte)
+      hex_segment = bytes.map(&format_byte)
       print_segment = bytes.map(&print_byte)
 
       if block_given?
