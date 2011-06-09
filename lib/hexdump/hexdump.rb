@@ -71,22 +71,22 @@ module Hexdump
     width = options.fetch(:width,16)
     base = options.fetch(:base,:hexadecimal)
     ascii = options.fetch(:ascii,false)
-    byte_width, byte_format = case base
-                              when :hexadecimal, :hex, 16
-                                [2, "%.2x"]
-                              when :decimal, :dec, 10
-                                [3, "%3.d"]
-                              when :octal, :oct, 8
-                                [4, "0%.3o"]
-                              when :binary, :bin, 2
-                                [8, "%.8b"]
-                              end
+    format_width, format = case base
+                           when :hexadecimal, :hex, 16
+                             [2, "%.2x"]
+                           when :decimal, :dec, 10
+                             [3, "%3.d"]
+                           when :octal, :oct, 8
+                             [4, "0%.3o"]
+                           when :binary, :bin, 2
+                             [8, "%.8b"]
+                           end
 
     format_byte = lambda { |byte|
       if (ascii && (byte >= 0x20 && byte <= 0x7e))
         byte.chr
       else
-        byte_format % byte
+        format % byte
       end
     }
 
@@ -98,21 +98,21 @@ module Hexdump
       end
     }
 
-    hex_segment_width = ((width * byte_width) + (width - 1))
-    line_format = "%.8x  %-#{hex_segment_width}s  |%s|\n"
+    bytes_segment_width = ((width * format_width) + (width - 1))
+    line_format = "%.8x  %-#{bytes_segment_width}s  |%s|\n"
     index = 0
 
     data.each_byte.each_slice(width) do |bytes|
-      hex_segment = bytes.map(&format_byte)
+      bytes_segment = bytes.map(&format_byte)
       print_segment = bytes.map(&print_byte)
 
       if block_given?
-        yield(index,hex_segment,print_segment)
+        yield(index,bytes_segment,print_segment)
       else
         output << sprintf(
           line_format,
           index,
-          hex_segment.join(' '),
+          bytes_segment.join(' '),
           print_segment.join
         )
       end
