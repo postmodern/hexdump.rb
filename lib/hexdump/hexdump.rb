@@ -70,7 +70,7 @@ module Hexdump
     if block
       dumper.each(data,&block)
     else
-      dumper.print(data,output)
+      dumper.dump(data,output)
     end
 
     return nil

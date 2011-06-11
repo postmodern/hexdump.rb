@@ -234,17 +234,17 @@ describe Hexdump::Dumper do
     end
   end
 
-  describe "#print" do
+  describe "#dump" do
     it "should check if the :output supports the '#<<' method" do
       lambda {
-        subject.print(data,Object.new)
+        subject.dump(data,Object.new)
       }.should raise_error(ArgumentError)
     end
 
     it "should append each line of the hexdump to the output" do
       lines = []
 
-      subject.print(data,lines)
+      subject.dump(data,lines)
 
       lines.length.should == 1
       lines[0].should include(hex_chars.join(' '))
