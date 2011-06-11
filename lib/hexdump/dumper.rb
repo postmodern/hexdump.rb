@@ -131,6 +131,21 @@ module Hexdump
 
     PRINTABLE.default = UNPRINTABLE
 
+    # The base to dump words as.
+    attr_reader :base
+
+    # The size of the words parse from the data.
+    attr_reader :word_size
+
+    # The endianness of the words parsed from the data.
+    attr_reader :endian
+
+    # The width in words of each hexdump line.
+    attr_reader :width
+
+    # Whether to display ASCII characters alongside numeric values.
+    attr_reader :ascii
+
     #
     # Creates a new Hexdump dumper.
     #
