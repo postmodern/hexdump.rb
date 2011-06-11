@@ -257,17 +257,17 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
-    # @yield [index,hex_segment,print_segment]
+    # @yield [index,numeric,printable]
     #   The given block will be passed the hexdump break-down of each segment.
     #
     # @yieldparam [Integer] index
     #   The index of the hexdumped segment.
     #
-    # @yieldparam [Array<String>] hex_segment
-    #   The hexadecimal-byte representation of the segment.
+    # @yieldparam [Array<String>] numeric
+    #   The numeric representation of the segment.
     #
-    # @yieldparam [Array<String>] print_segment
-    #   The print-character representation of the segment.
+    # @yieldparam [Array<String>] printable
+    #   The printable representation of the segment.
     #
     # @return [nil]
     #
@@ -277,20 +277,20 @@ module Hexdump
       index = 0
       count = 0
 
-      numeric_buffer = []
-      char_buffer = []
+      numeric = []
+      printable = []
 
       each_word(data) do |word|
-        numeric_buffer << format_numeric(word)
-        char_buffer << format_char(word)
+        numeric << format_numeric(word)
+        printable << format_char(word)
 
         count += 1
 
         if count >= @width
-          yield(index,numeric_buffer,char_buffer)
+          yield(index,numeric,printable)
 
-          numeric_buffer.clear
-          char_buffer.clear
+          numeric.clear
+          printable.clear
 
           index += (@width * @word_size)
           count = 0
@@ -299,7 +299,7 @@ module Hexdump
 
       if count > 0
         # yield the remaining data
-        yield(index,numeric_buffer,char_buffer)
+        yield(index,numeric,printable)
       end
     end
 
@@ -330,17 +330,17 @@ module Hexdump
       index = 0
       count = 0
 
-      numeric_buffer = ''
-      char_buffer = ''
+      numeric = ''
+      printable = ''
 
       each_word(data) do |word|
-        numeric_buffer << format_numeric(word) << ' '
-        char_buffer << format_char(word)
+        numeric << format_numeric(word) << ' '
+        printable << format_char(word)
 
         count += 1
 
         if count >= @width
-          output << sprintf(line_format,index,numeric_buffer,char_buffer)
+          output << sprintf(line_format,index,numeric,printable)
 
           numeric_buffer = ''
           char_buffer = ''
@@ -352,7 +352,7 @@ module Hexdump
 
       if count > 0
         # output the remaining line
-        output << sprintf(line_format,index,numeric_buffer,char_buffer)
+        output << sprintf(line_format,index,numeric,printable)
       end
     end
 
