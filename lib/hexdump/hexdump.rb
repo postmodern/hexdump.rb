@@ -44,17 +44,18 @@ module Hexdump
   # @option options [#<<] :output (STDOUT)
   #   The output to print the hexdump to.
   #
-  # @yield [index,hex_segment,print_segment]
-  #   The given block will be passed the hexdump break-down of each segment.
+  # @yield [index,numeric,printable]
+  #   The given block will be passed the hexdump break-down of each
+  #   segment.
   #
   # @yieldparam [Integer] index
   #   The index of the hexdumped segment.
   #
-  # @yieldparam [Array<String>] hex_segment
-  #   The hexadecimal-byte representation of the segment.
+  # @yieldparam [Array<String>] numeric
+  #   The numeric representation of the segment.
   #
-  # @yieldparam [Array<String>] print_segment
-  #   The print-character representation of the segment.
+  # @yieldparam [Array<String>] printable
+  #   The printable representation of the segment.
   #
   # @return [nil]
   #
@@ -64,8 +65,8 @@ module Hexdump
   #   the `:base` value was unknown.
   #
   def Hexdump.dump(data,options={},&block)
-    dumper = Dumper.new(options)
     output = (options.delete(:output) || STDOUT)
+    dumper = Dumper.new(options)
 
     if block
       dumper.each(data,&block)
