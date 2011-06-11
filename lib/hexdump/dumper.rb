@@ -27,6 +27,7 @@ module Hexdump
       :binary => proc { |width| "%.#{width}b" }
     }
 
+    # Character to represent unprintable characters
     UNPRINTABLE = '.'
 
     # ASCII printable bytes and characters
@@ -258,7 +259,8 @@ module Hexdump
     #   The data to be hexdumped.
     #
     # @yield [index,numeric,printable]
-    #   The given block will be passed the hexdump break-down of each segment.
+    #   The given block will be passed the hexdump break-down of each
+    #   segment.
     #
     # @yieldparam [Integer] index
     #   The index of the hexdumped segment.
@@ -359,6 +361,14 @@ module Hexdump
     protected
 
     #
+    # Converts the word into a numeric String.
+    #
+    # @param [Integer] word
+    #   The word to convert.
+    #
+    # @return [String]
+    #   The numeric representation of the word.
+    #
     # @since 0.2.0
     #
     def format_numeric(word)
@@ -373,6 +383,14 @@ module Hexdump
       end
     end
 
+    #
+    # Converts a word into a printable String.
+    #
+    # @param [Integer] word
+    #   The word to convert.
+    #
+    # @return [String]
+    #   The printable representation of the word.
     #
     # @since 0.2.0
     #
