@@ -153,6 +153,8 @@ module Hexdump
     # @raise [ArgumentError]
     #   The `:base` value was unknown.
     #
+    # @since 0.2.0
+    #
     def initialize(options={})
       @base = case options[:base]
               when :hexadecimal, :hex, 16
@@ -269,6 +271,8 @@ module Hexdump
     #
     # @return [nil]
     #
+    # @since 0.2.0
+    #
     def each(data)
       index = 0
       count = 0
@@ -313,6 +317,8 @@ module Hexdump
     # @raise [ArgumentError]
     #   The output value does not support the `#<<` method.
     #
+    # @since 0.2.0
+    #
     def dump(data,output=STDOUT)
       unless output.respond_to?(:<<)
         raise(ArgumentError,"output must support the #<< method")
@@ -352,6 +358,9 @@ module Hexdump
 
     protected
 
+    #
+    # @since 0.2.0
+    #
     def format_numeric(word)
       if @word_size == 1
         if (@ascii && (word >= 0x20 && word <= 0x7e))
@@ -364,6 +373,9 @@ module Hexdump
       end
     end
 
+    #
+    # @since 0.2.0
+    #
     def format_char(word)
       if @word_size == 1
         PRINTABLE[word]
