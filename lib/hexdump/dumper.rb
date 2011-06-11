@@ -176,6 +176,12 @@ module Hexdump
 
       @format_width = (WIDTHS[@base][@word_size] || 1)
       @format = FORMATS[@base][@format_width]
+
+      if @word_size == 1
+        @format_cache = Hash.new do |hash,key|
+          hash[key] = (@format % key)
+        end
+      end
     end
     
     #
@@ -347,8 +353,12 @@ module Hexdump
     protected
 
     def format_numeric(word)
-      if (@ascii && (word >= 0x20 && word <= 0x7e))
-        PRINTABLE[word]
+      if @word_size == 1
+        if (@ascii && (word >= 0x20 && word <= 0x7e))
+          PRINTABLE[word]
+        else
+          @format_cache[word]
+        end
       else
         (@format % word)
       end
