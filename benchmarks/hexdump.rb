@@ -32,4 +32,14 @@ Benchmark.bm(26) do |b|
   b.report('hexdump ascii=true') do
     Hexdump.dump(DATA, :ascci => true, :output => OUTPUT)
   end
+
+  [2, 4, 8].each do |word_size|
+    b.report("hexdump word_size=#{word_size} (block)") do
+      Hexdump.dump(DATA, :word_size => word_size) { |index,hex,print| }
+    end
+
+    b.report("hexdump word_size=#{word_size}") do
+      Hexdump.dump(DATA, :word_size => word_size, :output => OUTPUT)
+    end
+  end
 end
