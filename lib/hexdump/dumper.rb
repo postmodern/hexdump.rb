@@ -1,4 +1,9 @@
 module Hexdump
+  #
+  # Handles the parsing of data and formatting of the hexdump.
+  #
+  # @since 0.2.0
+  #
   class Dumper
 
     # Widths for formatted numbers
