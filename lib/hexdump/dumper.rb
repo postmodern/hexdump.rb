@@ -367,7 +367,7 @@ module Hexdump
     def format_char(word)
       if @word_size == 1
         PRINTABLE[word]
-      elsif RUBY_VERSION > '1.9.'
+      elsif (RUBY_VERSION > '1.9.' && (word >= -2 && word <= 0xffffffff))
         word.chr(Encoding::UTF_8)
       else
         UNPRINTABLE
