@@ -18,12 +18,7 @@
 module Hexdump
   # Widths for formatted numbers
   WIDTHS = {
-    :hexadecimal => {
-      1 => 2,
-      2 => 4,
-      4 => 8,
-      8 => 16
-    },
+    :hexadecimal => proc { |word_size| word_size * 2 },
 
     :decimal => {
       1 => 3,
@@ -39,12 +34,7 @@ module Hexdump
       8 => 22
     },
 
-    :binary => {
-      1 => 8,
-      2 => 16,
-      4 => 32,
-      8 => 64
-    }
+    :binary => proc { |word_size| word_size * 8 }
   }
 
   # Format Strings for the various bases
@@ -203,7 +193,7 @@ module Hexdump
     width = (options.fetch(:width,16) / word_size)
     ascii = options.fetch(:ascii,false)
 
-    format_width = WIDTHS[base][word_size]
+    format_width = (WIDTHS[base][word_size] || 1)
     format = FORMATS[base][format_width]
 
     format_word = if ascii 
