@@ -16,6 +16,122 @@
 #     data.hexdump
 #
 module Hexdump
+  # Widths for formatted numbers
+  WIDTHS = {
+    :hexadecimal => {
+      1 => 2,
+      2 => 4,
+      4 => 8,
+      8 => 16
+    },
+
+    :decimal => {
+      1 => 3,
+      2 => 5,
+      4 => 10,
+      8 => 20
+    },
+
+    :octal => {
+      1 => 3,
+      2 => 6,
+      4 => 11,
+      8 => 22
+    },
+
+    :binary => {
+      1 => 8,
+      2 => 16,
+      4 => 32,
+      8 => 64
+    }
+  }
+
+  # Format Strings for the various bases
+  FORMATS = {
+    :hexadecimal => proc { |width| "%.#{width}x" },
+    :decimal => proc { |width| "%#{width}.d" },
+    :octal => proc { |width| "%.#{width}o" },
+    :binary => proc { |width| "%.#{width}b" }
+  }
+
+  #
+  # Iterates over every word within the data.
+  #
+  # @param [#each_byte] data
+  #   The data containing bytes.
+  #
+  # @param [Hash] options
+  #   Additional options.
+  #
+  # @option options [Integer] :word_size (1)
+  #   The number of bytes within each word.
+  #
+  # @option options [:little, :bit] :endian (:little)
+  #   The endianness of each word.
+  #
+  # @yield [word]
+  #   The given block will be passed each word within the data.
+  #
+  # @yieldparam [Integer]
+  #   An unpacked word from the data.
+  #
+  # @return [Enumerator]
+  #   If no block is given, an Enumerator will be returned.
+  #
+  # @raise [ArgumentError]
+  #   The given data does not define the `#each_byte` method.
+  #
+  # @since 0.2.0
+  #
+  def Hexdump.each_word(data,options={},&block)
+    return enum_for(:each_word,data,options) unless block
+
+    unless data.respond_to?(:each_byte)
+      raise(ArgumentError,"the data to hexdump must define #each_byte")
+    end
+
+    word_size = options.fetch(:word_size,1)
+    endian = options.fetch(:endian,:little)
+
+    if word_size > 1
+      word = 0
+      count = 0
+
+      init_shift = if endian == :big
+                     ((word_size - 1) * 8)
+                   else
+                     0
+                   end
+      shift = init_shift
+
+      data.each_byte do |b|
+        word |= (b << shift)
+
+        if endian == :big
+          shift -= 8
+        else
+          shift += 8
+        end
+
+        count += 1
+
+        if count >= word_size
+          yield word
+
+          word = 0
+          count = 0
+          shift = init_shift
+        end
+      end
+
+      # yield the remaining word
+      yield word if count > 0
+    else
+      data.each_byte(&block)
+    end
+  end
+
   #
   # Hexdumps the given data.
   #
@@ -27,6 +143,9 @@ module Hexdump
   #
   # @option options [Integer] :width (16)
   #   The number of bytes to dump for each line.
+  #
+  # @option options [Integer] :word_size (1)
+  #   The number of bytes within a word.
   #
   # @option options [Symbol, Integer] :base (:hexadecimal)
   #   The base to print bytes in. Supported bases include, `:hexadecimal`,
@@ -58,53 +177,65 @@ module Hexdump
   #   the `:output` value does not support the `#<<` method.
   #
   def Hexdump.dump(data,options={})
-    unless data.respond_to?(:each_byte)
-      raise(ArgumentError,"the data to hexdump must define #each_byte")
-    end
-
     output = options.fetch(:output,STDOUT)
 
     unless output.respond_to?(:<<)
       raise(ArgumentError,":output must support the #<< method")
     end
 
-    width = options.fetch(:width,16)
-    base = options.fetch(:base,:hexadecimal)
+    base = case options[:base]
+           when :hexadecimal, :hex, 16
+             :hexadecimal
+           when :decimal, :dec, 10
+             :decimal
+           when :octal, :oct, 8
+             :octal
+           when :binary, :bin, 2
+             :binary
+           else
+             :hexadecimal
+           end
+
+    word_size = options.fetch(:word_size,1)
+    width = (options.fetch(:width,16) / word_size)
     ascii = options.fetch(:ascii,false)
-    format_width, format = case base
-                           when :hexadecimal, :hex, 16
-                             [2, "%.2x"]
-                           when :decimal, :dec, 10
-                             [3, "%3.d"]
-                           when :octal, :oct, 8
-                             [4, "0%.3o"]
-                           when :binary, :bin, 2
-                             [8, "%.8b"]
-                           end
 
-    format_byte = lambda { |byte|
-      if (ascii && (byte >= 0x20 && byte <= 0x7e))
-        byte.chr
-      else
-        format % byte
-      end
-    }
+    format_width = WIDTHS[base][word_size]
+    format = FORMATS[base][format_width]
 
-    print_byte = lambda { |byte|
-      if (byte >= 0x20 && byte <= 0x7e)
-        byte.chr
-      else
-        '.'
-      end
-    }
+    format_word = if ascii 
+                    lambda { |word|
+                      if (word >= 0x20 && word <= 0x7e)
+                        word.chr
+                      else
+                        (format % word)
+                      end
+                    }
+                  else
+                    lambda { |word| (format % word) }
+                  end
+
+    print_word = if word_size == 1
+                   lambda { |word|
+                     if (word >= 0x20 && word <= 0x7e)
+                       word.chr
+                     else
+                       '.'
+                     end
+                   }
+                 elsif RUBY_VERSION > '1.9.'
+                   lambda { |word| word.chr(Encoding::UTF_8) }
+                 else
+                   lambda { |word| '.' }
+                 end
 
     bytes_segment_width = ((width * format_width) + (width - 1))
     line_format = "%.8x  %-#{bytes_segment_width}s  |%s|\n"
     index = 0
 
-    data.each_byte.each_slice(width) do |bytes|
-      bytes_segment = bytes.map(&format_byte)
-      print_segment = bytes.map(&print_byte)
+    each_word(data,options).each_slice(width) do |words|
+      bytes_segment = words.map(&format_word)
+      print_segment = words.map(&print_word)
 
       if block_given?
         yield(index,bytes_segment,print_segment)
@@ -117,7 +248,7 @@ module Hexdump
         )
       end
 
-      index += width
+      index += (width * word_size)
     end
 
     return nil

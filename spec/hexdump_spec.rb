@@ -5,18 +5,42 @@ describe Hexdump do
   let(:bytes) { [104, 101, 108, 108, 111] }
   let(:hex_chars) { ['68', '65', '6c', '6c', '6f'] }
   let(:decimal_chars) { ['104', '101', '108', '108', '111'] }
-  let(:octal_chars) { ['0150', '0145', '0154', '0154', '0157'] }
+  let(:octal_chars) { ['150', '145', '154', '154', '157'] }
   let(:binary_chars) { ['01101000', '01100101', '01101100', '01101100', '01101111'] }
   let(:print_chars) { ['h', 'e', 'l', 'l', 'o'] }
   let(:data) { print_chars.join }
 
-  describe "dump" do
+  describe "each_word" do
+    let(:data) { 'ABAB' }
+    let(:bytes) { [0x41, 0x42, 0x41, 0x42] }
+    let(:shorts_le) { [0x4241, 0x4241] }
+    let(:shorts_be) { [0x4142, 0x4142] }
+    let(:custom_words) { [0x414241, 0x42] }
+
     it "should check if the data defines '#each_byte'" do
       lambda {
-        subject.dump(Object.new)
+        subject.each_word(Object.new).to_a
       }.should raise_error(ArgumentError)
     end
 
+    it "should iterate over each byte by default" do
+      subject.each_word(data).to_a.should == bytes
+    end
+
+    it "should allow iterating over custom word-sizes" do
+      subject.each_word(data, :word_size => 3).to_a.should == custom_words
+    end
+
+    it "should iterate over little-endian words by default" do
+      subject.each_word(data, :word_size => 2).to_a.should == shorts_le
+    end
+
+    it "should iterate over big-endian words" do
+      subject.each_word(data, :word_size => 2, :endian => :big).to_a.should == shorts_be
+    end
+  end
+
+  describe "dump" do
     it "should check if the :output supports the '#<<' method" do
       lambda {
         subject.dump(data, :output => Object.new)
@@ -153,7 +177,9 @@ describe Hexdump do
   describe "#hexdump" do
     subject do
       obj = Object.new.extend(Hexdump)
-      obj.stub!(:each_byte).and_return(bytes.enum_for(:each))
+
+      stub = obj.stub!(:each_byte)
+      bytes.each { |b| stub = stub.and_yield(b) }
 
       obj
     end
