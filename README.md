@@ -132,6 +132,10 @@ Benchmarks show {Hexdump.dump} processing 2.4M of data.
     Hexdump.dump(data, :base => :binary)
     # 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
 
+    ("ABC" * 10).hexdump(:word_size => 2)
+    # 00000000  4241 4143 4342 4241 4143 4342 4241 4143  |䉁䅃䍂䉁䅃䍂䉁䅃|
+    # 00000010  4342 4241 4143 4342 4241 4143 4342       |䍂䉁䅃䍂䉁䅃䍂|
+
 ## Install
 
     $ gem install hexdump
