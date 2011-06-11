@@ -172,6 +172,55 @@ describe Hexdump do
 
       chars.should == binary_chars
     end
+
+    context ":word_size" do
+      let(:options) { {:word_size => 2, :endian => :little} }
+
+      let(:hex_words) { ['6568', '6c6c', '006f'] }
+      let(:decimal_words) { ['25960', '27756', '  111'] }
+      let(:octal_words) { ['062550', '066154', '000157'] }
+      let(:binary_words) { ['0110010101101000', '0110110001101100', '0000000001101111'] }
+
+      it "should dump words in hexadecimal" do
+        words = []
+
+        subject.dump(data,options) do |index,hex,print|
+          words += hex
+        end
+
+        words.should == hex_words
+      end
+
+      it "should dump words in decimal" do
+        words = []
+
+        subject.dump(data,options.merge(:base => :decimal)) do |index,dec,print|
+          words += dec
+        end
+
+        words.should == decimal_words
+      end
+
+      it "should dump words in octal" do
+        words = []
+
+        subject.dump(data,options.merge(:base => :octal)) do |index,oct,print|
+          words += oct
+        end
+
+        words.should == octal_words
+      end
+
+      it "should dump words in binary" do
+        words = []
+
+        subject.dump(data,options.merge(:base => :binary)) do |index,bin,print|
+          words += bin
+        end
+
+        words.should == binary_words
+      end
+    end
   end
 
   describe "#hexdump" do
