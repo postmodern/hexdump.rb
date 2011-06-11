@@ -179,7 +179,7 @@ module Hexdump
 
       if @word_size == 1
         @format_cache = Hash.new do |hash,key|
-          hash[key] = (@format % key)
+          hash[key] = sprintf(@format,key)
         end
       end
     end
@@ -360,7 +360,7 @@ module Hexdump
           @format_cache[word]
         end
       else
-        (@format % word)
+        sprintf(@format,word)
       end
     end
 
