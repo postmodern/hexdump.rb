@@ -152,7 +152,7 @@ module Hexdump
     #   Print ascii characters when possible.
     #
     # @raise [ArgumentError]
-    #   The `:base` value was unknown.
+    #   The values for `:base` or `:endian` were unknown.
     #
     # @since 0.2.0
     #
@@ -173,7 +173,17 @@ module Hexdump
               end
 
       @word_size = options.fetch(:word_size,1)
-      @endian = options.fetch(:endian,:little)
+      @endian = case options[:endian]
+                when 'little', :little
+                  :little
+                when 'big', :big
+                  :big
+                when nil
+                  :little
+                else
+                  raise(ArgumentError,"unknown endian: #{options[:endian].inspect}")
+                end
+
       @width = (options.fetch(:width,16) / @word_size)
       @ascii = options.fetch(:ascii,false)
 
