@@ -17,6 +17,12 @@ describe Hexdump::Dumper do
     }.should raise_error(ArgumentError)
   end
 
+  it "should only accept known :endian values" do
+    lambda {
+      described_class.new(data, :endian => :foo)
+    }.should raise_error(ArgumentError)
+  end
+
   describe "each_word" do
     let(:data) { 'ABAB' }
     let(:bytes) { [0x41, 0x42, 0x41, 0x42] }
