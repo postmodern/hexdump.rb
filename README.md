@@ -20,6 +20,58 @@ Simple and Fast hexdumping for Ruby.
 * Makes {String}, {StringIO}, {IO}, {File} objects hexdumpable.
 * Fast-ish.
 
+## Examples
+
+    require 'hexdump'
+
+    data = "hello\x00"
+
+    Hexdump.dump(data)
+    # 00000000  68 65 6c 6c 6f 00                                |hello.|
+    
+    data.hexdump
+    # 00000000  68 65 6c 6c 6f 00                                |hello.|
+
+    File.open('dump.txt','w') do |file|
+      data.hexdump(:output => file)
+    end
+
+    # iterate over the hexdump lines
+    data.hexdump do |index,hex,printable|
+      index     # => 0
+      hex       # => ["68", "65", "6c", "6c", "6f", "00"]
+      printable # => ["h", "e", "l", "l", "o", "."]
+    end
+
+    # configure the width of the hexdump
+    Hexdump.dump('A' * 30, :width => 10)
+    # 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+    # 0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+    # 00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+
+    Hexdump.dump(data, :ascii => true)
+    # 00000000  h e l l o 00                                     |hello.|
+
+    Hexdump.dump(data, :base => 16)
+    # 00000000  68 65 6c 6c 6f 00                                |hello.|
+
+    Hexdump.dump(data, :base => :decimal)
+    # 00000000  104 101 108 108 111   0                                          |hello.|
+
+    Hexdump.dump(data, :base => :octal)
+    # 00000000  0150 0145 0154 0154 0157 0000                                                    |hello.|
+
+    Hexdump.dump(data, :base => :binary)
+    # 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
+
+    ("ABC" * 10).hexdump(:word_size => 2)
+    # 00000000  4241 4143 4342 4241 4143 4342 4241 4143  |䉁䅃䍂䉁䅃䍂䉁䅃|
+    # 00000010  4342 4241 4143 4342 4241 4143 4342       |䍂䉁䅃䍂䉁䅃䍂|
+
+## Install
+
+    $ gem install hexdump
+
 ## Benchmarks
 
 Benchmarks show {Hexdump.dump} processing 2.4M of data.
@@ -87,58 +139,6 @@ Benchmarks show {Hexdump.dump} processing 2.4M of data.
     hexdump word_size=4          6.649989   0.053992   6.703981 (  8.245247)
     hexdump word_size=8 (block)  5.638143   0.047993   5.686136 ( 12.530454)
     hexdump word_size=8          7.598844   0.066990   7.665834 ( 16.881667)
-
-## Examples
-
-    require 'hexdump'
-
-    data = "hello\x00"
-
-    Hexdump.dump(data)
-    # 00000000  68 65 6c 6c 6f 00                                |hello.|
-    
-    data.hexdump
-    # 00000000  68 65 6c 6c 6f 00                                |hello.|
-
-    File.open('dump.txt','w') do |file|
-      data.hexdump(:output => file)
-    end
-
-    # iterate over the hexdump lines
-    data.hexdump do |index,hex,printable|
-      index     # => 0
-      hex       # => ["68", "65", "6c", "6c", "6f", "00"]
-      printable # => ["h", "e", "l", "l", "o", "."]
-    end
-
-    # configure the width of the hexdump
-    Hexdump.dump('A' * 30, :width => 10)
-    # 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
-    # 0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
-    # 00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
-
-    Hexdump.dump(data, :ascii => true)
-    # 00000000  h e l l o 00                                     |hello.|
-
-    Hexdump.dump(data, :base => 16)
-    # 00000000  68 65 6c 6c 6f 00                                |hello.|
-
-    Hexdump.dump(data, :base => :decimal)
-    # 00000000  104 101 108 108 111   0                                          |hello.|
-
-    Hexdump.dump(data, :base => :octal)
-    # 00000000  0150 0145 0154 0154 0157 0000                                                    |hello.|
-
-    Hexdump.dump(data, :base => :binary)
-    # 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
-
-    ("ABC" * 10).hexdump(:word_size => 2)
-    # 00000000  4241 4143 4342 4241 4143 4342 4241 4143  |䉁䅃䍂䉁䅃䍂䉁䅃|
-    # 00000010  4342 4241 4143 4342 4241 4143 4342       |䍂䉁䅃䍂䉁䅃䍂|
-
-## Install
-
-    $ gem install hexdump
 
 ## Copyright
 
