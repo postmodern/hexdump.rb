@@ -282,7 +282,7 @@ module Hexdump
 
       each_word(data) do |word|
         numeric << format_numeric(word)
-        printable << format_char(word)
+        printable << format_printable(word)
 
         count += 1
 
@@ -335,7 +335,7 @@ module Hexdump
 
       each_word(data) do |word|
         numeric << format_numeric(word) << ' '
-        printable << format_char(word)
+        printable << format_printable(word)
 
         count += 1
 
@@ -376,7 +376,7 @@ module Hexdump
     #
     # @since 0.2.0
     #
-    def format_char(word)
+    def format_printable(word)
       if @word_size == 1
         PRINTABLE[word]
       elsif (RUBY_VERSION > '1.9.' && (word >= -2 && word <= 0x7fffffff))
