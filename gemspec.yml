@@ -1,5 +1,5 @@
 name: hexdump
-version: 0.1.0
+version: 0.2.0
 summary: Hexdump Strings and IO objects.
 description: Simple and Fast hexdumping for Ruby.
 license: MIT
