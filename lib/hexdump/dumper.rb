@@ -318,7 +318,7 @@ module Hexdump
         raise(ArgumentError,"output must support the #<< method")
       end
 
-      bytes_segment_width = ((@width * @format_width) + (@width - 1))
+      bytes_segment_width = ((@width * @format_width) + @width)
       line_format = "%.8x  %-#{bytes_segment_width}s |%s|\n"
 
       index = 0
