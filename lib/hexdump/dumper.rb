@@ -215,8 +215,8 @@ module Hexdump
         word = 0
         count = 0
 
-        init_shift = if endian == :big
-                       ((word_size - 1) * 8)
+        init_shift = if @endian == :big
+                       ((@word_size - 1) * 8)
                      else
                        0
                      end
@@ -225,7 +225,7 @@ module Hexdump
         data.each_byte do |b|
           word |= (b << shift)
 
-          if endian == :big
+          if @endian == :big
             shift -= 8
           else
             shift += 8
