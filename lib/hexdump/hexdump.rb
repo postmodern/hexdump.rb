@@ -173,8 +173,9 @@ module Hexdump
   # @return [nil]
   #
   # @raise [ArgumentError]
-  #   The given data does not define the `#each_byte` method, or
-  #   the `:output` value does not support the `#<<` method.
+  #   The given data does not define the `#each_byte` method,
+  #   the `:output` value does not support the `#<<` method or
+  #   the `:base` value was unknown.
   #
   def Hexdump.dump(data,options={})
     output = options.fetch(:output,STDOUT)
@@ -192,8 +193,10 @@ module Hexdump
              :octal
            when :binary, :bin, 2
              :binary
-           else
+           when nil
              :hexadecimal
+           else
+             raise(ArgumentError,"unknown base #{options[:base].inspect}")
            end
 
     word_size = options.fetch(:word_size,1)

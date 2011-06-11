@@ -47,6 +47,12 @@ describe Hexdump do
       }.should raise_error(ArgumentError)
     end
 
+    it "should only accept known :base values" do
+      lambda {
+        subject.dump(data, :base => :foo)
+      }.should raise_error(ArgumentError)
+    end
+
     it "should append each line of the hexdump to the output" do
       lines = []
       subject.dump(data, :output => lines)
