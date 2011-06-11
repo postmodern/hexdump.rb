@@ -56,7 +56,7 @@ Benchmarks show {Hexdump.dump} processing 2.4M of data.
     hexdump word_size=8 (block)  7.520000   0.040000   7.560000 (  8.565246)
     hexdump word_size=8          8.240000   0.040000   8.280000 (  9.475693)
 
-### JRuby 1.5.6
+### JRuby 1.6.0
 
                                      user     system      total        real
     hexdump (block)              6.742000   0.000000   6.742000 (  6.495000)
