@@ -271,11 +271,14 @@ module Hexdump
     # @yieldparam [Array<String>] printable
     #   The printable representation of the segment.
     #
-    # @return [nil]
+    # @return [Enumerator]
+    #   If no block is given, an Enumerator will be returned.
     #
     # @since 0.2.0
     #
     def each(data)
+      return enum_for(:each,data) unless block_given?
+
       index = 0
       count = 0
 
