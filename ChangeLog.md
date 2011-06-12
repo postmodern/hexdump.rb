@@ -1,3 +1,8 @@
+### 0.2.1 / 2011-06-11
+
+* Fixed a major bug in {Hexdump::Dumper#dump}, where the line buffers
+  were not being cleared.
+
 ### 0.2.0 / 2011-06-11
 
 * Added {Hexdump::Dumper}.
