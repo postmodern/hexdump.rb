@@ -377,8 +377,8 @@ module Hexdump
         if count >= @width
           output << sprintf(line_format,index,numeric,printable)
 
-          numeric_buffer = ''
-          char_buffer = ''
+          numeric = ''
+          printable = ''
 
           index += (@width * @word_size)
           count = 0
