@@ -1,6 +1,6 @@
 # hexdump
 
-* [Homepage](http://github.com/postmodern/hexdump)
+* [Source](http://github.com/postmodern/hexdump)
 * [Issues](http://github.com/postmodern/hexdump/issues)
 * [Documentation](http://rubydoc.info/gems/hexdump/frames)
 * [Email](mailto:postmodern.mod3 at gmail.com)
