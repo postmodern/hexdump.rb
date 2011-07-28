@@ -160,6 +160,10 @@ module Hexdump
     # @option options [Integer] :width (16)
     #   The number of bytes to dump for each line.
     #
+    # @option options [Integer] :endian (:little)
+    #   The endianness that the bytes are organized in. Supported endianness
+    #   include `:little` and `:big`.
+    #
     # @option options [Integer] :word_size (1)
     #   The number of bytes within a word.
     #
