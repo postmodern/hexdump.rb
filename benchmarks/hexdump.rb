@@ -26,11 +26,11 @@ Benchmark.bm(27) do |b|
   end
 
   b.report('hexdump ascii=true (block)') do
-    Hexdump.dump(DATA, :ascci => true) { |index,hex,print| }
+    Hexdump.dump(DATA, :ascii => true) { |index,hex,print| }
   end
 
   b.report('hexdump ascii=true') do
-    Hexdump.dump(DATA, :ascci => true, :output => OUTPUT)
+    Hexdump.dump(DATA, :ascii => true, :output => OUTPUT)
   end
 
   [2, 4, 8].each do |word_size|
