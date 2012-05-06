@@ -435,7 +435,11 @@ module Hexdump
       if @word_size == 1
         PRINTABLE[word]
       elsif (RUBY_VERSION > '1.9.' && (word >= -2 && word <= 0x7fffffff))
-        word.chr(Encoding::UTF_8)
+        begin
+          word.chr(Encoding::UTF_8)
+        rescue RangeError
+          UNPRINTABLE
+        end
       else
         UNPRINTABLE
       end
