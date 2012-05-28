@@ -27,9 +27,9 @@ module Hexdump
     # Format Strings for the various bases
     FORMATS = {
       :hexadecimal => proc { |width| "%.#{width}x" },
-      :decimal => proc { |width| "%#{width}.d" },
-      :octal => proc { |width| "%.#{width}o" },
-      :binary => proc { |width| "%.#{width}b" }
+      :decimal     => proc { |width| "%#{width}.d" },
+      :octal       => proc { |width| "%.#{width}o" },
+      :binary      => proc { |width| "%.#{width}b" }
     }
 
     # Character to represent unprintable characters
@@ -249,7 +249,7 @@ module Hexdump
       end
 
       if @word_size > 1
-        word = 0
+        word  = 0
         count = 0
 
         init_shift = if @endian == :big
@@ -273,7 +273,7 @@ module Hexdump
           if count >= @word_size
             yield word
 
-            word = 0
+            word  = 0
             count = 0
             shift = init_shift
           end
@@ -320,13 +320,13 @@ module Hexdump
       printable = []
 
       each_word(data) do |word|
-        numeric << format_numeric(word)
+        numeric   << format_numeric(word)
         printable << format_printable(word)
 
         count += 1
 
         if count >= @width
-          yield(index,numeric,printable)
+          yield index, numeric, printable
 
           numeric.clear
           printable.clear
@@ -338,7 +338,7 @@ module Hexdump
 
       if count > 0
         # yield the remaining data
-        yield(index,numeric,printable)
+        yield index, numeric, printable
       end
     end
 
@@ -369,11 +369,11 @@ module Hexdump
       index = 0
       count = 0
 
-      numeric = ''
+      numeric   = ''
       printable = ''
 
       each_word(data) do |word|
-        numeric << format_numeric(word) << ' '
+        numeric   << format_numeric(word) << ' '
         printable << format_printable(word)
 
         count += 1
@@ -381,11 +381,11 @@ module Hexdump
         if count >= @width
           output << sprintf(line_format,index,numeric,printable)
 
-          numeric = ''
+          numeric   = ''
           printable = ''
 
           index += (@width * @word_size)
-          count = 0
+          count  = 0
         end
       end
 
