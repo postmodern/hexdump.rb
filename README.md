@@ -27,10 +27,10 @@ Simple and Fast hexdumping for Ruby.
     data = "hello\x00"
 
     Hexdump.dump(data)
-    # 00000000  68 65 6c 6c 6f 00                                |hello.|
+    # 00000000  68 65 6c 6c 6f 00   |hello.|
     
     data.hexdump
-    # 00000000  68 65 6c 6c 6f 00                                |hello.|
+    # 00000000  68 65 6c 6c 6f 00   |hello.|
 
     File.open('dump.txt','w') do |file|
       data.hexdump(:output => file)
@@ -50,19 +50,19 @@ Simple and Fast hexdumping for Ruby.
     # 00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
 
     Hexdump.dump(data, :ascii => true)
-    # 00000000  h e l l o 00                                     |hello.|
+    # 00000000  h e l l o 00    |hello.|
 
     Hexdump.dump(data, :base => 16)
-    # 00000000  68 65 6c 6c 6f 00                                |hello.|
+    # 00000000  68 65 6c 6c 6f 00   |hello.|
 
     Hexdump.dump(data, :base => :decimal)
-    # 00000000  104 101 108 108 111   0                                          |hello.|
+    # 00000000  104 101 108 108 111   0   |hello.|
 
     Hexdump.dump(data, :base => :octal)
-    # 00000000  0150 0145 0154 0154 0157 0000                                                    |hello.|
+    # 00000000  0150 0145 0154 0154 0157 0000   |hello.|
 
     Hexdump.dump(data, :base => :binary)
-    # 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
+    # 00000000  01101000 01100101 01101100 01101100 01101111 00000000   |hello.|
 
     ("ABC" * 10).hexdump(:word_size => 2)
     # 00000000  4241 4143 4342 4241 4143 4342 4241 4143  |䉁䅃䍂䉁䅃䍂䉁䅃|
