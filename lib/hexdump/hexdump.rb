@@ -45,7 +45,7 @@ module Hexdump
   # @option options [Boolean] :ascii (false)
   #   Print ascii characters when possible.
   #
-  # @option options [#<<] :output (STDOUT)
+  # @option options [#<<] :output ($stdout)
   #   The output to print the hexdump to.
   #
   # @yield [index,numeric,printable]
@@ -69,7 +69,7 @@ module Hexdump
   #   the `:base` value was unknown.
   #
   def Hexdump.dump(data,options={},&block)
-    output = (options.delete(:output) || STDOUT)
+    output = (options.delete(:output) || $stdout)
     dumper = Dumper.new(options)
 
     if block

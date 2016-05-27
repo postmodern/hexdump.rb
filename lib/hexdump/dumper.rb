@@ -358,7 +358,7 @@ module Hexdump
     #
     # @since 0.2.0
     #
-    def dump(data,output=STDOUT)
+    def dump(data,output=$stdout)
       unless output.respond_to?(:<<)
         raise(ArgumentError,"output must support the #<< method")
       end
