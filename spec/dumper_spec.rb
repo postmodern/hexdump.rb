@@ -12,15 +12,15 @@ describe Hexdump::Dumper do
   let(:data) { print_chars.join }
 
   it "should only accept known :base values" do
-    lambda {
+    expect {
       described_class.new(data, :base => :foo)
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   it "should only accept known :endian values" do
-    lambda {
+    expect {
       described_class.new(data, :endian => :foo)
-    }.should raise_error(ArgumentError)
+    }.to raise_error(ArgumentError)
   end
 
   describe "each_word" do
@@ -31,31 +31,31 @@ describe Hexdump::Dumper do
     let(:custom_words) { [0x414241, 0x42] }
 
     it "should check if the data defines '#each_byte'" do
-      lambda {
+      expect {
         subject.each_word(Object.new).to_a
-      }.should raise_error(ArgumentError)
+      }.to raise_error(ArgumentError)
     end
 
     it "should iterate over each byte by default" do
-      subject.each_word(data).to_a.should == bytes
+      expect(subject.each_word(data).to_a).to be == bytes
     end
 
     it "should allow iterating over custom word-sizes" do
       dumper = described_class.new(:word_size => 3)
 
-      dumper.each_word(data).to_a.should == custom_words
+      expect(dumper.each_word(data).to_a).to be == custom_words
     end
 
     it "should iterate over little-endian words by default" do
       dumper = described_class.new(:word_size => 2)
 
-      dumper.each_word(data).to_a.should == shorts_le
+      expect(dumper.each_word(data).to_a).to be == shorts_le
     end
 
     it "should iterate over big-endian words" do
       dumper = described_class.new(:word_size => 2, :endian => :big)
 
-      dumper.each_word(data).to_a.should == shorts_be
+      expect(dumper.each_word(data).to_a).to be == shorts_be
     end
   end
 
@@ -67,10 +67,10 @@ describe Hexdump::Dumper do
         lines << [index, hex, print]
       end
 
-      lines.length.should == 1
-      lines[0][0].should == 0
-      lines[0][1].should == hex_chars
-      lines[0][2].should == print_chars
+      expect(lines.length).to be(1)
+      expect(lines[0][0]).to be == 0
+      expect(lines[0][1]).to be == hex_chars
+      expect(lines[0][2]).to be == print_chars
     end
 
     it "should provide the index within the data for each line" do
@@ -81,7 +81,7 @@ describe Hexdump::Dumper do
         indices << index
       end
 
-      indices.should == [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+      expect(indices).to be == [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
     end
 
     it "should allow configuring the width, in bytes, of each line" do
@@ -92,7 +92,7 @@ describe Hexdump::Dumper do
         widths << hex.length
       end
 
-      widths.should == ([10] * 10)
+      expect(widths).to be == ([10] * 10)
     end
 
     it "should hexdump the remaining bytes" do
@@ -106,7 +106,7 @@ describe Hexdump::Dumper do
         remainder = print
       end
 
-      remainder.should == chars
+      expect(remainder).to be == chars
     end
 
     it "should provide the hexadecimal characters for each line" do
@@ -117,7 +117,7 @@ describe Hexdump::Dumper do
         chars += hex
       end
 
-      chars.should == (hex_chars * 100)
+      expect(chars).to be == (hex_chars * 100)
     end
 
     it "should allow printing ASCII characters in place of hex characters" do
@@ -128,7 +128,7 @@ describe Hexdump::Dumper do
         chars += hex
       end
 
-      chars.should == print_chars
+      expect(chars).to be == print_chars
     end
 
     it "should provide the print characters for each line" do
@@ -139,7 +139,7 @@ describe Hexdump::Dumper do
         chars += print
       end
 
-      chars.should == (print_chars * 100)
+      expect(chars).to be == (print_chars * 100)
     end
 
     it "should map unprintable characters to '.'" do
@@ -150,7 +150,7 @@ describe Hexdump::Dumper do
         chars += print
       end
 
-      chars.should == (['.'] * unprintable.length)
+      expect(chars).to be == (['.'] * unprintable.length)
     end
 
     it "should support dumping bytes in decimal format" do
@@ -161,7 +161,7 @@ describe Hexdump::Dumper do
         chars += hex
       end
 
-      chars.should == decimal_chars
+      expect(chars).to be == decimal_chars
     end
 
     it "should support dumping bytes in octal format" do
@@ -172,7 +172,7 @@ describe Hexdump::Dumper do
         chars += hex
       end
 
-      chars.should == octal_chars
+      expect(chars).to be == octal_chars
     end
 
     it "should support dumping bytes in binary format" do
@@ -183,7 +183,7 @@ describe Hexdump::Dumper do
         chars += hex
       end
 
-      chars.should == binary_chars
+      expect(chars).to be == binary_chars
     end
 
     context ":word_size" do
@@ -202,7 +202,7 @@ describe Hexdump::Dumper do
           words += hex
         end
 
-        words.should == hex_words
+        expect(words).to be == hex_words
       end
 
       it "should dump words in decimal" do
@@ -213,7 +213,7 @@ describe Hexdump::Dumper do
           words += dec
         end
 
-        words.should == decimal_words
+        expect(words).to be == decimal_words
       end
 
       it "should dump words in octal" do
@@ -224,7 +224,7 @@ describe Hexdump::Dumper do
           words += oct
         end
 
-        words.should == octal_words
+        expect(words).to be == octal_words
       end
 
       it "should dump words in binary" do
@@ -235,16 +235,16 @@ describe Hexdump::Dumper do
           words += bin
         end
 
-        words.should == binary_words
+        expect(words).to be == binary_words
       end
     end
   end
 
   describe "#dump" do
     it "should check if the :output supports the '#<<' method" do
-      lambda {
+      expect {
         subject.dump(data,Object.new)
-      }.should raise_error(ArgumentError)
+      }.to raise_error(ArgumentError)
     end
 
     it "should append each line of the hexdump to the output" do
@@ -252,9 +252,9 @@ describe Hexdump::Dumper do
 
       subject.dump(data,lines)
 
-      lines.length.should == 1
-      lines[0].should include(hex_chars.join(' '))
-      lines[0].should include(print_chars.join)
+      expect(lines.length).to be(1)
+      expect(lines[0]).to include(hex_chars.join(' '))
+      expect(lines[0]).to include(print_chars.join)
     end
   end
 end

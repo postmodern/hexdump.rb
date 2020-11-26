@@ -10,8 +10,10 @@ describe Hexdump do
     subject do
       obj = Object.new.extend(Hexdump)
 
-      stub = obj.stub!(:each_byte)
-      bytes.each { |b| stub = stub.and_yield(b) }
+      each_byte = expect(obj).to receive(:each_byte)
+      bytes.each do |b|
+        each_byte = each_byte.and_yield(b)
+      end
 
       obj
     end
@@ -23,7 +25,7 @@ describe Hexdump do
         chars += hex
       end
 
-      chars.should == hex_chars
+      expect(chars).to be == hex_chars
     end
   end
 end

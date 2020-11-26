@@ -3,18 +3,18 @@ require 'hexdump/extensions'
 
 describe "Hexdump extensions" do
   it "should include Hexdump into String" do
-    String.should include(Hexdump)
+    expect(String).to include(Hexdump)
   end
 
   it "should include Hexdump into StringIO" do
-    StringIO.should include(Hexdump)
+    expect(StringIO).to include(Hexdump)
   end
 
   it "should include Hexdump into IO" do
-    IO.should include(Hexdump)
+    expect(IO).to include(Hexdump)
   end
 
   it "should define File.hexdump" do
-    File.should respond_to(:hexdump)
+    expect(File).to respond_to(:hexdump)
   end
 end
