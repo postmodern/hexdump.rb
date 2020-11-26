@@ -10,6 +10,4 @@ has_yard: true
 required_ruby_version: ">= 1.8.7"
 
 development_dependencies:
-  rubygems-tasks: ~> 0.1
-  rspec: ~> 2.4
-  yard: ~> 0.7
+  bundler: ~> 2.0
