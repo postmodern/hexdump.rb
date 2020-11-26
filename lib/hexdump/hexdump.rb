@@ -68,7 +68,7 @@ module Hexdump
   #   the `:output` value does not support the `#<<` method or
   #   the `:base` value was unknown.
   #
-  def Hexdump.dump(data,options={},&block)
+  def self.dump(data,options={},&block)
     output = (options.delete(:output) || $stdout)
     dumper = Dumper.new(options)
 
