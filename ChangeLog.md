@@ -1,3 +1,8 @@
+### 0.2.4 / 2020-09-26
+
+* Default the `:output` option of {Hexdump.dump} to `$stdout` instead of
+  `STDOUT`, to support overriding the default stdout stream (@kylekyle).
+
 ### 0.2.3 / 2012-05-28
 
 * Fixed a typo in the gemspec, which incorrectly set
