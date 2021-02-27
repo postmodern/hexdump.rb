@@ -72,10 +72,8 @@ module Hexdump
     output = options.fetch(:output,$stdout)
     dumper = Dumper.new(options)
 
-    if block
-      dumper.each(data,&block)
-    else
-      dumper.dump(data,output)
+    if block then dumper.each(data,&block)
+    else          dumper.dump(data,output)
     end
 
     return nil

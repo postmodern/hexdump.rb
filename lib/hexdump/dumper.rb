@@ -182,28 +182,20 @@ module Hexdump
     #
     def initialize(options={})
       @base = case options[:base]
-              when :hexadecimal, :hex, 16
-                :hexadecimal
-              when :decimal, :dec, 10
-                :decimal
-              when :octal, :oct, 8
-                :octal
-              when :binary, :bin, 2
-                :binary
-              when nil
-                :hexadecimal
+              when :hexadecimal, :hex, 16 then :hexadecimal
+              when :decimal, :dec, 10     then :decimal
+              when :octal, :oct, 8        then :octal
+              when :binary, :bin, 2       then :binary
+              when nil                    then :hexadecimal
               else
                 raise(ArgumentError,"unknown base #{options[:base].inspect}")
               end
 
       @word_size = options.fetch(:word_size,1)
       @endian = case options[:endian]
-                when 'little', :little
-                  :little
-                when 'big', :big
-                  :big
-                when nil
-                  :little
+                when 'little', :little then :little
+                when 'big', :big       then :big
+                when nil               then :little
                 else
                   raise(ArgumentError,"unknown endian: #{options[:endian].inspect}")
                 end
@@ -252,10 +244,8 @@ module Hexdump
         word  = 0
         count = 0
 
-        init_shift = if @endian == :big
-                       ((@word_size - 1) * 8)
-                     else
-                       0
+        init_shift = if @endian == :big then ((@word_size - 1) * 8)
+                     else                    0
                      end
         shift = init_shift
 
