@@ -252,10 +252,8 @@ module Hexdump
         data.each_byte do |b|
           word |= (b << shift)
 
-          if @endian == :big
-            shift -= 8
-          else
-            shift += 8
+          if @endian == :big then shift -= 8
+          else                    shift += 8
           end
 
           count += 1
@@ -424,7 +422,7 @@ module Hexdump
     def format_printable(word)
       if @word_size == 1
         PRINTABLE[word]
-      elsif (RUBY_VERSION > '1.9.' && (word >= -2 && word <= 0x7fffffff))
+      elsif word >= -2 && word <= 0x7fffffff
         begin
           word.chr(Encoding::UTF_8)
         rescue RangeError
