@@ -7,7 +7,7 @@ email: postmodern.mod3@gmail.com
 homepage: https://github.com/postmodern/hexdump#readme
 has_yard: true
 
-required_ruby_version: ">= 1.8.7"
+required_ruby_version: ">= 1.9.0"
 
 development_dependencies:
   bundler: ~> 2.0
