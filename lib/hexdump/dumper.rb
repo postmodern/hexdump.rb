@@ -352,7 +352,7 @@ module Hexdump
       end
 
       bytes_segment_width = ((@width * @format_width) + @width)
-      line_format = "%.8x  %-#{bytes_segment_width}s |%s|\n"
+      line_format = "%.8x  %-#{bytes_segment_width}s |%s|#{$/}"
 
       index = 0
       count = 0
