@@ -8,28 +8,28 @@ module Hexdump
 
     # Widths for formatted numbers
     WIDTHS = {
-      :hexadecimal => proc { |word_size| word_size * 2 },
-      :decimal => {
+      hexadecimal: ->(word_size) { word_size * 2 },
+      decimal: {
         1 => 3,
         2 => 5,
         4 => 10,
         8 => 20
       },
-      :octal => {
+      octal: {
         1 => 3,
         2 => 6,
         4 => 11,
         8 => 22
       },
-      :binary => proc { |word_size| word_size * 8 }
+      binary: ->(word_size) { word_size * 8 }
     }
 
     # Format Strings for the various bases
     FORMATS = {
-      :hexadecimal => proc { |width| "%.#{width}x" },
-      :decimal     => proc { |width| "%#{width}.d" },
-      :octal       => proc { |width| "%.#{width}o" },
-      :binary      => proc { |width| "%.#{width}b" }
+      hexadecimal: ->(width) { "%.#{width}x" },
+      decimal:     ->(width) { "%#{width}.d" },
+      octal:       ->(width) { "%.#{width}o" },
+      binary:      ->(width) { "%.#{width}b" }
     }
 
     # Character to represent unprintable characters
