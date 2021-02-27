@@ -69,7 +69,7 @@ module Hexdump
   #   the `:base` value was unknown.
   #
   def self.dump(data,options={},&block)
-    output = (options.delete(:output) || $stdout)
+    output = options.fetch(:output,$stdout)
     dumper = Dumper.new(options)
 
     if block
