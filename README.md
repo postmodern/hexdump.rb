@@ -1,5 +1,7 @@
 # hexdump
 
+[![CI](https://github.com/postmodern/hexdump/actions/workflows/ruby.yml/badge.svg)](https://github.com/postmodern/hexdump/actions/workflows/ruby.yml)
+
 * [Source](https://github.com/postmodern/hexdump)
 * [Issues](https://github.com/postmodern/hexdump/issues)
 * [Documentation](http://rubydoc.info/gems/hexdump/frames)
