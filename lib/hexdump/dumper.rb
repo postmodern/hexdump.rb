@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Hexdump
   #
   # Handles the parsing of data and formatting of the hexdump.
