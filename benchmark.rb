@@ -8,7 +8,7 @@ require 'benchmark'
 DATA = ((0..255).map { |b| b.chr }.join) * (1024 * 40)
 OUTPUT = Class.new { def <<(data); end }.new
 
-Benchmark.bm(27) do |b|
+Benchmark.bm(33) do |b|
   b.report('Hexdump.dump (output)') do
     Hexdump.dump(DATA, :output => OUTPUT)
   end
