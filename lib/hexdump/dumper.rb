@@ -179,7 +179,7 @@ module Hexdump
     #
     # @since 0.2.0
     #
-    def initialize(width:     15,
+    def initialize(width:     16,
                    endian:    :little,
                    word_size: 1,
                    base:      :hexadecimal,
