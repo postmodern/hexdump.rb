@@ -154,6 +154,6 @@ Benchmarks show {Hexdump.dump} processing 2.4M of data.
 
 ## Copyright
 
-Copyright (c) 2011-2020 Hal Brodigan
+Copyright (c) 2011-2021 Hal Brodigan
 
 See {file:LICENSE.txt} for details.
