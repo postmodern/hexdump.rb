@@ -11,15 +11,15 @@ describe Hexdump::Dumper do
   let(:print_chars) { ['h', 'e', 'l', 'l', 'o'] }
   let(:data) { print_chars.join }
 
-  it "should only accept known :base values" do
+  it "should only accept known base: values" do
     expect {
-      described_class.new(data, :base => :foo)
+      described_class.new(data, base: :foo)
     }.to raise_error(ArgumentError)
   end
 
-  it "should only accept known :endian values" do
+  it "should only accept known endian: values" do
     expect {
-      described_class.new(data, :endian => :foo)
+      described_class.new(data, endian: :foo)
     }.to raise_error(ArgumentError)
   end
 
@@ -41,19 +41,19 @@ describe Hexdump::Dumper do
     end
 
     it "should allow iterating over custom word-sizes" do
-      dumper = described_class.new(:word_size => 3)
+      dumper = described_class.new(word_size: 3)
 
       expect(dumper.each_word(data).to_a).to be == custom_words
     end
 
     it "should iterate over little-endian words by default" do
-      dumper = described_class.new(:word_size => 2)
+      dumper = described_class.new(word_size: 2)
 
       expect(dumper.each_word(data).to_a).to be == shorts_le
     end
 
     it "should iterate over big-endian words" do
-      dumper = described_class.new(:word_size => 2, :endian => :big)
+      dumper = described_class.new(word_size: 2, endian: :big)
 
       expect(dumper.each_word(data).to_a).to be == shorts_be
     end
@@ -74,7 +74,7 @@ describe Hexdump::Dumper do
     end
 
     it "should provide the index within the data for each line" do
-      dumper = described_class.new(:width => 10)
+      dumper = described_class.new(width: 10)
       indices = []
 
       dumper.each('A' * 100) do |index,hex,print|
@@ -85,7 +85,7 @@ describe Hexdump::Dumper do
     end
 
     it "should allow configuring the width, in bytes, of each line" do
-      dumper = described_class.new(:width => 10)
+      dumper = described_class.new(width: 10)
       widths = []
 
       dumper.each('A' * 100) do |index,hex,print|
@@ -96,7 +96,7 @@ describe Hexdump::Dumper do
     end
 
     it "should hexdump the remaining bytes" do
-      dumper = described_class.new(:width => 10)
+      dumper = described_class.new(width: 10)
       chars = (['B'] * 4)
       string = chars.join
       leading = ('A' * 100)
@@ -110,7 +110,7 @@ describe Hexdump::Dumper do
     end
 
     it "should provide the hexadecimal characters for each line" do
-      dumper = described_class.new(:width => 10)
+      dumper = described_class.new(width: 10)
       chars = []
 
       dumper.each(data * 100) do |index,hex,print|
@@ -121,7 +121,7 @@ describe Hexdump::Dumper do
     end
 
     it "should allow printing ASCII characters in place of hex characters" do
-      dumper = described_class.new(:ascii => true)
+      dumper = described_class.new(ascii: true)
       chars = []
 
       dumper.each(data) do |index,hex,print|
@@ -132,7 +132,7 @@ describe Hexdump::Dumper do
     end
 
     it "should provide the print characters for each line" do
-      dumper = described_class.new(:width => 10)
+      dumper = described_class.new(width: 10)
       chars = []
 
       dumper.each(data * 100) do |index,hex,print|
@@ -154,7 +154,7 @@ describe Hexdump::Dumper do
     end
 
     it "should support dumping bytes in decimal format" do
-      dumper = described_class.new(:base => :decimal)
+      dumper = described_class.new(base: :decimal)
       chars = []
 
       dumper.each(data) do |index,hex,print|
@@ -165,7 +165,7 @@ describe Hexdump::Dumper do
     end
 
     it "should support dumping bytes in octal format" do
-      dumper = described_class.new(:base => :octal)
+      dumper = described_class.new(base: :octal)
       chars = []
 
       dumper.each(data) do |index,hex,print|
@@ -176,7 +176,7 @@ describe Hexdump::Dumper do
     end
 
     it "should support dumping bytes in binary format" do
-      dumper = described_class.new(:base => :binary)
+      dumper = described_class.new(base: :binary)
       chars = []
 
       dumper.each(data) do |index,hex,print|
@@ -186,7 +186,7 @@ describe Hexdump::Dumper do
       expect(chars).to be == binary_chars
     end
 
-    context ":word_size" do
+    context "word_size:" do
       let(:options) { {:word_size => 2, :endian => :little} }
 
       let(:hex_words) { ['6568', '6c6c', '006f'] }
@@ -195,7 +195,7 @@ describe Hexdump::Dumper do
       let(:binary_words) { ['0110010101101000', '0110110001101100', '0000000001101111'] }
 
       it "should dump words in hexadecimal" do
-        dumper = described_class.new(options)
+        dumper = described_class.new(**options)
         words = []
 
         dumper.each(data) do |index,hex,print|
@@ -206,7 +206,7 @@ describe Hexdump::Dumper do
       end
 
       it "should dump words in decimal" do
-        dumper = described_class.new(options.merge(:base => :decimal))
+        dumper = described_class.new(base: :decimal, **options)
         words = []
 
         dumper.each(data) do |index,dec,print|
@@ -217,7 +217,7 @@ describe Hexdump::Dumper do
       end
 
       it "should dump words in octal" do
-        dumper = described_class.new(options.merge(:base => :octal))
+        dumper = described_class.new(base: :octal, **options)
         words = []
 
         dumper.each(data) do |index,oct,print|
@@ -228,7 +228,7 @@ describe Hexdump::Dumper do
       end
 
       it "should dump words in binary" do
-        dumper = described_class.new(options.merge(:base => :binary))
+        dumper = described_class.new(base: :binary, **options)
         words = []
 
         dumper.each(data) do |index,bin,print|
@@ -241,7 +241,7 @@ describe Hexdump::Dumper do
   end
 
   describe "#dump" do
-    it "should check if the :output supports the '#<<' method" do
+    it "should check if the output supports the '#<<' method" do
       expect {
         subject.dump(data,Object.new)
       }.to raise_error(ArgumentError)
