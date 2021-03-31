@@ -84,29 +84,33 @@ describe Hexdump::Dumper do
       expect(indices).to be == [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
     end
 
-    it "should allow configuring the width, in bytes, of each line" do
-      dumper = described_class.new(width: 10)
-      widths = []
+    context "when wdith: is set" do
+      it "should change the width, in bytes, of each line" do
+        dumper = described_class.new(width: 10)
+        widths = []
 
-      dumper.each('A' * 100) do |index,hex,print|
-        widths << hex.length
+        dumper.each('A' * 100) do |index,hex,print|
+          widths << hex.length
+        end
+
+        expect(widths).to be == ([10] * 10)
       end
-
-      expect(widths).to be == ([10] * 10)
     end
 
-    it "should hexdump the remaining bytes" do
-      dumper = described_class.new(width: 10)
-      chars = (['B'] * 4)
-      string = chars.join
-      leading = ('A' * 100)
-      remainder = nil
+    context "when there are leftover bytes" do
+      it "should hexdump the remaining bytes" do
+        dumper = described_class.new(width: 10)
+        chars = (['B'] * 4)
+        string = chars.join
+        leading = ('A' * 100)
+        remainder = nil
 
-      dumper.each(leading + string) do |index,hex,print|
-        remainder = print
+        dumper.each(leading + string) do |index,hex,print|
+          remainder = print
+        end
+
+        expect(remainder).to be == chars
       end
-
-      expect(remainder).to be == chars
     end
 
     it "should provide the hexadecimal characters for each line" do
@@ -192,15 +196,11 @@ describe Hexdump::Dumper do
       end
     end
 
-    context "word_size:" do
+    context "when word_size: and endian: are set" do
       let(:options) { {:word_size => 2, :endian => :little} }
-
       let(:hex_words) { ['6568', '6c6c', '006f'] }
-      let(:decimal_words) { ['25960', '27756', '  111'] }
-      let(:octal_words) { ['062550', '066154', '000157'] }
-      let(:binary_words) { ['0110010101101000', '0110110001101100', '0000000001101111'] }
 
-      it "should dump words in hexadecimal" do
+      it "should dump words in hexadecimal by default" do
         dumper = described_class.new(**options)
         words = []
 
@@ -211,37 +211,49 @@ describe Hexdump::Dumper do
         expect(words).to be == hex_words
       end
 
-      it "should dump words in decimal" do
-        dumper = described_class.new(base: :decimal, **options)
-        words = []
+      context "and base: is :decimal" do
+        let(:decimal_words) { ['25960', '27756', '  111'] }
 
-        dumper.each(data) do |index,dec,print|
-          words += dec
+        it "should dump words in decimal" do
+          dumper = described_class.new(base: :decimal, **options)
+          words = []
+
+          dumper.each(data) do |index,dec,print|
+            words += dec
+          end
+
+          expect(words).to be == decimal_words
         end
-
-        expect(words).to be == decimal_words
       end
 
-      it "should dump words in octal" do
-        dumper = described_class.new(base: :octal, **options)
-        words = []
+      context "and base: is :octal" do
+        let(:octal_words) { ['062550', '066154', '000157'] }
 
-        dumper.each(data) do |index,oct,print|
-          words += oct
+        it "should dump words in octal" do
+          dumper = described_class.new(base: :octal, **options)
+          words = []
+
+          dumper.each(data) do |index,oct,print|
+            words += oct
+          end
+
+          expect(words).to be == octal_words
         end
-
-        expect(words).to be == octal_words
       end
 
-      it "should dump words in binary" do
-        dumper = described_class.new(base: :binary, **options)
-        words = []
+      context "and base: is :binary" do
+        let(:binary_words) { ['0110010101101000', '0110110001101100', '0000000001101111'] }
 
-        dumper.each(data) do |index,bin,print|
-          words += bin
+        it "should dump words in binary" do
+          dumper = described_class.new(base: :binary, **options)
+          words = []
+
+          dumper.each(data) do |index,bin,print|
+            words += bin
+          end
+
+          expect(words).to be == binary_words
         end
-
-        expect(words).to be == binary_words
       end
     end
 
