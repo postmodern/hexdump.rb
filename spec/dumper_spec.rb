@@ -153,37 +153,43 @@ describe Hexdump::Dumper do
       expect(chars).to be == (['.'] * unprintable.length)
     end
 
-    it "should support dumping bytes in decimal format" do
-      dumper = described_class.new(base: :decimal)
-      chars = []
+    context "when base: is :decimal" do
+      it "should support dumping bytes in decimal format" do
+        dumper = described_class.new(base: :decimal)
+        chars = []
 
-      dumper.each(data) do |index,hex,print|
-        chars += hex
+        dumper.each(data) do |index,hex,print|
+          chars += hex
+        end
+
+        expect(chars).to be == decimal_chars
       end
-
-      expect(chars).to be == decimal_chars
     end
 
-    it "should support dumping bytes in octal format" do
-      dumper = described_class.new(base: :octal)
-      chars = []
+    context "when base: is :octal" do
+      it "should support dumping bytes in octal format" do
+        dumper = described_class.new(base: :octal)
+        chars = []
 
-      dumper.each(data) do |index,hex,print|
-        chars += hex
+        dumper.each(data) do |index,hex,print|
+          chars += hex
+        end
+
+        expect(chars).to be == octal_chars
       end
-
-      expect(chars).to be == octal_chars
     end
 
-    it "should support dumping bytes in binary format" do
-      dumper = described_class.new(base: :binary)
-      chars = []
+    context "when base: is :binary" do
+      it "should support dumping bytes in binary format" do
+        dumper = described_class.new(base: :binary)
+        chars = []
 
-      dumper.each(data) do |index,hex,print|
-        chars += hex
+        dumper.each(data) do |index,hex,print|
+          chars += hex
+        end
+
+        expect(chars).to be == binary_chars
       end
-
-      expect(chars).to be == binary_chars
     end
 
     context "word_size:" do
