@@ -316,7 +316,7 @@ describe Hexdump::Dumper do
       expect(lines.length).to be(2)
       expect(lines[0]).to start_with(index_format % 0)
       expect(lines[0]).to include(hex_chars.join(' '))
-      expect(lines[0]).to include(print_chars.join)
+      expect(lines[0]).to end_with("|#{print_chars.join}|#{$/}")
     end
 
     it "must always print the total number of bytes read on the last line" do
