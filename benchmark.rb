@@ -5,7 +5,7 @@ $LOAD_PATH.unshift(File.expand_path('../lib',__FILE__))
 require 'hexdump'
 require 'benchmark'
 
-DATA = ((0..255).map { |b| b.chr }.join) * 10000
+DATA = ((0..255).map { |b| b.chr }.join) * (1024 * 40)
 OUTPUT = Class.new { def <<(data); end }.new
 
 Benchmark.bm(27) do |b|
