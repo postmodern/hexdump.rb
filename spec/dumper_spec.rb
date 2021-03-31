@@ -257,6 +257,13 @@ describe Hexdump::Dumper do
       end
     end
 
+    it "must return the number of bytes read" do
+      dumper = described_class.new(width: 10)
+      data   = 'A' * 100
+
+      expect(dumper.each(data) { |index,hex,print| }).to be == data.length
+    end
+
     context "when no block is given" do
       it "must return an Enumerator" do
         expect(subject.each(data)).to be_kind_of(Enumerator)

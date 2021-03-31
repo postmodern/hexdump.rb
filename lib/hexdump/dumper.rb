@@ -297,7 +297,8 @@ module Hexdump
     # @yieldparam [Array<String>] printable
     #   The printable representation of the segment.
     #
-    # @return [Enumerator]
+    # @return [Integer, Enumerator]
+    #   IF a block is given, then the final number of bytes read is returned.
     #   If no block is given, an Enumerator will be returned.
     #
     # @since 0.2.0
@@ -331,7 +332,11 @@ module Hexdump
       if count > 0
         # yield the remaining data
         yield index, numeric, printable
+
+        index += (numeric.length * @word_size)
       end
+
+      return index
     end
 
     #
