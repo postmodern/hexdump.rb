@@ -11,24 +11,23 @@ describe Hexdump::Dumper do
   let(:print_chars) { ['h', 'e', 'l', 'l', 'o'] }
   let(:data) { print_chars.join }
 
-  it "should only accept known base: values" do
-    expect {
-      described_class.new(data, base: :foo)
-    }.to raise_error(ArgumentError)
-  end
+  describe "#initialize" do
+    it "should only accept known base: values" do
+      expect {
+        described_class.new(data, base: :foo)
+      }.to raise_error(ArgumentError)
+    end
 
-  it "should only accept known endian: values" do
-    expect {
-      described_class.new(data, endian: :foo)
-    }.to raise_error(ArgumentError)
+    it "should only accept known endian: values" do
+      expect {
+        described_class.new(data, endian: :foo)
+      }.to raise_error(ArgumentError)
+    end
   end
 
   describe "each_word" do
     let(:data) { 'ABAB' }
     let(:bytes) { [0x41, 0x42, 0x41, 0x42] }
-    let(:shorts_le) { [0x4241, 0x4241] }
-    let(:shorts_be) { [0x4142, 0x4142] }
-    let(:custom_words) { [0x414241, 0x42] }
 
     it "should check if the data defines '#each_byte'" do
       expect {
@@ -40,22 +39,34 @@ describe Hexdump::Dumper do
       expect(subject.each_word(data).to_a).to be == bytes
     end
 
-    it "should allow iterating over custom word-sizes" do
-      dumper = described_class.new(word_size: 3)
+    context "when initialized with a custom word_size:" do
+      subject { described_class.new(word_size: 3) }
 
-      expect(dumper.each_word(data).to_a).to be == custom_words
+      let(:custom_words) { [0x414241, 0x42] }
+
+      it "should allow iterating over custom word-sizes" do
+        expect(subject.each_word(data).to_a).to be == custom_words
+      end
     end
 
-    it "should iterate over little-endian words by default" do
-      dumper = described_class.new(word_size: 2)
+    context "when initialized with default endian:" do
+      subject { described_class.new(word_size: 2) }
 
-      expect(dumper.each_word(data).to_a).to be == shorts_le
+      let(:shorts_le) { [0x4241, 0x4241] }
+
+      it "should iterate over little-endian words by default" do
+        expect(subject.each_word(data).to_a).to be == shorts_le
+      end
     end
 
-    it "should iterate over big-endian words" do
-      dumper = described_class.new(word_size: 2, endian: :big)
+    context "when initialized with endian: :big" do
+      subject { described_class.new(word_size: 2, endian: :big) }
 
-      expect(dumper.each_word(data).to_a).to be == shorts_be
+      let(:shorts_be) { [0x4142, 0x4142] }
+
+      it "should iterate over big-endian words" do
+        expect(subject.each_word(data).to_a).to be == shorts_be
+      end
     end
   end
 
@@ -74,38 +85,45 @@ describe Hexdump::Dumper do
     end
 
     it "should provide the index within the data for each line" do
-      dumper = described_class.new(width: 10)
       indices = []
 
-      dumper.each('A' * 100) do |index,hex,print|
+      subject.each('A' * (16 * 10)) do |index,hex,print|
         indices << index
       end
 
-      expect(indices).to be == [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+      expect(indices).to be == [0, 16, 32, 48, 64, 80, 96, 112, 128, 144]
     end
 
-    context "when wdith: is set" do
-      it "should change the width, in bytes, of each line" do
-        dumper = described_class.new(width: 10)
-        widths = []
+    context "when initialized with a custom wdith:" do
+      let(:width) { 10 }
 
-        dumper.each('A' * 100) do |index,hex,print|
+      subject { described_class.new(width: width) }
+
+      it "should change the width, in bytes, of each line" do
+        widths = []
+        count  = 10
+
+        subject.each('A' * (width * count)) do |index,hex,print|
           widths << hex.length
         end
 
-        expect(widths).to be == ([10] * 10)
+        expect(widths).to be == ([width] * count)
       end
     end
 
     context "when there are leftover bytes" do
+      let(:width) { 10 }
+
+      subject { described_class.new(width: width) }
+
+      let(:chars)   { ['B'] * 4 }
+      let(:string)  { chars.join }
+      let(:leading) { 'A' * 100 }
+
       it "should hexdump the remaining bytes" do
-        dumper = described_class.new(width: 10)
-        chars = (['B'] * 4)
-        string = chars.join
-        leading = ('A' * 100)
         remainder = nil
 
-        dumper.each(leading + string) do |index,hex,print|
+        subject.each(leading + string) do |index,hex,print|
           remainder = print
         end
 
@@ -114,36 +132,39 @@ describe Hexdump::Dumper do
     end
 
     it "should provide the hexadecimal characters for each line" do
-      dumper = described_class.new(width: 10)
       chars = []
+      length = (16 * 10)
 
-      dumper.each(data * 100) do |index,hex,print|
+      subject.each(data * length) do |index,hex,print|
         chars += hex
       end
 
-      expect(chars).to be == (hex_chars * 100)
+      expect(chars).to be == (hex_chars * length)
     end
 
-    it "should allow printing ASCII characters in place of hex characters" do
-      dumper = described_class.new(ascii: true)
-      chars = []
+    context "when initialized with ascii: true" do
+      subject { described_class.new(ascii: true) }
 
-      dumper.each(data) do |index,hex,print|
-        chars += hex
+      it "should allow printing ASCII characters in place of hex characters" do
+        chars = []
+
+        subject.each(data) do |index,hex,print|
+          chars += hex
+        end
+
+        expect(chars).to be == print_chars
       end
-
-      expect(chars).to be == print_chars
     end
 
     it "should provide the print characters for each line" do
-      dumper = described_class.new(width: 10)
       chars = []
+      length = (16 * 10)
 
-      dumper.each(data * 100) do |index,hex,print|
+      subject.each(data * length) do |index,hex,print|
         chars += print
       end
 
-      expect(chars).to be == (print_chars * 100)
+      expect(chars).to be == (print_chars * length)
     end
 
     it "should map unprintable characters to '.'" do
@@ -157,12 +178,13 @@ describe Hexdump::Dumper do
       expect(chars).to be == (['.'] * unprintable.length)
     end
 
-    context "when base: is :decimal" do
+    context "when initialized with base: :decimal" do
+      subject { described_class.new(base: :decimal) }
+
       it "should support dumping bytes in decimal format" do
-        dumper = described_class.new(base: :decimal)
         chars = []
 
-        dumper.each(data) do |index,hex,print|
+        subject.each(data) do |index,hex,print|
           chars += hex
         end
 
@@ -170,12 +192,13 @@ describe Hexdump::Dumper do
       end
     end
 
-    context "when base: is :octal" do
+    context "when initialized with base: :octal" do
+      subject { described_class.new(base: :octal) }
+
       it "should support dumping bytes in octal format" do
-        dumper = described_class.new(base: :octal)
         chars = []
 
-        dumper.each(data) do |index,hex,print|
+        subject.each(data) do |index,hex,print|
           chars += hex
         end
 
@@ -183,12 +206,13 @@ describe Hexdump::Dumper do
       end
     end
 
-    context "when base: is :binary" do
+    context "when initialized with base: :binary" do
+      subject { described_class.new(base: :binary) }
+
       it "should support dumping bytes in binary format" do
-        dumper = described_class.new(base: :binary)
         chars = []
 
-        dumper.each(data) do |index,hex,print|
+        subject.each(data) do |index,hex,print|
           chars += hex
         end
 
@@ -196,29 +220,31 @@ describe Hexdump::Dumper do
       end
     end
 
-    context "when word_size: and endian: are set" do
+    context "when initialized with word_size: and endian:" do
       let(:options) { {:word_size => 2, :endian => :little} }
       let(:hex_words) { ['6568', '6c6c', '006f'] }
 
+      subject { described_class.new(**options) }
+
       it "should dump words in hexadecimal by default" do
-        dumper = described_class.new(**options)
         words = []
 
-        dumper.each(data) do |index,hex,print|
+        subject.each(data) do |index,hex,print|
           words += hex
         end
 
         expect(words).to be == hex_words
       end
 
-      context "and base: is :decimal" do
+      context "and base: :decimal" do
+        subject { described_class.new(base: :decimal, **options) }
+
         let(:decimal_words) { ['25960', '27756', '  111'] }
 
         it "should dump words in decimal" do
-          dumper = described_class.new(base: :decimal, **options)
           words = []
 
-          dumper.each(data) do |index,dec,print|
+          subject.each(data) do |index,dec,print|
             words += dec
           end
 
@@ -226,14 +252,15 @@ describe Hexdump::Dumper do
         end
       end
 
-      context "and base: is :octal" do
+      context "and base: :octal" do
+        subject { described_class.new(base: :octal, **options) }
+
         let(:octal_words) { ['062550', '066154', '000157'] }
 
         it "should dump words in octal" do
-          dumper = described_class.new(base: :octal, **options)
           words = []
 
-          dumper.each(data) do |index,oct,print|
+          subject.each(data) do |index,oct,print|
             words += oct
           end
 
@@ -241,14 +268,15 @@ describe Hexdump::Dumper do
         end
       end
 
-      context "and base: is :binary" do
+      context "and base: :binary" do
+        subject { described_class.new(base: :binary, **options) }
+
         let(:binary_words) { ['0110010101101000', '0110110001101100', '0000000001101111'] }
 
         it "should dump words in binary" do
-          dumper = described_class.new(base: :binary, **options)
           words = []
 
-          dumper.each(data) do |index,bin,print|
+          subject.each(data) do |index,bin,print|
             words += bin
           end
 
@@ -258,10 +286,10 @@ describe Hexdump::Dumper do
     end
 
     it "must return the number of bytes read" do
-      dumper = described_class.new(width: 10)
-      data   = 'A' * 100
+      length = 100
+      data   = 'A' * length
 
-      expect(dumper.each(data) { |index,hex,print| }).to be == data.length
+      expect(subject.each(data) { |index,hex,print| }).to be == length
     end
 
     context "when no block is given" do
