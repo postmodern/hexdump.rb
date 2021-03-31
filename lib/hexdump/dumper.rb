@@ -360,26 +360,8 @@ module Hexdump
       numeric   = ''
       printable = ''
 
-      each_word(data) do |word|
-        numeric   << format_numeric(word) << ' '
-        printable << format_printable(word)
-
-        count += 1
-
-        if count >= @width
-          output << sprintf(line_format,index,numeric,printable)
-
-          numeric   = ''
-          printable = ''
-
-          index += (@width * @word_size)
-          count  = 0
-        end
-      end
-
-      if count > 0
-        # output the remaining line
-        output << sprintf(line_format,index,numeric,printable)
+      each(data) do |index,numeric,printable|
+        output << sprintf(line_format,index,numeric.join(' '),printable.join)
       end
     end
 
