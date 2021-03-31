@@ -244,6 +244,12 @@ describe Hexdump::Dumper do
         expect(words).to be == binary_words
       end
     end
+
+    context "when no block is given" do
+      it "must return an Enumerator" do
+        expect(subject.each(data)).to be_kind_of(Enumerator)
+      end
+    end
   end
 
   describe "#dump" do
