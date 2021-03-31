@@ -358,12 +358,6 @@ module Hexdump
       bytes_segment_width = ((@width * @format_width) + @width)
       line_format = "%.8x  %-#{bytes_segment_width}s |%s|#{$/}"
 
-      index = 0
-      count = 0
-
-      numeric   = ''
-      printable = ''
-
       each(data) do |index,numeric,printable|
         output << sprintf(line_format,index,numeric.join(' '),printable.join)
       end
