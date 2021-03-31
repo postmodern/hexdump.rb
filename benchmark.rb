@@ -14,16 +14,16 @@ Benchmark.bm(33) do |b|
   end
 
   b.report('Hexdump.dump width=256 (output)') do
-    Hexdump.dump(DATA, :width => 256, :output => OUTPUT)
+    Hexdump.dump(DATA, width: 256, output: OUTPUT)
   end
 
   b.report('Hexdump.dump ascii=true (output)') do
-    Hexdump.dump(DATA, :ascii => true, :output => OUTPUT)
+    Hexdump.dump(DATA, ascii: true, output: OUTPUT)
   end
 
   [2, 4, 8].each do |word_size|
     b.report("Hexdump.dump word_size=#{word_size} (output)") do
-      Hexdump.dump(DATA, :word_size => word_size, :output => OUTPUT)
+      Hexdump.dump(DATA, word_size: word_size, output: OUTPUT)
     end
   end
 
@@ -32,16 +32,16 @@ Benchmark.bm(33) do |b|
   end
 
   b.report('Hexdump.dump width=256 (block)') do
-    Hexdump.dump(DATA, :width => 256) { |index,hex,print| }
+    Hexdump.dump(DATA, width: 256) { |index,hex,print| }
   end
 
   b.report('Hexdump.dump ascii=true (block)') do
-    Hexdump.dump(DATA, :ascii => true) { |index,hex,print| }
+    Hexdump.dump(DATA, ascii: true) { |index,hex,print| }
   end
 
   [2, 4, 8].each do |word_size|
     b.report("Hexdump.dump word_size=#{word_size} (block)") do
-      Hexdump.dump(DATA, :word_size => word_size) { |index,hex,print| }
+      Hexdump.dump(DATA, word_size: word_size) { |index,hex,print| }
     end
   end
 end

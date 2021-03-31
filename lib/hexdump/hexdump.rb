@@ -24,28 +24,25 @@ module Hexdump
   # @param [#each_byte] data
   #   The data to be hexdumped.
   #
-  # @param [Hash] options
-  #   Additional options.
-  #
-  # @option options [Integer] :width (16)
+  # @param [Integer] width (16)
   #   The number of bytes to dump for each line.
   #
-  # @option options [Integer] :endian (:little)
+  # @param [Integer] endian (:little)
   #   The endianness that the bytes are organized in. Supported endianness
   #   include `:little` and `:big`.
   #
-  # @option options [Integer] :word_size (1)
+  # @param [Integer] word_size (1)
   #   The number of bytes within a word.
   #
-  # @option options [Symbol, Integer] :base (:hexadecimal)
+  # @param [Symbol, Integer] base (:hexadecimal)
   #   The base to print bytes in. Supported bases include, `:hexadecimal`,
   #   `:hex`, `16, `:decimal`, `:dec`, `10, `:octal`, `:oct`, `8`,
   #   `:binary`, `:bin` and `2`.
   #
-  # @option options [Boolean] :ascii (false)
+  # @param [Boolean] ascii (false)
   #   Print ascii characters when possible.
   #
-  # @option options [#<<] :output ($stdout)
+  # @param [#<<] output ($stdout)
   #   The output to print the hexdump to.
   #
   # @yield [index,numeric,printable]
@@ -68,9 +65,8 @@ module Hexdump
   #   the `:output` value does not support the `#<<` method or
   #   the `:base` value was unknown.
   #
-  def self.dump(data,options={},&block)
-    output = options.fetch(:output,$stdout)
-    dumper = Dumper.new(options)
+  def self.dump(data, output: $stdout, **options,&block)
+    dumper = Dumper.new(**options)
 
     if block then dumper.each(data,&block)
     else          dumper.dump(data,output)
@@ -82,12 +78,9 @@ module Hexdump
   #
   # Hexdumps the object.
   #
-  # @param [Hash] options
-  #   Additional options.
-  #
   # @see Hexdump.dump
   #
-  def hexdump(options={},&block)
-    Hexdump.dump(self,options,&block)
+  def hexdump(**options,&block)
+    Hexdump.dump(self,**options,&block)
   end
 end

@@ -156,25 +156,22 @@ module Hexdump
     #
     # Creates a new Hexdump dumper.
     #
-    # @param [Hash] options
-    #   Additional options.
-    #
-    # @option options [Integer] :width (16)
+    # @param [Integer] width (16)
     #   The number of bytes to dump for each line.
     #
-    # @option options [Integer] :endian (:little)
+    # @param [Integer] endian (:little)
     #   The endianness that the bytes are organized in. Supported endianness
     #   include `:little` and `:big`.
     #
-    # @option options [Integer] :word_size (1)
+    # @param [Integer] word_size (1)
     #   The number of bytes within a word.
     #
-    # @option options [Symbol, Integer] :base (:hexadecimal)
+    # @param [Symbol, Integer] base (:hexadecimal)
     #   The base to print bytes in. Supported bases include, `:hexadecimal`,
     #   `:hex`, `16, `:decimal`, `:dec`, `10, `:octal`, `:oct`, `8`,
     #   `:binary`, `:bin` and `2`.
     #
-    # @option options [Boolean] :ascii (false)
+    # @param [Boolean] ascii (false)
     #   Print ascii characters when possible.
     #
     # @raise [ArgumentError]
@@ -182,28 +179,33 @@ module Hexdump
     #
     # @since 0.2.0
     #
-    def initialize(options={})
-      @base = case options[:base]
+    def initialize(width:     15,
+                   endian:    :little,
+                   word_size: 1,
+                   base:      :hexadecimal,
+                   ascii:     false)
+
+      @base = case base
               when :hexadecimal, :hex, 16 then :hexadecimal
               when :decimal, :dec, 10     then :decimal
               when :octal, :oct, 8        then :octal
               when :binary, :bin, 2       then :binary
               when nil                    then :hexadecimal
               else
-                raise(ArgumentError,"unknown base #{options[:base].inspect}")
+                raise(ArgumentError,"unknown base #{base.inspect}")
               end
 
-      @word_size = options.fetch(:word_size,1)
-      @endian = case options[:endian]
+      @word_size = word_size
+      @endian = case endian
                 when 'little', :little then :little
                 when 'big', :big       then :big
                 when nil               then :little
                 else
-                  raise(ArgumentError,"unknown endian: #{options[:endian].inspect}")
+                  raise(ArgumentError,"unknown endian: #{endian.inspect}")
                 end
 
-      @width = (options.fetch(:width,16) / @word_size)
-      @ascii = options.fetch(:ascii,false)
+      @width = (width / @word_size)
+      @ascii = ascii
 
       @format_width = (WIDTHS[@base][@word_size] || 1)
       @format = FORMATS[@base][@format_width]

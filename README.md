@@ -46,27 +46,27 @@ Simple and Fast hexdumping for Ruby.
     end
 
     # configure the width of the hexdump
-    Hexdump.dump('A' * 30, :width => 10)
+    Hexdump.dump('A' * 30, width: 10)
     # 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     # 0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     # 00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
 
-    Hexdump.dump(data, :ascii => true)
+    Hexdump.dump(data, ascii: true)
     # 00000000  h e l l o 00                                     |hello.|
 
-    Hexdump.dump(data, :base => 16)
+    Hexdump.dump(data, base: 16)
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
 
-    Hexdump.dump(data, :base => :decimal)
+    Hexdump.dump(data, base: :decimal)
     # 00000000  104 101 108 108 111   0                                          |hello.|
 
-    Hexdump.dump(data, :base => :octal)
+    Hexdump.dump(data, base: :octal)
     # 00000000  0150 0145 0154 0154 0157 0000                                                    |hello.|
 
-    Hexdump.dump(data, :base => :binary)
+    Hexdump.dump(data, base: :binary)
     # 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
 
-    ("ABC" * 10).hexdump(:word_size => 2)
+    ("ABC" * 10).hexdump(word_size: 2)
     # 00000000  4241 4143 4342 4241 4143 4342 4241 4143  |䉁䅃䍂䉁䅃䍂䉁䅃|
     # 00000010  4342 4241 4143 4342 4241 4143 4342       |䍂䉁䅃䍂䉁䅃䍂|
 
