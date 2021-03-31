@@ -1,5 +1,4 @@
 require 'spec_helper'
-
 require 'hexdump/dumper'
 
 describe Hexdump::Dumper do
