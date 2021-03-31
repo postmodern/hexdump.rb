@@ -27,7 +27,7 @@ Benchmark.bm(33) do |b|
     end
   end
 
-  b.report('hexdump.dump (block)') do
+  b.report('Hexdump.dump (block)') do
     Hexdump.dump(DATA) { |index,hex,print| }
   end
 
@@ -40,7 +40,7 @@ Benchmark.bm(33) do |b|
   end
 
   [2, 4, 8].each do |word_size|
-    b.report("hexdump.dump word_size=#{word_size} (block)") do
+    b.report("Hexdump.dump word_size=#{word_size} (block)") do
       Hexdump.dump(DATA, :word_size => word_size) { |index,hex,print| }
     end
   end
