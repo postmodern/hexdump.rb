@@ -9,20 +9,20 @@ DATA = ((0..255).map { |b| b.chr }.join) * (1024 * 40)
 OUTPUT = Class.new { def <<(data); end }.new
 
 Benchmark.bm(27) do |b|
-  b.report('Hexdump.dump') do
+  b.report('Hexdump.dump (output)') do
     Hexdump.dump(DATA, :output => OUTPUT)
   end
 
-  b.report('Hexdump.dump width=256') do
+  b.report('Hexdump.dump width=256 (output)') do
     Hexdump.dump(DATA, :width => 256, :output => OUTPUT)
   end
 
-  b.report('Hexdump.dump ascii=true') do
+  b.report('Hexdump.dump ascii=true (output)') do
     Hexdump.dump(DATA, :ascii => true, :output => OUTPUT)
   end
 
   [2, 4, 8].each do |word_size|
-    b.report("Hexdump.dump word_size=#{word_size}") do
+    b.report("Hexdump.dump word_size=#{word_size} (output)") do
       Hexdump.dump(DATA, :word_size => word_size, :output => OUTPUT)
     end
   end
