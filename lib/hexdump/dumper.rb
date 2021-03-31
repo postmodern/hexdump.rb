@@ -361,11 +361,14 @@ module Hexdump
       end
 
       bytes_segment_width = ((@width * @format_width) + @width)
-      line_format = "%.8x  %-#{bytes_segment_width}s |%s|#{$/}"
+      index_format = "%.8x"
+      line_format = "#{index_format}  %-#{bytes_segment_width}s |%s|#{$/}"
 
-      each(data) do |index,numeric,printable|
+      length = each(data) do |index,numeric,printable|
         output << sprintf(line_format,index,numeric.join(' '),printable.join)
       end
+
+      output << sprintf("#{index_format}#{$/}",length)
     end
 
     protected

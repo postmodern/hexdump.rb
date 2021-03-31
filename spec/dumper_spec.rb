@@ -306,14 +306,25 @@ describe Hexdump::Dumper do
       }.to raise_error(ArgumentError)
     end
 
+    let(:index_format) { "%.8x" }
+
     it "should append each line of the hexdump to the output" do
       lines = []
 
       subject.dump(data,lines)
 
-      expect(lines.length).to be(1)
+      expect(lines.length).to be(2)
+      expect(lines[0]).to start_with(index_format % 0)
       expect(lines[0]).to include(hex_chars.join(' '))
       expect(lines[0]).to include(print_chars.join)
+    end
+
+    it "must always print the total number of bytes read on the last line" do
+      lines = []
+
+      subject.dump(data,lines)
+
+      expect(lines.last).to start_with(index_format % data.length)
     end
   end
 end
