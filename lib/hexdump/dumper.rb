@@ -309,7 +309,7 @@ module Hexdump
       index = 0
       count = 0
 
-      numeric = Array.new(@width)
+      numeric   = Array.new(@width)
       printable = Array.new(@width)
 
       each_word(data) do |word|
