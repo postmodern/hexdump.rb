@@ -366,6 +366,7 @@ module Hexdump
       end
 
       output << sprintf("#{index_format}#{$/}",length)
+      return nil
     end
 
     protected
