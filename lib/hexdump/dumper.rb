@@ -408,7 +408,7 @@ module Hexdump
     def format_printable(word)
       if @word_size == 1
         PRINTABLE[word]
-      elsif word >= -2 && word <= 0x7fffffff
+      elsif word >= 0 && word <= 0x7fffffff
         begin
           word.chr(Encoding::UTF_8)
         rescue RangeError
