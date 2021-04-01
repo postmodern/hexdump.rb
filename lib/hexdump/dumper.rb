@@ -309,20 +309,17 @@ module Hexdump
       index = 0
       count = 0
 
-      numeric = []
-      printable = []
+      numeric = Array.new(@width)
+      printable = Array.new(@width)
 
       each_word(data) do |word|
-        numeric   << format_numeric(word)
-        printable << format_printable(word)
+        numeric[count]   = format_numeric(word)
+        printable[count] = format_printable(word)
 
         count += 1
 
         if count >= @width
           yield index, numeric, printable
-
-          numeric.clear
-          printable.clear
 
           index += (@width * @word_size)
           count = 0
@@ -331,9 +328,9 @@ module Hexdump
 
       if count > 0
         # yield the remaining data
-        yield index, numeric, printable
+        yield index, numeric[0,count], printable[0,count]
 
-        index += (numeric.length * @word_size)
+        index += (count * @word_size)
       end
 
       return index
