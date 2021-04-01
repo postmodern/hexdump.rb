@@ -298,7 +298,7 @@ module Hexdump
     #   The printable representation of the segment.
     #
     # @return [Integer, Enumerator]
-    #   IF a block is given, then the final number of bytes read is returned.
+    #   If a block is given, then the final number of bytes read is returned.
     #   If no block is given, an Enumerator will be returned.
     #
     # @since 0.2.0
