@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'hexdump/extensions'
+require 'hexdump/core_ext'
 
-describe "Hexdump extensions" do
+describe "Hexdump core_ext" do
   it "should include Hexdump into String" do
     expect(String).to include(Hexdump)
   end

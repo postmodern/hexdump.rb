@@ -1,3 +1,3 @@
 require 'hexdump/hexdump'
-require 'hexdump/extensions'
+require 'hexdump/core_ext'
 require 'hexdump/version'
