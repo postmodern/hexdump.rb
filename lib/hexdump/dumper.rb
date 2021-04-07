@@ -369,8 +369,6 @@ module Hexdump
       return nil
     end
 
-    protected
-
     #
     # Converts the word into a numeric String.
     #
@@ -409,11 +407,8 @@ module Hexdump
       if @word_size == 1
         PRINTABLE[word]
       elsif word >= 0 && word <= 0x7fffffff
-        begin
-          word.chr(Encoding::UTF_8)
-        rescue RangeError
-          UNPRINTABLE
-        end
+        char = word.chr(Encoding::UTF_8) rescue nil
+        char || UNPRINTABLE
       else
         UNPRINTABLE
       end
