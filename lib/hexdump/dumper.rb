@@ -407,6 +407,7 @@ module Hexdump
       if @word_size == 1
         PRINTABLE[word]
       elsif word >= 0 && word <= 0x7fffffff
+        # XXX: https://github.com/jruby/jruby/issues/6652
         char = word.chr(Encoding::UTF_8) rescue nil
         char || UNPRINTABLE
       else
