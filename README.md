@@ -17,8 +17,9 @@ Simple and Fast hexdumping for Ruby.
 * Can send the hexdump output to any Object supporting the `<<` method.
 * Can yield each line of hexdump, instead of printing the output.
 * Supports printing ASCII, hexadecimal, decimal, octal and binary bytes.
-* Supports hexdumping 1, 2, 4, 8 byte words.
-* Supports hexdumping Little and Big Endian words.
+* Supports hexdumping bytes (8bit), words (16bit), double-words (32bit), and
+  quad-words (64bit).
+* Supports Little Endian and Big Endian modes.
 * Makes {String}, {StringIO}, {IO}, {File} objects hexdumpable.
 * Fast-ish.
 
