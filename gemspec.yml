@@ -4,7 +4,7 @@ description: Simple and Fast hexdumping for Ruby.
 license: MIT
 authors: Postmodern
 email: postmodern.mod3@gmail.com
-homepage: https://github.com/postmodern/hexdump#readme
+homepage: https://github.com/postmodern/hexdump.rb#readme
 has_yard: true
 
 required_ruby_version: ">= 2.0.0"

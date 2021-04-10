@@ -1,9 +1,9 @@
-# hexdump
+# hexdump.rb
 
-[![CI](https://github.com/postmodern/hexdump/actions/workflows/ruby.yml/badge.svg)](https://github.com/postmodern/hexdump/actions/workflows/ruby.yml)
+[![CI](https://github.com/postmodern/hexdump.rb/actions/workflows/ruby.yml/badge.svg)](https://github.com/postmodern/hexdump.rb/actions/workflows/ruby.yml)
 
-* [Source](https://github.com/postmodern/hexdump)
-* [Issues](https://github.com/postmodern/hexdump/issues)
+* [Source](https://github.com/postmodern/hexdump.rb)
+* [Issues](https://github.com/postmodern/hexdump.rb/issues)
 * [Documentation](http://rubydoc.info/gems/hexdump/frames)
 * [Email](mailto:postmodern.mod3 at gmail.com)
 
