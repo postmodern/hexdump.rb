@@ -88,76 +88,76 @@ Simple and Fast hexdumping for Ruby.
 
 Benchmarks show {Hexdump.dump} processing 25M of data.
 
-### Ruby 2.7.2
+### Ruby 2.7.3
 
 ```
                                         user     system      total        real
-Hexdump.dump (output)              12.479208   0.000000  12.479208 ( 12.535753)
-Hexdump.dump width=256 (output)    10.560755   0.001586  10.562341 ( 10.597715)
-Hexdump.dump ascii=true (output)   12.488982   0.000000  12.488982 ( 12.530661)
-Hexdump.dump word_size=2 (output)  16.395263   0.000000  16.395263 ( 16.453508)
-Hexdump.dump word_size=4 (output)  14.448080   0.000000  14.448080 ( 14.506035)
-Hexdump.dump word_size=8 (output)   7.740886   0.000000   7.740886 (  7.768686)
-Hexdump.dump (block)                7.621674   0.000000   7.621674 (  7.643375)
-Hexdump.dump width=256 (block)      7.471325   0.000000   7.471325 (  7.492967)
-Hexdump.dump ascii=true (block)     7.975231   0.000000   7.975231 (  7.997686)
-Hexdump.dump word_size=2 (block)   12.754562   0.000000  12.754562 ( 12.796870)
-Hexdump.dump word_size=4 (block)   11.619628   0.000000  11.619628 ( 11.665158)
-Hexdump.dump word_size=8 (block)    5.597346   0.000000   5.597346 (  5.614565)
+Hexdump.dump (output)              10.283433   0.000748  10.284181 ( 10.328899)
+Hexdump.dump width=256 (output)     8.803228   0.005973   8.809201 (  8.838375)
+Hexdump.dump ascii=true (output)   10.740975   0.001903  10.742878 ( 10.779777)
+Hexdump.dump word_size=2 (output)  15.163195   0.000989  15.164184 ( 15.220481)
+Hexdump.dump word_size=4 (output)  14.279406   0.003840  14.283246 ( 14.345357)
+Hexdump.dump word_size=8 (output)   7.715803   0.002879   7.718682 (  7.746389)
+Hexdump.dump (block)                5.543268   0.000980   5.544248 (  5.561494)
+Hexdump.dump width=256 (block)      5.438946   0.000000   5.438946 (  5.455742)
+Hexdump.dump ascii=true (block)     6.082787   0.000924   6.083711 (  6.106234)
+Hexdump.dump word_size=2 (block)   11.439610   0.000983  11.440593 ( 11.483788)
+Hexdump.dump word_size=4 (block)   11.111633   0.000954  11.112587 ( 11.158416)
+Hexdump.dump word_size=8 (block)    5.397569   0.002896   5.400465 (  5.426971)
 ```
 
-### Ruby 3.0.0
+### Ruby 3.0.1
 
 ```
                                         user     system      total        real
-Hexdump.dump (output)              13.859625   0.003076  13.862701 ( 13.916746)
-Hexdump.dump width=256 (output)    11.816353   0.002988  11.819341 ( 11.862517)
-Hexdump.dump ascii=true (output)   14.092920   0.000001  14.092921 ( 14.149172)
-Hexdump.dump word_size=2 (output)  18.421881   0.000001  18.421882 ( 18.503792)
-Hexdump.dump word_size=4 (output)  16.391246   0.000984  16.392230 ( 16.475601)
-Hexdump.dump word_size=8 (output)   8.769568   0.000000   8.769568 (  8.807117)
-Hexdump.dump (block)                8.293908   0.000984   8.294892 (  8.324818)
-Hexdump.dump width=256 (block)      8.010724   0.000989   8.011713 (  8.038550)
-Hexdump.dump ascii=true (block)     8.328595   0.000000   8.328595 (  8.355812)
-Hexdump.dump word_size=2 (block)   14.000797   0.000000  14.000797 ( 14.059903)
-Hexdump.dump word_size=4 (block)   12.985078   0.000000  12.985078 ( 13.048142)
-Hexdump.dump word_size=8 (block)    6.201691   0.000000   6.201691 (  6.225947)
+Hexdump.dump (output)              12.064022   0.001165  12.065187 ( 12.118272)
+Hexdump.dump width=256 (output)    10.228743   0.009920  10.238663 ( 10.279783)
+Hexdump.dump ascii=true (output)   12.532913   0.000000  12.532913 ( 12.582665)
+Hexdump.dump word_size=2 (output)  17.685782   0.000000  17.685782 ( 17.770686)
+Hexdump.dump word_size=4 (output)  15.835564   0.000000  15.835564 ( 15.917552)
+Hexdump.dump word_size=8 (output)   8.436831   0.000000   8.436831 (  8.473445)
+Hexdump.dump (block)                6.482589   0.000000   6.482589 (  6.504816)
+Hexdump.dump width=256 (block)      6.360828   0.000000   6.360828 (  6.383705)
+Hexdump.dump ascii=true (block)     6.911868   0.000000   6.911868 (  6.936795)
+Hexdump.dump word_size=2 (block)   13.120488   0.000000  13.120488 ( 13.179957)
+Hexdump.dump word_size=4 (block)   12.349516   0.000000  12.349516 ( 12.412972)
+Hexdump.dump word_size=8 (block)    5.814830   0.000000   5.814830 (  5.837822)
 ```
 
 ### JRuby 9.2.16.0
 
 ```
                                         user     system      total        real
-Hexdump.dump (output)              13.050000   0.550000  13.600000 ( 11.532856)
-Hexdump.dump width=256 (output)     9.580000   0.040000   9.620000 (  9.388971)
-Hexdump.dump ascii=true (output)   10.990000   0.080000  11.070000 ( 10.767254)
-Hexdump.dump word_size=2 (output)  63.590000   0.310000  63.900000 ( 61.609994)
-Hexdump.dump word_size=4 (output) 401.740000   1.340000 403.080000 (399.056659)
-Hexdump.dump word_size=8 (output)   8.790000   0.050000   8.840000 (  7.684096)
-Hexdump.dump (block)                8.240000   0.030000   8.270000 (  7.864539)
-Hexdump.dump width=256 (block)      7.300000   0.000000   7.300000 (  7.243460)
-Hexdump.dump ascii=true (block)     7.440000   0.010000   7.450000 (  7.309186)
-Hexdump.dump word_size=2 (block)   55.710000   0.170000  55.880000 ( 55.377441)
-Hexdump.dump word_size=4 (block)  378.980000   1.410000 380.390000 (376.949602)
-Hexdump.dump word_size=8 (block)    6.450000   0.040000   6.490000 (  6.281612)
+Hexdump.dump (output)              13.090000   0.240000  13.330000 ( 11.226466)
+Hexdump.dump width=256 (output)     9.350000   0.030000   9.380000 (  9.165070)
+Hexdump.dump ascii=true (output)   10.910000   0.050000  10.960000 ( 10.665791)
+Hexdump.dump word_size=2 (output)  13.760000   0.150000  13.910000 ( 12.268307)
+Hexdump.dump word_size=4 (output)  11.940000   0.090000  12.030000 ( 11.107564)
+Hexdump.dump word_size=8 (output)   8.170000   0.040000   8.210000 (  7.419708)
+Hexdump.dump (block)                7.840000   0.020000   7.860000 (  7.777749)
+Hexdump.dump width=256 (block)      7.540000   0.000000   7.540000 (  7.466315)
+Hexdump.dump ascii=true (block)     7.680000   0.010000   7.690000 (  7.622393)
+Hexdump.dump word_size=2 (block)    9.830000   0.020000   9.850000 (  9.693596)
+Hexdump.dump word_size=4 (block)    9.010000   0.020000   9.030000 (  8.998687)
+Hexdump.dump word_size=8 (block)    5.740000   0.030000   5.770000 (  5.709127)
 ```
 
 ### TruffleRuby 21.0.0
 
 ```
                                         user     system      total        real
-Hexdump.dump (output)              31.793750   0.606624  32.400374 ( 27.311739)
-Hexdump.dump width=256 (output)    25.106739   0.322180  25.428919 ( 22.541041)
-Hexdump.dump ascii=true (output)   29.138682   0.113125  29.251807 ( 24.774589)
-Hexdump.dump word_size=2 (output) 157.728393   0.231903 157.960296 (153.989984)
-Hexdump.dump word_size=4 (output) 1026.510944   0.293851 1026.804795 (1030.159870)
-Hexdump.dump word_size=8 (output)  20.441870   0.130094  20.571964 ( 14.602901)
-Hexdump.dump (block)                8.758839   0.070546   8.829385 (  6.518928)
-Hexdump.dump width=256 (block)      6.861031   0.117127   6.978158 (  6.155890)
-Hexdump.dump ascii=true (block)     7.690761   0.042608   7.733369 (  5.915393)
-Hexdump.dump word_size=2 (block)  137.653294   0.584158 138.237452 (138.217996)
-Hexdump.dump word_size=4 (block)  1000.214383   0.622550 1000.836933 (1005.895751)
-Hexdump.dump word_size=8 (block)    9.866725   0.011896   9.878621 (  8.655384)
+Hexdump.dump (output)              25.818995   0.855689  26.674684 ( 22.376015)
+Hexdump.dump width=256 (output)    20.489077   0.125966  20.615043 ( 18.301748)
+Hexdump.dump ascii=true (output)   25.214678   0.098018  25.312696 ( 21.714985)
+Hexdump.dump word_size=2 (output)  28.380387   0.192277  28.572664 ( 23.736887)
+Hexdump.dump word_size=4 (output)  31.348977   0.134854  31.483831 ( 27.710968)
+Hexdump.dump word_size=8 (output)  18.850093   0.100256  18.950349 ( 13.921720)
+Hexdump.dump (block)                7.792878   0.050542   7.843420 (  6.003789)
+Hexdump.dump width=256 (block)      6.526531   0.015898   6.542429 (  5.777169)
+Hexdump.dump ascii=true (block)     7.425399   0.030799   7.456198 (  5.705369)
+Hexdump.dump word_size=2 (block)   12.629775   0.028653  12.658428 ( 11.115049)
+Hexdump.dump word_size=4 (block)   20.372094   0.010807  20.382901 ( 19.758073)
+Hexdump.dump word_size=8 (block)    8.828653   0.010889   8.839542 (  8.017241)
 ```
 
 ## Copyright
