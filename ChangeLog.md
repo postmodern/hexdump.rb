@@ -1,3 +1,14 @@
+### 0.3.0 / 2021-04-10
+
+* Require Ruby >= 2.0.0.
+* Added support for Ruby 3.0.
+* {Hexdump.dump}, {Hexdump#dump}, and {Hexdump::Dumper#initialize} now accept
+  keyword arguments.
+* {Hexdump::Dumper#each} now returns the total number of bytes read.
+* {Hexdump::Dumper#dump} now prints the final number of bytes read on the last
+  line.
+* Micro-optimizations to improve performance on JRuby and TruffleRuby.
+
 ### 0.2.4 / 2020-09-26
 
 * Default the `:output` option of {Hexdump.dump} to `$stdout` instead of
