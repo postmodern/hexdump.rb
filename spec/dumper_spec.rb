@@ -11,16 +11,20 @@ describe Hexdump::Dumper do
   let(:data) { print_chars.join }
 
   describe "#initialize" do
-    it "should only accept known base: values" do
-      expect {
-        described_class.new(base: :foo)
-      }.to raise_error(ArgumentError)
+    context "when given an invalid base: value" do
+      it do
+        expect {
+          described_class.new(base: :foo)
+        }.to raise_error(ArgumentError)
+      end
     end
 
-    it "should only accept known endian: values" do
-      expect {
-        described_class.new(endian: :foo)
-      }.to raise_error(ArgumentError)
+    context "when given an invalid endian: value" do
+      it do
+        expect {
+          described_class.new(endian: :foo)
+        }.to raise_error(ArgumentError)
+      end
     end
   end
 
