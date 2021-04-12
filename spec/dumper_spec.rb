@@ -2,13 +2,13 @@ require 'spec_helper'
 require 'hexdump/dumper'
 
 describe Hexdump::Dumper do
-  let(:bytes) { [104, 101, 108, 108, 111] }
-  let(:hex_chars) { ['68', '65', '6c', '6c', '6f'] }
-  let(:decimal_chars) { ['104', '101', '108', '108', '111'] }
-  let(:octal_chars) { ['150', '145', '154', '154', '157'] }
-  let(:binary_chars) { ['01101000', '01100101', '01101100', '01101100', '01101111'] }
-  let(:print_chars) { ['h', 'e', 'l', 'l', 'o'] }
-  let(:data) { print_chars.join }
+  let(:bytes)         { [104, 101, 108, 108, 111] }
+  let(:hex_chars)     { %w[68 65 6c 6c 6f] }
+  let(:decimal_chars) { %w[104 101 108 108 111] }
+  let(:octal_chars)   { %w[150 145 154 154 157] }
+  let(:binary_chars)  { %w[01101000 01100101 01101100 01101100 01101111] }
+  let(:print_chars)   { %w[h e l l o] }
+  let(:data)          { print_chars.join }
 
   describe "#initialize" do
     context "when given an invalid base: value" do
@@ -29,7 +29,7 @@ describe Hexdump::Dumper do
   end
 
   describe "each_word" do
-    let(:data) { 'ABAB' }
+    let(:data)  { 'ABAB' }
     let(:bytes) { [0x41, 0x42, 0x41, 0x42] }
 
     it "should check if the data defines '#each_byte'" do
@@ -225,7 +225,7 @@ describe Hexdump::Dumper do
 
     context "when initialized with word_size: and endian:" do
       let(:options) { {:word_size => 2, :endian => :little} }
-      let(:hex_words) { ['6568', '6c6c', '006f'] }
+      let(:hex_words) { %w[6568 6c6c 006f] }
 
       subject { described_class.new(**options) }
 
@@ -258,7 +258,7 @@ describe Hexdump::Dumper do
       context "and base: :octal" do
         subject { described_class.new(base: :octal, **options) }
 
-        let(:octal_words) { ['062550', '066154', '000157'] }
+        let(:octal_words) { %w[062550 066154 000157] }
 
         it "should dump words in octal" do
           words = []
@@ -274,7 +274,7 @@ describe Hexdump::Dumper do
       context "and base: :binary" do
         subject { described_class.new(base: :binary, **options) }
 
-        let(:binary_words) { ['0110010101101000', '0110110001101100', '0000000001101111'] }
+        let(:binary_words) { %w[0110010101101000 0110110001101100 0000000001101111] }
 
         it "should dump words in binary" do
           words = []
