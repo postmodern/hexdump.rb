@@ -13,13 +13,13 @@ describe Hexdump::Dumper do
   describe "#initialize" do
     it "should only accept known base: values" do
       expect {
-        described_class.new(data, base: :foo)
+        described_class.new(base: :foo)
       }.to raise_error(ArgumentError)
     end
 
     it "should only accept known endian: values" do
       expect {
-        described_class.new(data, endian: :foo)
+        described_class.new(endian: :foo)
       }.to raise_error(ArgumentError)
     end
   end
