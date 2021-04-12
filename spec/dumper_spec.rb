@@ -224,7 +224,7 @@ describe Hexdump::Dumper do
     end
 
     context "when initialized with word_size: and endian:" do
-      let(:options) { {:word_size => 2, :endian => :little} }
+      let(:options)   { {word_size: 2, endian: :little} }
       let(:hex_words) { %w[6568 6c6c 006f] }
 
       subject { described_class.new(**options) }
