@@ -95,4 +95,14 @@ module Hexdump
   TYPES[:ulonglong_le] = TYPES[:uint64_le]
   TYPES[:ulonglong_be] = TYPES[:uint64_be]
   TYPES[:ulonglong_ne] = TYPES[:uint64_ne]
+
+  TYPES[:float32]    = TYPES[:float]
+  TYPES[:float32_le] = TYPES[:float_le]
+  TYPES[:float32_be] = TYPES[:float_be]
+  TYPES[:float32_ne] = TYPES[:float_ne]
+
+  TYPES[:float64]    = TYPES[:double]
+  TYPES[:float64_le] = TYPES[:double_le]
+  TYPES[:float64_be] = TYPES[:double_be]
+  TYPES[:float64_ne] = TYPES[:double_ne]
 end

@@ -853,4 +853,52 @@ describe "Hexdump::TYPES" do
       expect(subject.endian).to eq(:big)
     end
   end
+
+  describe "float32" do
+    it "must be an alias to float" do
+      expect(subject[:float32]).to be(subject[:float])
+    end
+  end
+
+  describe "float32_le" do
+    it "must be an alias to float_le" do
+      expect(subject[:float32_le]).to be(subject[:float_le])
+    end
+  end
+
+  describe "float32_be" do
+    it "must be an alias to float_be" do
+      expect(subject[:float32_be]).to be(subject[:float_be])
+    end
+  end
+
+  describe "float32_ne" do
+    it "must be an alias to float_ne" do
+      expect(subject[:float32_ne]).to be(subject[:float_ne])
+    end
+  end
+
+  describe "float64" do
+    it "must be an alias to double" do
+      expect(subject[:float64]).to be(subject[:double])
+    end
+  end
+
+  describe "float64_le" do
+    it "must be an alias to double_le" do
+      expect(subject[:float64_le]).to be(subject[:double_le])
+    end
+  end
+
+  describe "float64_be" do
+    it "must be an alias to double_be" do
+      expect(subject[:float64_be]).to be(subject[:double_be])
+    end
+  end
+
+  describe "float64_ne" do
+    it "must be an alias to double_ne" do
+      expect(subject[:float64_ne]).to be(subject[:double_ne])
+    end
+  end
 end
