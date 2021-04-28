@@ -1,9 +1,9 @@
-require 'hexdump/hexdump'
+require 'hexdump/mixin'
 
 require 'stringio'
 
 class StringIO
 
-  include Hexdump
+  include Hexdump::Mixin
 
 end

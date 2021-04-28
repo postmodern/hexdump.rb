@@ -1,7 +1,7 @@
-require 'hexdump/hexdump'
+require 'hexdump/mixin'
 
 class String
 
-  include Hexdump
+  include Hexdump::Mixin
 
 end

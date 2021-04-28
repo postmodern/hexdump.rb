@@ -3,15 +3,15 @@ require 'hexdump/core_ext'
 
 describe "Hexdump core_ext" do
   it "should include Hexdump into String" do
-    expect(String).to include(Hexdump)
+    expect(String).to include(Hexdump::Mixin)
   end
 
   it "should include Hexdump into StringIO" do
-    expect(StringIO).to include(Hexdump)
+    expect(StringIO).to include(Hexdump::Mixin)
   end
 
   it "should include Hexdump into IO" do
-    expect(IO).to include(Hexdump)
+    expect(IO).to include(Hexdump::Mixin)
   end
 
   it "should define File.hexdump" do

@@ -13,9 +13,9 @@ class File
   #
   # @see Hexdump.dump
   #
-  def self.hexdump(path,options={},&block)
+  def self.hexdump(path,**kwargs,&block)
     self.open(path,'rb') do |file|
-      Hexdump.dump(file,options,&block)
+      Hexdump.dump(file,**kwargs,&block)
     end
   end
 

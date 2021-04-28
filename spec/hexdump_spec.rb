@@ -2,29 +2,26 @@ require 'spec_helper'
 require 'hexdump'
 
 describe Hexdump do
-  describe "#hexdump" do
-    let(:bytes) { [104, 101, 108, 108, 111] }
-    let(:hex_chars) { ['68', '65', '6c', '6c', '6f'] }
+  describe ".dump" do
+    let(:bytes) { [0x41, 0x42, 0x43, 0x44, 0x45] }
+    let(:chars) { bytes.map(&:chr) }
+    let(:data)  { chars.join }
+    let(:hex_chars) { ['41', '42', '43', '44', '45'] }
 
-    subject do
-      obj = Object.new.extend(Hexdump)
+    it "should hexdump the given data" do
+      yielded_indices = []
+      yielded_numeric = []
+      yielded_printable = []
 
-      each_byte = expect(obj).to receive(:each_byte)
-      bytes.each do |b|
-        each_byte = each_byte.and_yield(b)
+      subject.dump(data) do |index,numeric,printable|
+        yielded_indices << index
+        yielded_numeric += numeric
+        yielded_printable += printable
       end
 
-      obj
-    end
-
-    it "should hexdump the object" do
-      chars = []
-
-      subject.hexdump do |index,hex,print|
-        chars += hex
-      end
-
-      expect(chars).to be == hex_chars
+      expect(yielded_indices).to eq([0x00000000])
+      expect(yielded_numeric).to be == hex_chars
+      expect(yielded_printable).to be == chars
     end
   end
 end
