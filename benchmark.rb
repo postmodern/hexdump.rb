@@ -5,25 +5,23 @@ $LOAD_PATH.unshift(File.expand_path('../lib',__FILE__))
 require 'hexdump'
 require 'benchmark'
 
-DATA = ((0..255).map { |b| b.chr }.join) * (1024 * 100)
+DATA = ((0..255).map { |b| b.chr }.join) * (1024 * 20)
 OUTPUT = Class.new { def <<(data); end }.new
+
+TYPES = Hexdump::TYPES.values.uniq.map(&Hexdump::TYPES.method(:key))
 
 Benchmark.bm(33) do |b|
   b.report('Hexdump.dump (output)') do
-    Hexdump.dump(DATA, :output => OUTPUT)
+    Hexdump.dump(DATA, output:  OUTPUT)
   end
 
-  b.report('Hexdump.dump width=256 (output)') do
-    Hexdump.dump(DATA, width: 256, output: OUTPUT)
+  b.report('Hexdump.dump columns: 256 (output)') do
+    Hexdump.dump(DATA, columns: 256, output: OUTPUT)
   end
 
-  b.report('Hexdump.dump ascii=true (output)') do
-    Hexdump.dump(DATA, ascii: true, output: OUTPUT)
-  end
-
-  [2, 4, 8].each do |word_size|
-    b.report("Hexdump.dump word_size=#{word_size} (output)") do
-      Hexdump.dump(DATA, word_size: word_size, output: OUTPUT)
+  TYPES.each do |type|
+    b.report("Hexdump.dump type: #{type} (output)") do
+      Hexdump.dump(DATA, type: type, output: OUTPUT)
     end
   end
 
@@ -31,17 +29,13 @@ Benchmark.bm(33) do |b|
     Hexdump.dump(DATA) { |index,hex,print| }
   end
 
-  b.report('Hexdump.dump width=256 (block)') do
-    Hexdump.dump(DATA, width: 256) { |index,hex,print| }
+  b.report('Hexdump.dump columns: 256 (block)') do
+    Hexdump.dump(DATA, columns: 256) { |index,hex,print| }
   end
 
-  b.report('Hexdump.dump ascii=true (block)') do
-    Hexdump.dump(DATA, ascii: true) { |index,hex,print| }
-  end
-
-  [2, 4, 8].each do |word_size|
-    b.report("Hexdump.dump word_size=#{word_size} (block)") do
-      Hexdump.dump(DATA, word_size: word_size) { |index,hex,print| }
+  TYPES.each do |type|
+    b.report("Hexdump.dump type: #{type} (block)") do
+      Hexdump.dump(DATA, type: type) { |index,hex,print| }
     end
   end
 end
