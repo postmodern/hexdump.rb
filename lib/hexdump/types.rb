@@ -12,7 +12,7 @@ module Hexdump
 
     byte:  Type::UInt.new(size: 1),
 
-    char:  Type::Int.new(size: 1),
+    char:  Type::Char.new,
     uchar: Type::UInt.new(size: 1),
 
     int16:     Type::Int.new(size: 2),

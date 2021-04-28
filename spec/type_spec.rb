@@ -83,6 +83,22 @@ describe Hexdump::Type do
     end
   end
 
+  describe Hexdump::Type::Char do
+    describe "#initialize" do
+      it "must default #signed? to true" do
+        expect(subject.signed?).to be(true)
+      end
+
+      it "must set #size to 1" do
+        expect(subject.size).to eq(1)
+      end
+
+      it "must set #endian to nil" do
+        expect(subject.endian).to be(nil)
+      end
+    end
+  end
+
   describe Hexdump::Type::Float do
     subject { described_class.new(size: 4) }
 

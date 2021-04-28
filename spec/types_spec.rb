@@ -23,10 +23,14 @@ describe "Hexdump::TYPES" do
     subject { super()[:char] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Char) }
 
     it "size must equal 1" do
       expect(subject.size).to eq(1)
+    end
+
+    it "must not have endian-ness" do
+      expect(subject.endian).to be(nil)
     end
 
     it "must be signed" do

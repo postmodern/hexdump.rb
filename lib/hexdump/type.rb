@@ -87,6 +87,17 @@ module Hexdump
     end
 
     #
+    # Rpresents a aingle-byte character.
+    #
+    class Char < Int
+
+      def initialize
+        super(size: 1, endian: nil)
+      end
+
+    end
+
+    #
     # Represents a floating point type.
     #
     class Float < self
