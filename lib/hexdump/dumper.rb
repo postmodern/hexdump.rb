@@ -390,7 +390,8 @@ module Hexdump
                          end
       numeric_segment_width = ((chars_per_column * @columns) + (@columns - 1))
       index_format = "%.8x"
-      line_format = "#{index_format}  %-#{numeric_segment_width}s |%s|#{$/}"
+      spacer = "  "
+      line_format = "#{index_format}#{spacer}%-#{numeric_segment_width}s#{spacer}|%s|#{$/}"
 
       length = each(data) do |index,numeric,printable|
         output << sprintf(line_format,index,numeric.join(' '),printable.join)
