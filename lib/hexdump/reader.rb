@@ -26,27 +26,6 @@ module Hexdump
     end
 
     #
-    # Reads each byte from the data.
-    #
-    # @param [#each_byte] data
-    #
-    # @yield [byte]
-    #
-    # @yieldparam [Integer] byte
-    #
-    # @return [Enumerator]
-    #
-    # @raise [ArgumentError]
-    #
-    def each_byte(data,&block)
-      unless data.respond_to?(:each_byte)
-        raise(ArgumentError,"the given data must respond to #each_byte")
-      end
-
-      data.each_byte(&block)
-    end
-
-    #
     # @param [#each_byte] data
     #
     # @yield [uint]
@@ -57,41 +36,45 @@ module Hexdump
     #
     # @raise [ArgumentError]
     #
-    def each_uint(data)
+    def each_uint(data,&block)
       return enum_for(__method__,data) unless block_given?
 
       unless data.respond_to?(:each_byte)
         raise(ArgumentError,"the given data must respond to #each_byte")
       end
 
-      uint  = 0
-      count = 0
+      if @type.size == 1
+        data.each_byte(&block)
+      else
+        uint  = 0
+        count = 0
 
-      init_shift = if @type.endian == :big then ((@type.size - 1) * 8)
-                   else                         0
-                   end
-      shift = init_shift
+        init_shift = if @type.endian == :big then ((@type.size - 1) * 8)
+                     else                         0
+                     end
+        shift = init_shift
 
-      data.each_byte do |b|
-        uint |= (b << shift)
+        data.each_byte do |b|
+          uint |= (b << shift)
 
-        if @type.endian == :big then shift -= 8
-        else                         shift += 8
+          if @type.endian == :big then shift -= 8
+          else                         shift += 8
+          end
+
+          count += 1
+
+          if count >= @type.size
+            yield uint
+
+            uint  = 0
+            count = 0
+            shift = init_shift
+          end
         end
 
-        count += 1
-
-        if count >= @type.size
-          yield uint
-
-          uint  = 0
-          count = 0
-          shift = init_shift
-        end
+        # yield the remaining uint
+        yield uint if count > 0
       end
-
-      # yield the remaining uint
-      yield uint if count > 0
     end
 
     #
@@ -238,11 +221,7 @@ module Hexdump
 
       case @type
       when Type::UInt
-        if @type.size == 1
-          each_byte(data,&block)
-        else
-          each_uint(data,&block)
-        end
+        each_uint(data,&block)
       when Type::Float
         each_float(data,&block)
       when Type::Int

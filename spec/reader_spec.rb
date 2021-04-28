@@ -3,23 +3,22 @@ require 'hexdump/reader'
 require 'hexdump/types'
 
 describe Hexdump::Reader do
-  describe "#each_byte" do
-    let(:type)  { Hexdump::TYPES[:byte] }
-    let(:bytes) { %w[A B C D E F] }
-    let(:data)  { bytes.join }
+  describe "#each_uint" do
+    context "when the type has size of 1" do
+      let(:bytes) { [0x41, 0x42, 0x43, 0x44] }
+      let(:chars) { bytes.map(&:chr) }
+      let(:data)  { chars.join }
+      let(:type)  { Hexdump::TYPES[:int8] }
 
-    subject { described_class.new(type) }
+      subject { described_class.new(type) }
 
-    context "when the given data does not define #each_byte" do
-      it do
-        expect {
-          subject.each_byte(Object.new).to_a
-        }.to raise_error(ArgumentError)
+      it "must yield each byte" do
+        expect { |b|
+          subject.each_uint(data,&b)
+        }.to yield_successive_args(*bytes)
       end
     end
-  end
 
-  describe "#each_uint" do
     context "when the type has size of 2" do
       let(:uints) { [0xfa01, 0xfb02, 0xfc03, 0xfd04] }
 
