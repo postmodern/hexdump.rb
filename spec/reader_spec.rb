@@ -144,6 +144,20 @@ describe Hexdump::Reader do
   end
 
   describe "#each_int" do
+    context "when the type has size of 1" do
+      let(:ints) { [0x01, -0x02, 0x03, -0x04] }
+      let(:type)  { Hexdump::TYPES[:int8] }
+      let(:data)  { ints.pack('c' * ints.length) }
+
+      subject { described_class.new(type) }
+
+      it "must decode the bytes" do
+        expect { |b|
+          subject.each_int(data,&b)
+        }.to yield_successive_args(*ints)
+      end
+    end
+
     context "when the type has size of 2" do
       let(:ints) { [0x0001, -0x0002, 0x0003, -0x0004] }
 

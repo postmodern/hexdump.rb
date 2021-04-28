@@ -113,27 +113,33 @@ module Hexdump
         raise(ArgumentError,"the given data must respond to #each_byte")
       end
 
-      buffer = String.new("\0" * @type.size, encoding: Encoding::BINARY)
-      index  = 0
-
-      data.each_byte do |b|
-        buffer[index] = b.chr(Encoding::BINARY)
-        index += 1
-
-        if index >= @type.size
-          yield buffer
-          index = 0
+      if @type.size == 1
+        data.each_byte do |b|
+          yield b.chr
         end
-      end
+      else
+        buffer = String.new("\0" * @type.size, encoding: Encoding::BINARY)
+        index  = 0
 
-      if index > 0
-        # zero pad the partially filled buffer
-        until index >= @type.size
-          buffer[index] = "\0"
+        data.each_byte do |b|
+          buffer[index] = b.chr(Encoding::BINARY)
           index += 1
+
+          if index >= @type.size
+            yield buffer
+            index = 0
+          end
         end
 
-        yield buffer
+        if index > 0
+          # zero pad the partially filled buffer
+          until index >= @type.size
+            buffer[index] = "\0"
+            index += 1
+          end
+
+          yield buffer
+        end
       end
     end
 
@@ -150,6 +156,8 @@ module Hexdump
       return enum_for(__method__,data) unless block_given?
 
       pack_format = case @type.size
+                    when 1
+                      'c'
                     when 2
                       case @type.endian
                       when :little then 's<'
