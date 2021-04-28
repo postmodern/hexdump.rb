@@ -383,9 +383,14 @@ module Hexdump
         raise(ArgumentError,"output must support the #<< method")
       end
 
-      bytes_segment_width = ((@columns * @max_digits) + @columns)
+      chars_per_column = if @type.signed?
+                           @max_digits + 1
+                         else
+                           @max_digits
+                         end
+      numeric_segment_width = ((chars_per_column * @columns) + (@columns - 1))
       index_format = "%.8x"
-      line_format = "#{index_format}  %-#{bytes_segment_width}s |%s|#{$/}"
+      line_format = "#{index_format}  %-#{numeric_segment_width}s |%s|#{$/}"
 
       length = each(data) do |index,numeric,printable|
         output << sprintf(line_format,index,numeric.join(' '),printable.join)
