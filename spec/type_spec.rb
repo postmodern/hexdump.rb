@@ -55,6 +55,28 @@ describe Hexdump::Type do
     end
   end
 
+  describe "#unsigned?" do
+    let(:size) { 4 }
+
+    subject { described_class.new(size: size, signed: signed) }
+
+    context "when initialized with signed: true" do
+      let(:signed) { true }
+
+      it do
+        expect(subject.unsigned?).to be(false)
+      end
+    end
+
+    context "when initialized with signed: false" do
+      let(:signed) { false }
+
+      it do
+        expect(subject.unsigned?).to be(true)
+      end
+    end
+  end
+
   describe Hexdump::Type::UInt do
     subject { described_class.new(size: 4) }
 

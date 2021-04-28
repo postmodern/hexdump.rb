@@ -37,12 +37,21 @@ module Hexdump
     end
 
     # 
-    # Whether the type is signed or unsigned.
+    # Whether the type is signed.
     #
     # @return [Boolean]
     #
     def signed?
       @signed
+    end
+
+    # 
+    # Whether the type is unsigned.
+    #
+    # @return [Boolean]
+    #
+    def unsigned?
+      !@signed
     end
 
     # The native endian-ness.
