@@ -228,14 +228,19 @@ module Hexdump
     def each(data,&block)
       return enum_for(__method__,data) unless block
 
-      if @type.size == 1
-        each_byte(data,&block)
-      elsif @type.kind_of?(Type::Float)
+      case @type
+      when Type::UInt
+        if @type.size == 1
+          each_byte(data,&block)
+        else
+          each_uint(data,&block)
+        end
+      when Type::Float
         each_float(data,&block)
-      elsif @type.signed?
+      when Type::Int
         each_int(data,&block)
       else
-        each_uint(data,&block)
+        raise(TypeError,"unsupported type: #{@type.inspect}")
       end
     end
 
