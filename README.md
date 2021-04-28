@@ -13,13 +13,49 @@ Simple and Fast hexdumping for Ruby.
 
 ## Features
 
+* Supports printing ASCII, hexadecimal, decimal, octal and binary bytes.
+* Supports hexdumping bytes, characters, signed/unsigned integers,
+  floating-point numbers, and in little/big/network endian byte orders:
+  * `byte` - ASCII byte (default)
+  * `char` - signed 8bit ASCII character
+  * `uchar` - unsigned 8bit ASCII character
+  * `int8` - signed 8bit integer
+  * `uint8` - unsigned 8bit integer
+  * `int16` - signed 16bit integer
+  * `int16_le` - signed 16bit integer (little endian)
+  * `int16_be` - signed 16bit integer (big nedian)
+  * `int16_ne` - signed 16bit integer (network endian)
+  * `uint16` - unsigned 16bit integer
+  * `uint16_le` - unsigned 16bit integer (little endian)
+  * `uint16_be` - unsigned 16bit integer (big nedian)
+  * `uint16_ne` - unsigned 16bit integer (network endian)
+  * `int32` - signed 32bit integer
+  * `int32_le` - signed 32bit integer (little endian)
+  * `int32_be` - signed 32bit integer (big nedian)
+  * `int32_ne` - signed 32bit integer (network endian)
+  * `uint32` - unsigned 32bit integer
+  * `uint32_le` - unsigned 32bit integer (little endian)
+  * `uint32_be` - unsigned 32bit integer (big nedian)
+  * `uint32_ne` - unsigned 32bit integer (network endian)
+  * `int64` - signed 64bit integer
+  * `int64_le` - signed 64bit integer (little endian)
+  * `int64_be` - signed 64bit integer (big nedian)
+  * `int64_ne` - signed 64bit integer (network endian)
+  * `uint64` - unsigned 64bit integer
+  * `uint64_le` - unsigned 64bit integer (little endian)
+  * `uint64_be` - unsigned 64bit integer (big nedian)
+  * `uint64_ne` - unsigned 64bit integer (network endian)
+  * `float` - single precision 32bit floating-point number
+  * `float_le` - single precision 32bit floating-point number (little endian)
+  * `float_be` - single precision 32bit floating-point number (big endian)
+  * `float_ne` - single precision 32bit floating-point number (network endian)
+  * `double` - single precision 64bit floating-point number
+  * `double_le` - single precision 64bit floating-point number (little endian)
+  * `double_be` - single precision 64bit floating-point number (big endian)
+  * `double_ne` - single precision 64bit floating-point number (network endian)
 * Can hexdump any Object supporting the `each_byte` method.
 * Can send the hexdump output to any Object supporting the `<<` method.
 * Can yield each line of hexdump, instead of printing the output.
-* Supports printing ASCII, hexadecimal, decimal, octal and binary bytes.
-* Supports hexdumping bytes (8bit), words (16bit), double-words (32bit), and
-  quad-words (64bit).
-* Supports Little Endian and Big Endian modes.
 * Makes {String}, {StringIO}, {IO}, {File} objects hexdumpable.
 * Fast-ish.
 
@@ -27,22 +63,20 @@ Simple and Fast hexdumping for Ruby.
 
     require 'hexdump'
 
-    data = "hello\x00"
-
-    Hexdump.dump(data)
+    Hexdump.dump("hello\0")
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
     # 00000006
     
-    data.hexdump
+    "hello\0".hexdump
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
     # 00000006
 
     File.open('dump.txt','w') do |file|
-      data.hexdump(:output => file)
+      data.hexdump(output: file)
     end
 
     # iterate over the hexdump lines
-    data.hexdump do |index,hex,printable|
+    "hello\0".hexdump do |index,hex,printable|
       index     # => 0
       hex       # => ["68", "65", "6c", "6c", "6f", "00"]
       printable # => ["h", "e", "l", "l", "o", "."]
@@ -50,33 +84,33 @@ Simple and Fast hexdumping for Ruby.
     # => 6
 
     # configure the width of the hexdump
-    Hexdump.dump('A' * 30, width: 10)
+    Hexdump.dump('A' * 30, columns: 10)
     # 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     # 0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     # 00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     # 0000001e
 
-    Hexdump.dump(data, ascii: true)
-    # 00000000  h e l l o 00                                     |hello.|
+    Hexdump.dump("hello\0", type: :char)
+    # 00000000    h   e   l   l   o  \0                                          |hello.|
     # 00000006
 
-    Hexdump.dump(data, base: 16)
+    Hexdump.dump("hello\0", base: 16)
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
     # 00000006
 
-    Hexdump.dump(data, base: :decimal)
+    Hexdump.dump("hello\0", base: 10)
     # 00000000  104 101 108 108 111   0                                          |hello.|
     # 00000006
 
-    Hexdump.dump(data, base: :octal)
+    Hexdump.dump("hello\0", base: 8)
     # 00000000  0150 0145 0154 0154 0157 0000                                                    |hello.|
     # 00000006
 
-    Hexdump.dump(data, base: :binary)
+    Hexdump.dump("hello\0", base: 2)
     # 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
     # 00000006
 
-    ("ABC" * 10).hexdump(word_size: 2)
+    ("ABC" * 10).hexdump(type: :uint16_le)
     # 00000000  4241 4143 4342 4241 4143 4342 4241 4143  |䉁䅃䍂䉁䅃䍂䉁䅃|
     # 00000010  4342 4241 4143 4342 4241 4143 4342       |䍂䉁䅃䍂䉁䅃䍂|
     # 0000001e
