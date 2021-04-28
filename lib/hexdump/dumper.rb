@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+require 'hexdump/types'
+require 'hexdump/reader'
+
 module Hexdump
   #
   # Handles the parsing of data and formatting of the hexdump.
@@ -8,31 +11,10 @@ module Hexdump
   #
   class Dumper
 
-    # Widths for formatted numbers
-    WIDTHS = {
-      hexadecimal: ->(word_size) { word_size * 2 },
-      decimal: {
-        1 => 3,
-        2 => 5,
-        4 => 10,
-        8 => 20
-      },
-      octal: {
-        1 => 3,
-        2 => 6,
-        4 => 11,
-        8 => 22
-      },
-      binary: ->(word_size) { word_size * 8 }
-    }
-
-    # Format Strings for the various bases
-    FORMATS = {
-      hexadecimal: ->(width) { "%.#{width}x" },
-      decimal:     ->(width) { "%#{width}.d" },
-      octal:       ->(width) { "%.#{width}o" },
-      binary:      ->(width) { "%.#{width}b" }
-    }
+    # Default number of columns
+    #
+    # @since 1.0.0
+    DEFAULT_COLUMNS = 16
 
     # Character to represent unprintable characters
     UNPRINTABLE = '.'
@@ -136,40 +118,64 @@ module Hexdump
       0x7e => "~"
     }
 
-    PRINTABLE.default = UNPRINTABLE
+    # Printable characters including escape characters.
+    #
+    # @since 1.0.0
+    ESCAPE_CHARS = {
+      0x00 => "\\0",
+      0x07 => "\\a",
+      0x08 => "\\b",
+      0x09 => "\\t",
+      0x0a => "\\n",
+      0x0b => "\\v",
+      0x0c => "\\f",
+      0x0d => "\\r"
+    }
+
+    # The word type to decode the byte stream as.
+    #
+    # @return [Type]
+    #
+    # @since 1.0.0
+    attr_reader :type
 
     # The base to dump words as.
+    #
+    # @return [16, 10, 8, 2]
     attr_reader :base
 
-    # The size of the words parse from the data.
-    attr_reader :word_size
+    # The number of columns per hexdump line.
+    #
+    # @return [Integer]
+    #
+    # @since 1.0.0
+    attr_reader :columns
 
-    # The endianness of the words parsed from the data.
-    attr_reader :endian
+    # Mapping of values to their numeric strings.
+    #
+    # @return [Hash, Proc]
+    #
+    # @since 1.0.0
+    attr_reader :numeric
 
-    # The width in words of each hexdump line.
-    attr_reader :width
-
-    # Whether to display ASCII characters alongside numeric values.
-    attr_reader :ascii
+    # Mapping of values to their character strings.
+    #
+    # @return [Proc]
+    #
+    # @since 1.0.0
+    attr_reader :printable
 
     #
     # Creates a new Hexdump dumper.
     #
-    # @param [Integer] width (16)
-    #   The number of bytes to dump for each line.
+    # @param [:int8, :uint8, :char, :uchar, :byte, :int16, :int16_le, :int16_be, :int16_ne, :uint16, :uint16_le, :uint16_be, :uint16_ne, :short, :short_le, :short_be, :short_ne, :ushort, :ushort_le, :ushort_be, :ushort_ne, :int32, :int32_le, :int32_be, :int32_ne, :uint32, :uint32_le, :uint32_be, :uint32_ne, :int, :long, :long_le, :long_be, :long_ne, :uint, :ulong, :ulong_le, :ulong_be, :ulong_ne, :int64, :int64_le, :int64_be, :int64_ne, :uint64, :uint64_le, :uint64_be, :uint64_ne, :longlong, :longlong_le, :longlong_be, :longlong_ne, :ulonglong, :ulonglong_le, :ulonglong_be, :ulonglong_ne, :float, :float_le, :float_be, :float_ne, :double, :double_le, :double_be, :double_ne] type (:byte)
+    #   The type to decode the data as.
     #
-    # @param [Integer] endian (:little)
-    #   The endianness that the bytes are organized in. Supported endianness
-    #   include `:little` and `:big`.
+    # @param [Integer] columns
+    #   The number of columns per hexdump line. Defaults to `16 / sizeof(type)`.
     #
-    # @param [Integer] word_size (1)
-    #   The number of bytes within a word.
-    #
-    # @param [Symbol, Integer] base (:hexadecimal)
-    #   The base to print bytes in. Supported bases include, `:hexadecimal`,
-    #   `:hex`, `16, `:decimal`, `:dec`, `10, `:octal`, `:oct`, `8`,
-    #   `:binary`, `:bin` and `2`.
+    # @param [16, 10, 8, 2] base
+    #   The base to print bytes in. Defaults to 16, or to 10 if printing floats.
     #
     # @param [Boolean] ascii (false)
     #   Print ascii characters when possible.
@@ -179,103 +185,123 @@ module Hexdump
     #
     # @since 0.2.0
     #
-    def initialize(width:     16,
-                   endian:    :little,
-                   word_size: 1,
-                   base:      :hexadecimal,
-                   ascii:     false)
-
-      @base = case base
-              when :hexadecimal, :hex, 16 then :hexadecimal
-              when :decimal, :dec, 10     then :decimal
-              when :octal, :oct, 8        then :octal
-              when :binary, :bin, 2       then :binary
-              when nil                    then :hexadecimal
-              else
-                raise(ArgumentError,"unknown base #{base.inspect}")
+    def initialize(type: :byte, columns: nil, base: nil)
+      @type = TYPES.fetch(type) do
+                raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
 
-      @word_size = word_size
-      @endian = case endian
-                when 'little', :little then :little
-                when 'big', :big       then :big
-                when nil               then :little
-                else
-                  raise(ArgumentError,"unknown endian: #{endian.inspect}")
-                end
+      @reader = Reader.new(@type)
 
-      @width = (width / @word_size)
-      @ascii = ascii
+      @columns = columns || (DEFAULT_COLUMNS / @type.size)
 
-      @format_width = (WIDTHS[@base][@word_size] || 1)
-      @format = FORMATS[@base][@format_width]
+      case @type
+      when Type::Float
+        @base = base || 10
 
-      if @word_size == 1
-        @format_cache = Hash.new do |hash,key|
-          hash[key] = sprintf(@format,key)
+        case @base
+        when 16
+          @max_digits = 20 # ("%a" % Float::MAX).length
+          @format     = "% #{@max_digits}a"
+        when 10
+          @max_digits = case @type.size
+                        when 4 then 13
+                        when 8 then 23
+                        end
+
+          @format = "% #{@max_digits}g"
+        else
+          raise(ArgumentError,"float units can only be printed in base 10")
         end
-      end
-    end
-    
-    #
-    # Iterates over every word within the data.
-    #
-    # @param [#each_byte] data
-    #   The data containing bytes.
-    #
-    # @yield [word]
-    #   The given block will be passed each word within the data.
-    #
-    # @yieldparam [Integer]
-    #   An unpacked word from the data.
-    #
-    # @return [Enumerator]
-    #   If no block is given, an Enumerator will be returned.
-    #
-    # @raise [ArgumentError]
-    #   The given data does not define the `#each_byte` method.
-    #
-    # @since 0.2.0
-    #
-    def each_word(data,&block)
-      return enum_for(:each_word,data) unless block
-
-      unless data.respond_to?(:each_byte)
-        raise(ArgumentError,"the data to hexdump must define #each_byte")
-      end
-
-      if @word_size > 1
-        word  = 0
-        count = 0
-
-        init_shift = if @endian == :big then ((@word_size - 1) * 8)
-                     else                    0
-                     end
-        shift = init_shift
-
-        data.each_byte do |b|
-          word |= (b << shift)
-
-          if @endian == :big then shift -= 8
-          else                    shift += 8
-          end
-
-          count += 1
-
-          if count >= @word_size
-            yield word
-
-            word  = 0
-            count = 0
-            shift = init_shift
-          end
-        end
-
-        # yield the remaining word
-        yield word if count > 0
       else
-        data.each_byte(&block)
+        @base = base || 16
+
+        case @base
+        when 16
+          @max_digits = case @type.size
+                        when 1 then 2  # 0xff.to_s(16).length
+                        when 2 then 4  # 0xffff.to_s(16).length
+                        when 4 then 8  # 0xffffffff.to_s(16).length
+                        when 8 then 16 # 0xffffffffffffffff.to_s(16).length
+                        end
+
+          @format = if @type.signed? then "% .#{@max_digits}x"
+                    else                  "%.#{@max_digits}x"
+                    end
+        when 10
+          @max_digits = case @type.size
+                        when 1 then 3  # 0xff.to_s(10).length
+                        when 2 then 5  # 0xffff.to_s(10).length
+                        when 4 then 10 # 0xffffffff.to_s(10).length
+                        when 8 then 20 # 0xffffffffffffffff.to_s(10).length
+                        end
+
+          @format = if @type.signed? then "% #{@max_digits}.d"
+                    else                  "%#{@max_digits}.d"
+                    end
+        when 8
+          @max_digits = case @type.size
+                        when 1 then 3  # 0xff.to_s(7).length
+                        when 2 then 6  # 0xffff.to_s(7).length
+                        when 4 then 11 # 0xffffffff.to_s(7).length
+                        when 8 then 22 # 0xffffffffffffffff.to_s(7).length
+                        end
+
+          @format = if @type.signed? then "% .#{@max_digits}o"
+                    else                  "%.#{@max_digits}o"
+                    end
+        when 2
+          @max_digits = case @type.size
+                        when 1 then 8  # 0xff.to_s(2).length
+                        when 2 then 16 # 0xffff.to_s(2).length
+                        when 4 then 32 # 0xffffffff.to_s(2).length
+                        when 8 then 64 # 0xffffffffffffffff.to_s(2).length
+                        end
+
+          @format = if @type.signed? then "% .#{@max_digits}b"
+                    else                  "%.#{@max_digits}b"
+                    end
+        else
+          raise(ArgumentError,"unsupported base: #{base.inspect}")
+        end
       end
+
+      @numeric = case @type
+                 when Type::Char, Type::UChar
+                   Hash.new do |hash,key|
+                     hash[key] = if (char = PRINTABLE[key])
+                                   "  #{char}"
+                                 elsif (char = ESCAPE_CHARS[key])
+                                   " #{char}"
+                                 else
+                                   sprintf(@format,key)
+                                 end
+                   end
+                 else
+                   if @type.size == 1
+                     Hash.new do |hash,key|
+                       hash[key] = sprintf(@format,key)
+                     end
+                   else
+                     ->(value) { sprintf(@format,value) }
+                   end
+                 end
+
+      @printable = case @type
+                   when Type::Float
+                     ->(valie) { nil }
+                   else
+                     if @type.size == 1
+                       ->(value) { PRINTABLE.fetch(value,UNPRINTABLE) }
+                     else
+                       ->(value) {
+                         PRINTABLE.fetch(value) do
+                           # XXX: https://github.com/jruby/jruby/issues/6652
+                           char = value.chr(Encoding::UTF_8) rescue nil
+                           char || UNPRINTABLE
+                         end
+                       }
+                     end
+                   end
     end
 
     #
@@ -304,24 +330,24 @@ module Hexdump
     # @since 0.2.0
     #
     def each(data)
-      return enum_for(:each,data) unless block_given?
+      return enum_for(__method__,data) unless block_given?
 
       index = 0
       count = 0
 
-      numeric   = Array.new(@width)
-      printable = Array.new(@width)
+      numeric   = Array.new(@columns)
+      printable = Array.new(@columns)
 
-      each_word(data) do |word|
-        numeric[count]   = format_numeric(word)
-        printable[count] = format_printable(word)
+      @reader.each(data) do |word|
+        numeric[count]   = @numeric[word]
+        printable[count] = @printable[word]
 
         count += 1
 
-        if count >= @width
+        if count >= @columns
           yield index, numeric, printable
 
-          index += (@width * @word_size)
+          index += (@columns * @type.size)
           count = 0
         end
       end
@@ -330,7 +356,7 @@ module Hexdump
         # yield the remaining data
         yield index, numeric[0,count], printable[0,count]
 
-        index += (count * @word_size)
+        index += (count * @type.size)
       end
 
       return index
@@ -357,7 +383,7 @@ module Hexdump
         raise(ArgumentError,"output must support the #<< method")
       end
 
-      bytes_segment_width = ((@width * @format_width) + @width)
+      bytes_segment_width = ((@columns * @max_digits) + @columns)
       index_format = "%.8x"
       line_format = "#{index_format}  %-#{bytes_segment_width}s |%s|#{$/}"
 
@@ -368,52 +394,5 @@ module Hexdump
       output << sprintf("#{index_format}#{$/}",length)
       return nil
     end
-
-    #
-    # Converts the word into a numeric String.
-    #
-    # @param [Integer] word
-    #   The word to convert.
-    #
-    # @return [String]
-    #   The numeric representation of the word.
-    #
-    # @since 0.2.0
-    #
-    def format_numeric(word)
-      if @word_size == 1
-        if (@ascii && (word >= 0x20 && word <= 0x7e))
-          PRINTABLE[word]
-        else
-          @format_cache[word]
-        end
-      else
-        sprintf(@format,word)
-      end
-    end
-
-    #
-    # Converts a word into a printable String.
-    #
-    # @param [Integer] word
-    #   The word to convert.
-    #
-    # @return [String]
-    #   The printable representation of the word.
-    #
-    # @since 0.2.0
-    #
-    def format_printable(word)
-      if @word_size == 1
-        PRINTABLE[word]
-      elsif word >= 0 && word <= 0x7fffffff
-        # XXX: https://github.com/jruby/jruby/issues/6652
-        char = word.chr(Encoding::UTF_8) rescue nil
-        char || UNPRINTABLE
-      else
-        UNPRINTABLE
-      end
-    end
-
   end
 end

@@ -11,64 +11,377 @@ describe Hexdump::Dumper do
   let(:data)          { print_chars.join }
 
   describe "#initialize" do
-    context "when given an invalid base: value" do
-      it do
-        expect {
-          described_class.new(base: :foo)
-        }.to raise_error(ArgumentError)
+    it "must default type to :byte" do
+      expect(subject.type).to be(Hexdump::TYPES[:byte])
+    end
+
+    it "must default #columns to 16" do
+      expect(subject.columns).to eq(16)
+    end
+
+    it "must default #base to 16" do
+      expect(subject.base).to eq(16)
+    end
+
+    context "when given a custom type name" do
+      let(:type) { :uint16_le }
+
+      subject { described_class.new(type: type) }
+
+      it "must look up the given type in Hexdump::TYPES" do
+        expect(subject.type).to be(Hexdump::TYPES[type])
+      end
+
+      it "must divide the number of columns by the size of the type" do
+        expect(subject.columns).to eq(16 / Hexdump::TYPES[type].size)
+      end
+
+      context "and the type is of a Type::Float type" do
+        let(:type) { :float }
+
+        it "must default the #base to 10" do
+          expect(subject.base).to eq(10)
+        end
+
+        context "but the base: value isn't 10 or 16" do
+          it do
+            expect {
+              described_class.new(type: type, base: 8)
+            }.to raise_error(ArgumentError,"float units can only be printed in base 10")
+          end
+        end
+      end
+
+      context "when given an unsupported type" do
+        it do
+          expect {
+            described_class.new(type: :foo)
+          }.to raise_error(ArgumentError,"unsupported type: :foo")
+        end
       end
     end
 
-    context "when given an invalid endian: value" do
+    context "when given an unsupported base: value" do
       it do
         expect {
-          described_class.new(endian: :foo)
-        }.to raise_error(ArgumentError)
+          described_class.new(base: 3)
+        }.to raise_error(ArgumentError,"unsupported base: 3")
       end
     end
   end
 
-  describe "each_word" do
-    let(:data)  { 'ABAB' }
-    let(:bytes) { [0x41, 0x42, 0x41, 0x42] }
-
-    it "should check if the data defines '#each_byte'" do
-      expect {
-        subject.each_word(Object.new).to_a
-      }.to raise_error(ArgumentError)
+  describe "#numeric" do
+    it do
+      expect(subject.numeric).to be_kind_of(Hash)
     end
 
-    it "should iterate over each byte by default" do
-      expect(subject.each_word(data).to_a).to be == bytes
+    it "must map numeric values to their hex String representations" do
+      expect(subject.numeric[0xff]).to eq("ff")
     end
 
-    context "when initialized with a custom word_size:" do
-      subject { described_class.new(word_size: 3) }
+    it "must cache numeric values" do
+      subject.numeric[0x41]
+      subject.numeric[0xff]
 
-      let(:custom_words) { [0x414241, 0x42] }
+      expect(subject.numeric).to eq({0x41 => '41', 0xff => 'ff'})
+    end
 
-      it "should allow iterating over custom word-sizes" do
-        expect(subject.each_word(data).to_a).to be == custom_words
+    context "when initialized with base: 10" do
+      subject { described_class.new(base: 10) }
+
+      it "must return numeric Strings in base 10" do
+        expect(subject.numeric[0xff]).to eq("255")
       end
     end
 
-    context "when initialized with default endian:" do
-      subject { described_class.new(word_size: 2) }
+    context "when initialized with base: 8" do
+      subject { described_class.new(base: 8) }
 
-      let(:shorts_le) { [0x4241, 0x4241] }
-
-      it "should iterate over little-endian words by default" do
-        expect(subject.each_word(data).to_a).to be == shorts_le
+      it "must return numeric Strings in base 8" do
+        expect(subject.numeric[0xff]).to eq("377")
       end
     end
 
-    context "when initialized with endian: :big" do
-      subject { described_class.new(word_size: 2, endian: :big) }
+    context "when initialized with base: 2" do
+      subject { described_class.new(base: 2) }
 
-      let(:shorts_be) { [0x4142, 0x4142] }
+      it "must return numeric Strings in base 2" do
+        expect(subject.numeric[0xff]).to eq("11111111")
+      end
+    end
 
-      it "should iterate over big-endian words" do
-        expect(subject.each_word(data).to_a).to be == shorts_be
+    context "when initialized with type: :char" do
+      subject { described_class.new(type: :char) }
+
+      it do
+        expect(subject.numeric).to be_kind_of(Hash)
+      end
+
+      context "when given a value that maps to a printable character" do
+        it "must return the printable character with left-padding" do
+          expect(subject.numeric[0x41]).to eq("  A")
+        end
+      end
+
+      context "when given a value that does not map to a printable character" do
+        it "must return the hex String representation, with left-padding" do
+          expect(subject.numeric[0xff]).to eq(" ff")
+        end
+      end
+
+      context "when given a negative value" do
+        it "must return the hex String representation with a '-' character" do
+          expect(subject.numeric[-0xff]).to eq('-ff')
+        end
+      end
+
+      it "must cache mapped values" do
+        subject.numeric[0x41]
+        subject.numeric[0xff]
+
+        expect(subject.numeric).to eq({0x41 => "  A", 0xff => " ff"})
+      end
+
+      it "must map 0x00 to \\0" do
+        expect(subject.numeric[0x00]).to eq(" \\0")
+      end
+
+      it "must map 0x07 to \\a" do
+        expect(subject.numeric[0x07]).to eq(" \\a")
+      end
+
+      it "must map 0x08 to \\b" do
+        expect(subject.numeric[0x08]).to eq(" \\b")
+      end
+
+      it "must map 0x09 to \\t" do
+        expect(subject.numeric[0x09]).to eq(" \\t")
+      end
+
+      it "must map 0x0a to \\n" do
+        expect(subject.numeric[0x0a]).to eq(" \\n")
+      end
+
+      it "must map 0x0b to \\v" do
+        expect(subject.numeric[0x0b]).to eq(" \\v")
+      end
+
+      it "must map 0x0c to \\f" do
+        expect(subject.numeric[0x0c]).to eq(" \\f")
+      end
+
+      it "must map 0x0d to \\r" do
+        expect(subject.numeric[0x0d]).to eq(" \\r")
+      end
+    end
+
+    context "when initialized with a multi-byte type" do
+      subject { described_class.new(type: :uint16_le) }
+
+      it do
+        expect(subject.numeric).to be_kind_of(Proc)
+      end
+
+      it "must map numeric values to their numeric String representation" do
+        expect(subject.numeric[0x4241]).to eq('4241')
+      end
+
+      context "when initialized with base: 10" do
+        subject { described_class.new(base: 10) }
+
+        it "must return numeric Strings in base 10" do
+          expect(subject.numeric[0xffff]).to eq("65535")
+        end
+      end
+
+      context "when initialized with base: 8" do
+        subject { described_class.new(base: 8) }
+
+        it "must return numeric Strings in base 8" do
+          expect(subject.numeric[0xffff]).to eq("177777")
+        end
+      end
+
+      context "when initialized with base: 2" do
+        subject { described_class.new(base: 2) }
+
+        it "must return numeric Strings in base 2" do
+          expect(subject.numeric[0xffff]).to eq("1111111111111111")
+        end
+      end
+    end
+
+    context "when initialized with a signed type" do
+      subject { described_class.new(type: :int8) }
+
+      context "when given a positive value" do
+        it "must left-pad the value to accomodate for the missing '-'" do
+          expect(subject.numeric[0x41]).to eq(" 41")
+        end
+      end
+
+      context "when given a negative value" do
+        it "must start with a '-' character" do
+          expect(subject.numeric[-0x41]).to eq("-41")
+        end
+      end
+
+      context "when initialized with base: 10" do
+        subject { described_class.new(type: :int8, base: 10) }
+
+        context "when given a positive value" do
+          it "must return numeric Strings in base 10, with left-padding" do
+            expect(subject.numeric[0xff]).to eq(" 255")
+          end
+        end
+
+        context "when given a negative value" do
+          it "must return numeric Strings in base 10, with a '-' character" do
+            expect(subject.numeric[-0xff]).to eq("-255")
+          end
+        end
+      end
+
+      context "when initialized with base: 8" do
+        subject { described_class.new(type: :int8, base: 8) }
+
+        context "when given a positive value" do
+          it "must return numeric Strings in base 10, with left-padding" do
+            expect(subject.numeric[0xff]).to eq(" 377")
+          end
+        end
+
+        context "when given a negative value" do
+          it "must return numeric Strings in base 10, with a '-' character" do
+            expect(subject.numeric[-0xff]).to eq("-377")
+          end
+        end
+      end
+
+      context "when initialized with base: 2" do
+        subject { described_class.new(type: :int8, base: 2) }
+
+        context "when given a positive value" do
+          it "must return numeric Strings in base 10, with left-padding" do
+            expect(subject.numeric[0xff]).to eq(" 11111111")
+          end
+        end
+
+        context "when given a negative value" do
+          it "must return numeric Strings in base 10, with a '-' character" do
+            expect(subject.numeric[-0xff]).to eq("-11111111")
+          end
+        end
+      end
+    end
+
+    context "when initialized with a multi-byte signed type" do
+      subject { described_class.new(type: :int16_le) }
+
+      context "when given a positive value" do
+        it "must left-pad the value to accomodate for the missing '-'" do
+          expect(subject.numeric[0xffff]).to eq(" ffff")
+        end
+      end
+
+      context "when given a negative value" do
+        it "must start with a '-' character" do
+          expect(subject.numeric[-0xffff]).to eq("-ffff")
+        end
+      end
+
+      context "when initialized with base: 10" do
+        subject { described_class.new(type: :int16_le, base: 10) }
+
+        context "when given a positive value" do
+          it "must return numeric Strings in base 10, with left-padding" do
+            expect(subject.numeric[0xffff]).to eq(" 65535")
+          end
+        end
+
+        context "when given a negative value" do
+          it "must return numeric Strings in base 10, with a '-' character" do
+            expect(subject.numeric[-0xffff]).to eq("-65535")
+          end
+        end
+      end
+
+      context "when initialized with base: 8" do
+        subject { described_class.new(type: :int16_le, base: 8) }
+
+        context "when given a positive value" do
+          it "must return numeric Strings in base 10, with left-padding" do
+            expect(subject.numeric[0xffff]).to eq(" 177777")
+          end
+        end
+
+        context "when given a negative value" do
+          it "must return numeric Strings in base 10, with a '-' character" do
+            expect(subject.numeric[-0xffff]).to eq("-177777")
+          end
+        end
+      end
+
+      context "when initialized with base: 2" do
+        subject { described_class.new(type: :int16_le, base: 2) }
+
+        context "when given a positive value" do
+          it "must return numeric Strings in base 10, with left-padding" do
+            expect(subject.numeric[0xffff]).to eq(" 1111111111111111")
+          end
+        end
+
+        context "when given a negative value" do
+          it "must return numeric Strings in base 10, with a '-' character" do
+            expect(subject.numeric[-0xffff]).to eq("-1111111111111111")
+          end
+        end
+      end
+    end
+  end
+
+  describe "#printable" do
+    it do
+      expect(subject.printable).to be_kind_of(Proc)
+    end
+
+    it "must map numeric values to printable character Strings" do
+      expect(subject.printable[0x41]).to eq("A")
+    end
+
+    context "when given a value that does not map to a printable char" do
+      it "must return '.'" do
+        expect(subject.printable[0xff]).to eq('.')
+      end
+    end
+
+    context "when initialized with a multi-byte type" do
+      subject { described_class.new(type: :uint16_le) }
+
+      it "must attempt to map multi-byte values to UTF characters" do
+        expect(subject.printable[0x4241]).to eq("䉁")
+      end
+
+      context "when given a value that does not map to a UTF8 character" do
+        it "must return '.'" do
+          expect(subject.printable[0xff0000]).to eq('.')
+        end
+      end
+    end
+
+    context "when initialized with type: :float" do
+      subject { described_class.new(type: :float) }
+
+      it "must return nil" do
+        expect(subject.printable[1.0]).to be(nil)
+      end
+    end
+
+    context "when initialized with type: :double" do
+      subject { described_class.new(type: :double) }
+
+      it "must return nil" do
+        expect(subject.printable[1.0]).to be(nil)
       end
     end
   end
@@ -98,26 +411,26 @@ describe Hexdump::Dumper do
     end
 
     context "when initialized with a custom wdith:" do
-      let(:width) { 10 }
+      let(:columns) { 10 }
 
-      subject { described_class.new(width: width) }
+      subject { described_class.new(columns: columns) }
 
-      it "should change the width, in bytes, of each line" do
-        widths = []
+      it "should change the columns, in bytes, of each line" do
+        columnss = []
         count  = 10
 
-        subject.each('A' * (width * count)) do |index,hex,print|
-          widths << hex.length
+        subject.each('A' * (columns * count)) do |index,hex,print|
+          columnss << hex.length
         end
 
-        expect(widths).to be == ([width] * count)
+        expect(columnss).to be == ([columns] * count)
       end
     end
 
     context "when there are leftover bytes" do
-      let(:width) { 10 }
+      let(:columns) { 10 }
 
-      subject { described_class.new(width: width) }
+      subject { described_class.new(columns: columns) }
 
       let(:chars)   { ['B'] * 4 }
       let(:string)  { chars.join }
@@ -145,20 +458,6 @@ describe Hexdump::Dumper do
       expect(chars).to be == (hex_chars * length)
     end
 
-    context "when initialized with ascii: true" do
-      subject { described_class.new(ascii: true) }
-
-      it "should allow printing ASCII characters in place of hex characters" do
-        chars = []
-
-        subject.each(data) do |index,hex,print|
-          chars += hex
-        end
-
-        expect(chars).to be == print_chars
-      end
-    end
-
     it "should provide the print characters for each line" do
       chars = []
       length = (16 * 10)
@@ -181,8 +480,8 @@ describe Hexdump::Dumper do
       expect(chars).to be == (['.'] * unprintable.length)
     end
 
-    context "when initialized with base: :decimal" do
-      subject { described_class.new(base: :decimal) }
+    context "when initialized with base: 10" do
+      subject { described_class.new(base: 10) }
 
       it "should support dumping bytes in decimal format" do
         chars = []
@@ -195,8 +494,8 @@ describe Hexdump::Dumper do
       end
     end
 
-    context "when initialized with base: :octal" do
-      subject { described_class.new(base: :octal) }
+    context "when initialized with base: 8" do
+      subject { described_class.new(base: 8) }
 
       it "should support dumping bytes in octal format" do
         chars = []
@@ -209,8 +508,8 @@ describe Hexdump::Dumper do
       end
     end
 
-    context "when initialized with base: :binary" do
-      subject { described_class.new(base: :binary) }
+    context "when initialized with base: 2" do
+      subject { described_class.new(base: 2) }
 
       it "should support dumping bytes in binary format" do
         chars = []
@@ -223,11 +522,11 @@ describe Hexdump::Dumper do
       end
     end
 
-    context "when initialized with word_size: and endian:" do
-      let(:options)   { {word_size: 2, endian: :little} }
+    context "when type has a size > 1 and endian-ness" do
+      let(:type)      { :uint16_le         }
       let(:hex_words) { %w[6568 6c6c 006f] }
 
-      subject { described_class.new(**options) }
+      subject { described_class.new(type: type) }
 
       it "should dump words in hexadecimal by default" do
         words = []
@@ -239,8 +538,8 @@ describe Hexdump::Dumper do
         expect(words).to be == hex_words
       end
 
-      context "and base: :decimal" do
-        subject { described_class.new(base: :decimal, **options) }
+      context "and base: 10" do
+        subject { described_class.new(type: type, base: 10) }
 
         let(:decimal_words) { ['25960', '27756', '  111'] }
 
@@ -255,8 +554,8 @@ describe Hexdump::Dumper do
         end
       end
 
-      context "and base: :octal" do
-        subject { described_class.new(base: :octal, **options) }
+      context "and base: 8" do
+        subject { described_class.new(type: type, base: 8) }
 
         let(:octal_words) { %w[062550 066154 000157] }
 
@@ -271,8 +570,8 @@ describe Hexdump::Dumper do
         end
       end
 
-      context "and base: :binary" do
-        subject { described_class.new(base: :binary, **options) }
+      context "and base: 2" do
+        subject { described_class.new(type: type, base: 2) }
 
         let(:binary_words) { %w[0110010101101000 0110110001101100 0000000001101111] }
 
