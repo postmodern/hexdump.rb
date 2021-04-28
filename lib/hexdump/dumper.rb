@@ -290,7 +290,7 @@ module Hexdump
 
       @printable = case @type
                    when Type::Float
-                     ->(valie) { nil }
+                     ->(value) { nil }
                    else
                      if @type.size == 1
                        ->(value) { PRINTABLE.fetch(value,UNPRINTABLE) }
