@@ -120,25 +120,43 @@ describe Hexdump::Reader do
   end
 
   describe "#each_slice" do
-    let(:type) { Hexdump::TYPES[:int16] }
-    let(:data) { 'AABBCCDDEEFF' }
+    context "when type has size of 1" do
+      let(:chars) { %w[A B C D] }
+      let(:data)  { chars.join }
+      let(:type)  { Hexdump::TYPES[:int8] }
 
-    subject { described_class.new(type) }
+      subject { described_class.new(type) }
 
-    it "must yield each slice of the String" do
-      expect { |b|
-        subject.each_slice(data,&b)
-      }.to yield_successive_args('AA', 'BB', 'CC', 'DD', 'EE', 'FF')
-    end
-
-    context "when the given data is not evenly divisible by the type's size" do
-      let(:type) { Hexdump::TYPES[:int32] }
-      let(:data) { 'AABBCCDDE' }
-
-      it "must pad the last slice with zeros" do
+      it "must yield each consequetize character" do
         expect { |b|
           subject.each_slice(data,&b)
-        }.to yield_successive_args('AABB', 'CCDD', "E\0\0\0")
+        }.to yield_successive_args(*chars)
+      end
+    end
+
+    context "when type has size > 1" do
+      let(:type)    { Hexdump::TYPES[:int16] }
+      let(:strings) { %w[AA BB CC DD EE FF] }
+      let(:data)    { strings.join }
+
+      subject { described_class.new(type) }
+
+      it "must yield each slice of the String" do
+        expect { |b|
+          subject.each_slice(data,&b)
+        }.to yield_successive_args(*strings)
+      end
+
+      context "when the given data is not evenly divisible by the type's size" do
+        let(:type)    { Hexdump::TYPES[:int32] }
+        let(:strings) { %w[AABB CCDD E] }
+        let(:data)    { strings.join }
+
+        it "must pad the last slice with zeros" do
+          expect { |b|
+            subject.each_slice(data,&b)
+          }.to yield_successive_args('AABB', 'CCDD', "E\0\0\0")
+        end
       end
     end
   end
