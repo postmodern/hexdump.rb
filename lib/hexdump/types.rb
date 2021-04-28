@@ -7,13 +7,13 @@ module Hexdump
   # @since 1.0.0
   #
   TYPES = {
-    int8:  Type::Int.new(size: 1),
-    uint8: Type::UInt.new(size: 1),
+    int8:  Type::Int.new(size: 1, endian: nil),
+    uint8: Type::UInt.new(size: 1, endian: nil),
 
-    byte:  Type::UInt.new(size: 1),
+    byte:  Type::UInt.new(size: 1, endian: nil),
 
     char:  Type::Char.new,
-    uchar: Type::UInt.new(size: 1),
+    uchar: Type::UInt.new(size: 1, endian: nil),
 
     int16:     Type::Int.new(size: 2),
     int16_le:  Type::Int.new(size: 2, endian: :little),

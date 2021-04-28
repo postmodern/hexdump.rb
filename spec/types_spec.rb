@@ -14,6 +14,10 @@ describe "Hexdump::TYPES" do
       expect(subject.size).to eq(1)
     end
 
+    it "must not have endian-ness" do
+      expect(subject.endian).to be(nil)
+    end
+
     it "must not be signed" do
       expect(subject.signed?).to be(false)
     end
@@ -48,6 +52,10 @@ describe "Hexdump::TYPES" do
       expect(subject.size).to eq(1)
     end
 
+    it "must not have endian-ness" do
+      expect(subject.endian).to be(nil)
+    end
+
     it "must not be signed" do
       expect(subject.signed?).to be(false)
     end
@@ -63,6 +71,10 @@ describe "Hexdump::TYPES" do
       expect(subject.size).to eq(1)
     end
 
+    it "must not have endian-ness" do
+      expect(subject.endian).to be(nil)
+    end
+
     it "must be signed" do
       expect(subject.signed?).to be(true)
     end
@@ -76,6 +88,10 @@ describe "Hexdump::TYPES" do
 
     it "size must equal 1" do
       expect(subject.size).to eq(1)
+    end
+
+    it "must not have endian-ness" do
+      expect(subject.endian).to be(nil)
     end
 
     it "must not be signed" do
