@@ -13,7 +13,7 @@ module Hexdump
     byte:  Type::UInt.new(size: 1, endian: nil),
 
     char:  Type::Char.new,
-    uchar: Type::UInt.new(size: 1, endian: nil),
+    uchar: Type::UChar.new,
 
     int16:     Type::Int.new(size: 2),
     int16_le:  Type::Int.new(size: 2, endian: :little),

@@ -46,7 +46,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uchar] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UChar) }
 
     it "size must equal 1" do
       expect(subject.size).to eq(1)

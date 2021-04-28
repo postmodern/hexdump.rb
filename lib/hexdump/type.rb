@@ -91,6 +91,23 @@ module Hexdump
     #
     class Char < Int
 
+      #
+      # Initializes the char type.
+      #
+      def initialize
+        super(size: 1, endian: nil)
+      end
+
+    end
+
+    #
+    # Rpresents a aingle-byte unsigned character.
+    #
+    class UChar < UInt
+
+      #
+      # Initializes the uchar type.
+      #
       def initialize
         super(size: 1, endian: nil)
       end
