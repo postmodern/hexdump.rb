@@ -16,35 +16,34 @@ Simple and Fast hexdumping for Ruby.
 * Supports printing ASCII, hexadecimal, decimal, octal and binary bytes.
 * Supports hexdumping bytes, characters, signed/unsigned integers,
   floating-point numbers, and in little/big/network endian byte orders:
-  * `byte` - ASCII byte (default)
   * `char` - signed 8bit ASCII character
   * `uchar` - unsigned 8bit ASCII character
   * `int8` - signed 8bit integer
-  * `uint8` - unsigned 8bit integer
-  * `int16` - signed 16bit integer
-  * `int16_le` - signed 16bit integer (little endian)
-  * `int16_be` - signed 16bit integer (big nedian)
-  * `int16_ne` - signed 16bit integer (network endian)
-  * `uint16` - unsigned 16bit integer
-  * `uint16_le` - unsigned 16bit integer (little endian)
-  * `uint16_be` - unsigned 16bit integer (big nedian)
-  * `uint16_ne` - unsigned 16bit integer (network endian)
-  * `int32` - signed 32bit integer
-  * `int32_le` - signed 32bit integer (little endian)
-  * `int32_be` - signed 32bit integer (big nedian)
-  * `int32_ne` - signed 32bit integer (network endian)
-  * `uint32` - unsigned 32bit integer
-  * `uint32_le` - unsigned 32bit integer (little endian)
-  * `uint32_be` - unsigned 32bit integer (big nedian)
-  * `uint32_ne` - unsigned 32bit integer (network endian)
-  * `int64` - signed 64bit integer
-  * `int64_le` - signed 64bit integer (little endian)
-  * `int64_be` - signed 64bit integer (big nedian)
-  * `int64_ne` - signed 64bit integer (network endian)
-  * `uint64` - unsigned 64bit integer
-  * `uint64_le` - unsigned 64bit integer (little endian)
-  * `uint64_be` - unsigned 64bit integer (big nedian)
-  * `uint64_ne` - unsigned 64bit integer (network endian)
+  * `uin8` / `byte` - unsigned 8bit integer (default)
+  * `int16` / `short` - signed 16bit integer
+  * `int16_le` / `short_le` - signed 16bit integer (little endian)
+  * `int16_be` / `short_be` - signed 16bit integer (big nedian)
+  * `int16_ne` / `short_ne` - signed 16bit integer (network endian)
+  * `uint16` / `ushort` - unsigned 16bit integer
+  * `uint16_le` / `ushort_le` - unsigned 16bit integer (little endian)
+  * `uint16_be` / `ushort_be` - unsigned 16bit integer (big nedian)
+  * `uint16_ne` / `ushort_ne` - unsigned 16bit integer (network endian)
+  * `int32` / `int` / `long` - signed 32bit integer
+  * `int32_le` / `int_le` / `long_le` - signed 32bit integer (little endian)
+  * `int32_be` / `int_be` / `long_be` - signed 32bit integer (big nedian)
+  * `int32_ne` / `int_ne` / `long_ne` - signed 32bit integer (network endian)
+  * `uint32` / `uint` / `ulong` - unsigned 32bit integer
+  * `uint32_le` / `uint_le` / `ulong_le` - unsigned 32bit integer (little endian)
+  * `uint32_be` / `uint_be` / `ulong_be` - unsigned 32bit integer (big nedian)
+  * `uint32_ne` / `uint_ne` / `ulong_ne` - unsigned 32bit integer (network endian)
+  * `int64` / `longlong` - signed 64bit integer
+  * `int64_le` / `longlong_le` - signed 64bit integer (little endian)
+  * `int64_be` / `longlong_be` - signed 64bit integer (big nedian)
+  * `int64_ne` / `longlong_ne` - signed 64bit integer (network endian)
+  * `uint64` / `ulonglong` - unsigned 64bit integer
+  * `uint64_le` / `ulonglong_le` - unsigned 64bit integer (little endian)
+  * `uint64_be` / `ulonglong_be` - unsigned 64bit integer (big nedian)
+  * `uint64_ne` / `ulonglong_ne` - unsigned 64bit integer (network endian)
   * `float` - single precision 32bit floating-point number
   * `float_le` - single precision 32bit floating-point number (little endian)
   * `float_be` - single precision 32bit floating-point number (big endian)
