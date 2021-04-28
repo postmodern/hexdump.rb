@@ -9,6 +9,8 @@ module Hexdump
   #
   # @since 0.2.0
   #
+  # @api semipublic
+  #
   class Dumper
 
     # Default number of columns
