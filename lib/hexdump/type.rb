@@ -2,6 +2,8 @@ module Hexdump
   #
   # @api private
   #
+  # @since 1.0.0
+  #
   class Type
 
     # The endian-ness of the type.

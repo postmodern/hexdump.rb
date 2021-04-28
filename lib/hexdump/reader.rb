@@ -3,6 +3,11 @@
 require 'hexdump/type'
 
 module Hexdump
+  #
+  # @api private
+  #
+  # @since 1.0.0
+  #
   class Reader
 
     # The type to decode the data as.

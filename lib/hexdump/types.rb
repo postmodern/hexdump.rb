@@ -4,6 +4,8 @@ module Hexdump
   #
   # @api private
   #
+  # @since 1.0.0
+  #
   TYPES = {
     int8:  Type::Int.new(size: 1),
     uint8: Type::UInt.new(size: 1),
