@@ -78,6 +78,50 @@ module Hexdump
 
     end
 
+    class Int8 < Int
+
+      #
+      # @see Int#initialize
+      #
+      def initialize(**kwargs)
+        super(size: 1, endian: nil, **kwargs)
+      end
+
+    end
+
+    class Int16 < Int
+
+      #
+      # @see Int#initialize
+      #
+      def initialize(**kwargs)
+        super(size: 2, **kwargs)
+      end
+
+    end
+
+    class Int32 < Int
+
+      #
+      # @see Int#initialize
+      #
+      def initialize(**kwargs)
+        super(size: 4, **kwargs)
+      end
+
+    end
+
+    class Int64 < Int
+
+      #
+      # @see Int#initialize
+      #
+      def initialize(**kwargs)
+        super(size: 8, **kwargs)
+      end
+
+    end
+
     #
     # Represents a unsigned integer type.
     #
@@ -95,32 +139,60 @@ module Hexdump
 
     end
 
-    #
-    # Rpresents a aingle-byte character.
-    #
-    class Char < Int
+    class UInt8 < UInt
 
       #
-      # Initializes the char type.
+      # @see UInt#initialize
       #
-      def initialize
-        super(size: 1, endian: nil)
+      def initialize(**kwargs)
+        super(size: 1, endian: nil, **kwargs)
+      end
+
+    end
+
+    class UInt16 < UInt
+
+      #
+      # @see UInt#initialize
+      #
+      def initialize(**kwargs)
+        super(size: 2, **kwargs)
+      end
+
+    end
+
+    class UInt32 < UInt
+
+      #
+      # @see UInt#initialize
+      #
+      def initialize(**kwargs)
+        super(size: 4, **kwargs)
+      end
+
+    end
+
+    class UInt64 < UInt
+
+      #
+      # @see UInt#initialize
+      #
+      def initialize(**kwargs)
+        super(size: 8, **kwargs)
       end
 
     end
 
     #
+    # Rpresents a aingle-byte character.
+    #
+    class Char < Int8
+    end
+
+    #
     # Rpresents a aingle-byte unsigned character.
     #
-    class UChar < UInt
-
-      #
-      # Initializes the uchar type.
-      #
-      def initialize
-        super(size: 1, endian: nil)
-      end
-
+    class UChar < UInt8
     end
 
     #
@@ -136,6 +208,22 @@ module Hexdump
       #
       def initialize(endian: NATIVE_ENDIAN, **kwargs)
         super(signed: true, endian: endian, **kwargs)
+      end
+
+    end
+
+    class Float32 < Float
+
+      def initialize(**kwargs)
+        super(size: 4, **kwargs)
+      end
+
+    end
+
+    class Float64 < Float
+
+      def initialize(**kwargs)
+        super(size: 8, **kwargs)
       end
 
     end

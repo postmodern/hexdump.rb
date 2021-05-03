@@ -52,7 +52,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int8] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int8) }
 
     it "size must equal 1" do
       expect(subject.size).to eq(1)
@@ -71,7 +71,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint8] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt8) }
 
     it "size must equal 1" do
       expect(subject.size).to eq(1)
@@ -90,7 +90,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int16] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int16) }
 
     it "size must equal 2" do
       expect(subject.size).to eq(2)
@@ -105,7 +105,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int16_le] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int16) }
 
     it "size must equal 2" do
       expect(subject.size).to eq(2)
@@ -124,7 +124,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int16_be] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int16) }
 
     it "size must equal 2" do
       expect(subject.size).to eq(2)
@@ -143,7 +143,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int16_ne] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int16) }
 
     it "size must equal 2" do
       expect(subject.size).to eq(2)
@@ -162,7 +162,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint16] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt16) }
 
     it "size must equal 2" do
       expect(subject.size).to eq(2)
@@ -177,7 +177,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint16_le] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt16) }
 
     it "size must equal 2" do
       expect(subject.size).to eq(2)
@@ -196,7 +196,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint16_be] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt16) }
 
     it "size must equal 2" do
       expect(subject.size).to eq(2)
@@ -215,7 +215,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint16_ne] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt16) }
 
     it "size must equal 2" do
       expect(subject.size).to eq(2)
@@ -282,7 +282,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int32] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -297,7 +297,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int32_le] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -316,7 +316,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int32_be] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -335,7 +335,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int32_ne] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -354,7 +354,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint32] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -369,7 +369,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint32_le] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -388,7 +388,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint32_be] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -407,7 +407,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint32_ne] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -522,7 +522,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int64] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -537,7 +537,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int64_le] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -556,7 +556,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int64_be] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -575,7 +575,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:int64_ne] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Int) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Int64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -594,7 +594,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint64] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -609,7 +609,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint64_le] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -628,7 +628,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint64_be] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -647,7 +647,7 @@ describe "Hexdump::TYPES" do
     subject { super()[:uint64_ne] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::UInt) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::UInt64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -710,11 +710,11 @@ describe "Hexdump::TYPES" do
     end
   end
 
-  describe "#float" do
-    subject { super()[:float] }
+  describe "#float32" do
+    subject { super()[:float32] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Float) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Float32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -725,11 +725,11 @@ describe "Hexdump::TYPES" do
     end
   end
 
-  describe "#float_le" do
-    subject { super()[:float_le] }
+  describe "#float32_le" do
+    subject { super()[:float32_le] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Float) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Float32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -744,11 +744,11 @@ describe "Hexdump::TYPES" do
     end
   end
 
-  describe "#float_be" do
-    subject { super()[:float_be] }
+  describe "#float32_be" do
+    subject { super()[:float32_be] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Float) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Float32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -763,11 +763,11 @@ describe "Hexdump::TYPES" do
     end
   end
 
-  describe "#float_ne" do
-    subject { super()[:float_ne] }
+  describe "#float32_ne" do
+    subject { super()[:float32_ne] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Float) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Float32) }
 
     it "size must equal 4" do
       expect(subject.size).to eq(4)
@@ -782,11 +782,11 @@ describe "Hexdump::TYPES" do
     end
   end
 
-  describe "#double" do
-    subject { super()[:double] }
+  describe "#float64" do
+    subject { super()[:float64] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Float) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Float64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -797,11 +797,11 @@ describe "Hexdump::TYPES" do
     end
   end
 
-  describe "#double_le" do
-    subject { super()[:double_le] }
+  describe "#float64_le" do
+    subject { super()[:float64_le] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Float) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Float64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -816,11 +816,11 @@ describe "Hexdump::TYPES" do
     end
   end
 
-  describe "#double_be" do
-    subject { super()[:double_be] }
+  describe "#float64_be" do
+    subject { super()[:float64_be] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Float) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Float64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -835,11 +835,11 @@ describe "Hexdump::TYPES" do
     end
   end
 
-  describe "#double_ne" do
-    subject { super()[:double_ne] }
+  describe "#float64_ne" do
+    subject { super()[:float64_ne] }
 
     it { expect(subject).to_not be(nil) }
-    it { expect(subject).to be_kind_of(Hexdump::Type::Float) }
+    it { expect(subject).to be_kind_of(Hexdump::Type::Float64) }
 
     it "size must equal 8" do
       expect(subject.size).to eq(8)
@@ -854,51 +854,51 @@ describe "Hexdump::TYPES" do
     end
   end
 
-  describe "float32" do
-    it "must be an alias to float" do
-      expect(subject[:float32]).to be(subject[:float])
+  describe "float" do
+    it "must be an alias to float32" do
+      expect(subject[:float]).to be(subject[:float32])
     end
   end
 
-  describe "float32_le" do
-    it "must be an alias to float_le" do
-      expect(subject[:float32_le]).to be(subject[:float_le])
+  describe "float_le" do
+    it "must be an alias to float32_le" do
+      expect(subject[:float_le]).to be(subject[:float32_le])
     end
   end
 
-  describe "float32_be" do
-    it "must be an alias to float_be" do
-      expect(subject[:float32_be]).to be(subject[:float_be])
+  describe "float_be" do
+    it "must be an alias to float32_be" do
+      expect(subject[:float_be]).to be(subject[:float32_be])
     end
   end
 
-  describe "float32_ne" do
-    it "must be an alias to float_ne" do
-      expect(subject[:float32_ne]).to be(subject[:float_ne])
+  describe "float_ne" do
+    it "must be an alias to float32_ne" do
+      expect(subject[:float_ne]).to be(subject[:float32_ne])
     end
   end
 
-  describe "float64" do
-    it "must be an alias to double" do
-      expect(subject[:float64]).to be(subject[:double])
+  describe "double" do
+    it "must be an alias to float64" do
+      expect(subject[:double]).to be(subject[:float64])
     end
   end
 
-  describe "float64_le" do
-    it "must be an alias to double_le" do
-      expect(subject[:float64_le]).to be(subject[:double_le])
+  describe "double_le" do
+    it "must be an alias to float64_le" do
+      expect(subject[:double_le]).to be(subject[:float64_le])
     end
   end
 
-  describe "float64_be" do
-    it "must be an alias to double_be" do
-      expect(subject[:float64_be]).to be(subject[:double_be])
+  describe "double_be" do
+    it "must be an alias to float64_be" do
+      expect(subject[:double_be]).to be(subject[:float64_be])
     end
   end
 
-  describe "float64_ne" do
-    it "must be an alias to double_ne" do
-      expect(subject[:float64_ne]).to be(subject[:double_ne])
+  describe "double_ne" do
+    it "must be an alias to float64_ne" do
+      expect(subject[:double_ne]).to be(subject[:float64_ne])
     end
   end
 end

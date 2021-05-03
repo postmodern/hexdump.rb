@@ -10,48 +10,48 @@ module Hexdump
     char:  Type::Char.new,
     uchar: Type::UChar.new,
 
-    int8:  Type::Int.new(size: 1, endian: nil),
-    uint8: Type::UInt.new(size: 1, endian: nil),
+    int8:  Type::Int8.new,
+    uint8: Type::UInt8.new,
 
-    int16:     Type::Int.new(size: 2),
-    int16_le:  Type::Int.new(size: 2, endian: :little),
-    int16_be:  Type::Int.new(size: 2, endian: :big),
-    int16_ne:  Type::Int.new(size: 2, endian: :big),
+    int16:     Type::Int16.new,
+    int16_le:  Type::Int16.new(endian: :little),
+    int16_be:  Type::Int16.new(endian: :big),
+    int16_ne:  Type::Int16.new(endian: :big),
 
-    uint16:    Type::UInt.new(size: 2),
-    uint16_le: Type::UInt.new(size: 2, endian: :little),
-    uint16_be: Type::UInt.new(size: 2, endian: :big),
-    uint16_ne: Type::UInt.new(size: 2, endian: :big),
+    uint16:    Type::UInt16.new,
+    uint16_le: Type::UInt16.new(endian: :little),
+    uint16_be: Type::UInt16.new(endian: :big),
+    uint16_ne: Type::UInt16.new(endian: :big),
 
-    int32:     Type::Int.new(size: 4),
-    int32_le:  Type::Int.new(size: 4, endian: :little),
-    int32_be:  Type::Int.new(size: 4, endian: :big),
-    int32_ne:  Type::Int.new(size: 4, endian: :big),
+    int32:     Type::Int32.new,
+    int32_le:  Type::Int32.new(endian: :little),
+    int32_be:  Type::Int32.new(endian: :big),
+    int32_ne:  Type::Int32.new(endian: :big),
 
-    uint32:    Type::UInt.new(size: 4),
-    uint32_le: Type::UInt.new(size: 4, endian: :little),
-    uint32_be: Type::UInt.new(size: 4, endian: :big),
-    uint32_ne: Type::UInt.new(size: 4, endian: :big),
+    uint32:    Type::UInt32.new,
+    uint32_le: Type::UInt32.new(endian: :little),
+    uint32_be: Type::UInt32.new(endian: :big),
+    uint32_ne: Type::UInt32.new(endian: :big),
 
-    int64:        Type::Int.new(size: 8),
-    int64_le:     Type::Int.new(size: 8, endian: :little),
-    int64_be:     Type::Int.new(size: 8, endian: :big),
-    int64_ne:     Type::Int.new(size: 8, endian: :big),
+    int64:        Type::Int64.new,
+    int64_le:     Type::Int64.new(endian: :little),
+    int64_be:     Type::Int64.new(endian: :big),
+    int64_ne:     Type::Int64.new(endian: :big),
 
-    uint64:       Type::UInt.new(size: 8),
-    uint64_le:    Type::UInt.new(size: 8, endian: :little),
-    uint64_be:    Type::UInt.new(size: 8, endian: :big),
-    uint64_ne:    Type::UInt.new(size: 8, endian: :big),
+    uint64:       Type::UInt64.new,
+    uint64_le:    Type::UInt64.new(endian: :little),
+    uint64_be:    Type::UInt64.new(endian: :big),
+    uint64_ne:    Type::UInt64.new(endian: :big),
 
-    float:    Type::Float.new(size: 4),
-    float_le: Type::Float.new(size: 4, endian: :little),
-    float_be: Type::Float.new(size: 4, endian: :big),
-    float_ne: Type::Float.new(size: 4, endian: :big),
+    float32:    Type::Float32.new,
+    float32_le: Type::Float32.new(endian: :little),
+    float32_be: Type::Float32.new(endian: :big),
+    float32_ne: Type::Float32.new(endian: :big),
 
-    double:    Type::Float.new(size: 8),
-    double_le: Type::Float.new(size: 8, endian: :little),
-    double_be: Type::Float.new(size: 8, endian: :big),
-    double_ne: Type::Float.new(size: 8, endian: :big),
+    float64:    Type::Float64.new,
+    float64_le: Type::Float64.new(endian: :little),
+    float64_be: Type::Float64.new(endian: :big),
+    float64_ne: Type::Float64.new(endian: :big),
   }
 
   TYPES[:byte]   = TYPES[:uint8]
@@ -96,13 +96,13 @@ module Hexdump
   TYPES[:ulonglong_be] = TYPES[:uint64_be]
   TYPES[:ulonglong_ne] = TYPES[:uint64_ne]
 
-  TYPES[:float32]    = TYPES[:float]
-  TYPES[:float32_le] = TYPES[:float_le]
-  TYPES[:float32_be] = TYPES[:float_be]
-  TYPES[:float32_ne] = TYPES[:float_ne]
+  TYPES[:float]    = TYPES[:float32]
+  TYPES[:float_le] = TYPES[:float32_le]
+  TYPES[:float_be] = TYPES[:float32_be]
+  TYPES[:float_ne] = TYPES[:float32_ne]
 
-  TYPES[:float64]    = TYPES[:double]
-  TYPES[:float64_le] = TYPES[:double_le]
-  TYPES[:float64_be] = TYPES[:double_be]
-  TYPES[:float64_ne] = TYPES[:double_ne]
+  TYPES[:double]    = TYPES[:float64]
+  TYPES[:double_le] = TYPES[:float64_le]
+  TYPES[:double_be] = TYPES[:float64_be]
+  TYPES[:double_ne] = TYPES[:float64_ne]
 end
