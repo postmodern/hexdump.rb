@@ -160,12 +160,12 @@ module Hexdump
     # @since 1.0.0
     attr_reader :numeric
 
-    # Mapping of values to their character strings.
+    # Mapping of numeric values to their character strings.
     #
     # @return [Proc]
     #
     # @since 1.0.0
-    attr_reader :printable
+    attr_reader :characters
 
     #
     # Creates a new Hexdump dumper.
@@ -285,24 +285,24 @@ module Hexdump
                    end
                  end
 
-      @printable = case @type
-                   when Type::Char, Type::UChar
-                     nil # disable the printable characters for chars
-                   when Type::UInt8
-                     ->(value) { PRINTABLE.fetch(value,UNPRINTABLE) }
-                   when Type::UInt
-                     ->(value) {
-                       PRINTABLE.fetch(value) do
-                         # XXX: https://github.com/jruby/jruby/issues/6652
-                         char = value.chr(Encoding::UTF_8) rescue nil
-                         char || UNPRINTABLE
-                       end
-                     }
-                   when Type::Int
-                     nil # disable the printable characters for signed ints
-                   when Type::Float
-                     nil # disable the printable characters for floats
-                   end
+      @characters = case @type
+                    when Type::Char, Type::UChar
+                      nil # disable the printable characters for chars
+                    when Type::UInt8
+                      ->(value) { PRINTABLE.fetch(value,UNPRINTABLE) }
+                    when Type::UInt
+                      ->(value) {
+                        PRINTABLE.fetch(value) do
+                          # XXX: https://github.com/jruby/jruby/issues/6652
+                          char = value.chr(Encoding::UTF_8) rescue nil
+                          char || UNPRINTABLE
+                        end
+                      }
+                    when Type::Int
+                      nil # disable the printable characters for signed ints
+                    when Type::Float
+                      nil # disable the printable characters for floats
+                    end
     end
 
     #
@@ -311,7 +311,7 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
-    # @yield [index,numeric,printable]
+    # @yield [index,numeric,characters]
     #   The given block will be passed the hexdump break-down of each
     #   segment.
     #
@@ -321,7 +321,7 @@ module Hexdump
     # @yieldparam [Array<String>] numeric
     #   The numeric representation of the segment.
     #
-    # @yieldparam [Array<String>] printable
+    # @yieldparam [Array<String>] characters
     #   The printable representation of the segment.
     #
     # @return [Integer, Enumerator]
@@ -337,18 +337,18 @@ module Hexdump
       index = 0
       slice_size = (@columns * @type.size)
 
-      numeric   = Array.new(@columns)
-      printable = Array.new(@columns)
+      numeric    = Array.new(@columns)
+      characters = Array.new(@columns)
 
       @reader.each(data) do |word|
-        numeric[count]   = @numeric[word]
-        printable[count] = @printable[word] if @printable
+        numeric[count]    = @numeric[word]
+        characters[count] = @characters[word] if @characters
 
         count += 1
 
         if count >= @columns
-          if @printable
-            yield index, numeric, printable
+          if @characters
+            yield index, numeric, characters
           else
             yield index, numeric
           end
@@ -360,8 +360,8 @@ module Hexdump
 
       if count > 0
         # yield the remaining data
-        if @printable
-          yield index, numeric[0,count], printable[0,count]
+        if @characters
+          yield index, numeric[0,count], characters[0,count]
         else
           yield index, numeric[0,count]
         end
@@ -401,16 +401,16 @@ module Hexdump
       index_format = "%.8x"
       spacer = "  "
 
-      if @printable
+      if @characters
         format_string = "#{index_format}#{spacer}%-#{numeric_width}s#{spacer}|%s|#{$/}"
 
-        index = each(data) do |index,numeric,printable|
-          yield sprintf(format_string,index,numeric.join(' '),printable.join)
+        index = each(data) do |index,numeric,characters|
+          yield sprintf(format_string,index,numeric.join(' '),characters.join)
         end
       else
         format_string = "#{index_format}#{spacer}%-#{numeric_width}s"
 
-        index = each(data) do |index,numeric,printable|
+        index = each(data) do |index,numeric|
           yield sprintf(format_string,index,numeric.join(' '))
         end
       end

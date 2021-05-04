@@ -340,37 +340,37 @@ describe Hexdump::Dumper do
     end
   end
 
-  describe "#printable" do
+  describe "#characters" do
     it do
-      expect(subject.printable).to be_kind_of(Proc)
+      expect(subject.characters).to be_kind_of(Proc)
     end
 
     context "when initialized with a type: :char" do
       subject { described_class.new(type: :char) }
 
-      it { expect(subject.printable).to be(nil) }
+      it { expect(subject.characters).to be(nil) }
     end
 
     context "when initialized with type: :uchar" do
       subject { described_class.new(type: :uchar) }
 
-      it { expect(subject.printable).to be(nil) }
+      it { expect(subject.characters).to be(nil) }
     end
 
     context "when initialized with type: :uint8" do
       subject { described_class.new(type: :uint8) }
 
       it do
-        expect(subject.printable).to be_kind_of(Proc)
+        expect(subject.characters).to be_kind_of(Proc)
       end
 
-      it "must map numeric values to printable character Strings" do
-        expect(subject.printable[0x41]).to eq("A")
+      it "must map numeric values to characters character Strings" do
+        expect(subject.characters[0x41]).to eq("A")
       end
 
-      context "when given a value that does not map to a printable char" do
+      context "when given a value that does not map to a characters char" do
         it "must return '.'" do
-          expect(subject.printable[0xff]).to eq('.')
+          expect(subject.characters[0xff]).to eq('.')
         end
       end
     end
@@ -379,19 +379,19 @@ describe Hexdump::Dumper do
       subject { described_class.new(type: :uint16_le) }
 
       it do
-        expect(subject.printable).to be_kind_of(Proc)
+        expect(subject.characters).to be_kind_of(Proc)
       end
 
       context "when given a single byte value" do
-        context "and it maps to a printable ASCII character" do
+        context "and it maps to a characters ASCII character" do
           it "must return the ASCII character" do
-            expect(subject.printable[0x41]).to eq("A")
+            expect(subject.characters[0x41]).to eq("A")
           end
         end
 
-        context "and it does not map to a printable ASCII character" do
+        context "and it does not map to a characters ASCII character" do
           it "must convert it to a UTF character" do
-            expect(subject.printable[0xff]).to eq('ÿ')
+            expect(subject.characters[0xff]).to eq('ÿ')
           end
         end
       end
@@ -399,13 +399,13 @@ describe Hexdump::Dumper do
       context "when given a multi-byte value" do
         context "and it maps to a valid UTF character" do
           it "must return the UTF character" do
-            expect(subject.printable[0x4241]).to eq("䉁")
+            expect(subject.characters[0x4241]).to eq("䉁")
           end
         end
 
         context "but it does not map to a UTF character" do
           it "must return '.'" do
-            expect(subject.printable[0xd800]).to eq('.')
+            expect(subject.characters[0xd800]).to eq('.')
           end
         end
       end
@@ -414,43 +414,43 @@ describe Hexdump::Dumper do
     context "when initialized with type: :int" do
       subject { described_class.new(type: :int) }
 
-      it { expect(subject.printable).to be(nil) }
+      it { expect(subject.characters).to be(nil) }
     end
 
     context "when initialized with type: :int8" do
       subject { described_class.new(type: :int8) }
 
-      it { expect(subject.printable).to be(nil) }
+      it { expect(subject.characters).to be(nil) }
     end
 
     context "when initialized with type: :int16" do
       subject { described_class.new(type: :int16) }
 
-      it { expect(subject.printable).to be(nil) }
+      it { expect(subject.characters).to be(nil) }
     end
 
     context "when initialized with type: :int32" do
       subject { described_class.new(type: :int32) }
 
-      it { expect(subject.printable).to be(nil) }
+      it { expect(subject.characters).to be(nil) }
     end
 
     context "when initialized with type: :int64" do
       subject { described_class.new(type: :int64) }
 
-      it { expect(subject.printable).to be(nil) }
+      it { expect(subject.characters).to be(nil) }
     end
 
     context "when initialized with type: :float" do
       subject { described_class.new(type: :float) }
 
-      it { expect(subject.printable).to be(nil) }
+      it { expect(subject.characters).to be(nil) }
     end
 
     context "when initialized with type: :double" do
       subject { described_class.new(type: :double) }
 
-      it { expect(subject.printable).to be(nil) }
+      it { expect(subject.characters).to be(nil) }
     end
   end
 
