@@ -179,9 +179,6 @@ module Hexdump
     # @param [16, 10, 8, 2] base
     #   The base to print bytes in. Defaults to 16, or to 10 if printing floats.
     #
-    # @param [Boolean] ascii (false)
-    #   Print ascii characters when possible.
-    #
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
@@ -289,20 +286,22 @@ module Hexdump
                  end
 
       @printable = case @type
+                   when Type::Char, Type::UChar
+                     nil # disable the printable characters for chars
+                   when Type::UInt8
+                     ->(value) { PRINTABLE.fetch(value,UNPRINTABLE) }
+                   when Type::UInt
+                     ->(value) {
+                       PRINTABLE.fetch(value) do
+                         # XXX: https://github.com/jruby/jruby/issues/6652
+                         char = value.chr(Encoding::UTF_8) rescue nil
+                         char || UNPRINTABLE
+                       end
+                     }
+                   when Type::Int
+                     nil # disable the printable characters for signed ints
                    when Type::Float
-                     ->(value) { nil }
-                   else
-                     if @type.size == 1
-                       ->(value) { PRINTABLE.fetch(value,UNPRINTABLE) }
-                     else
-                       ->(value) {
-                         PRINTABLE.fetch(value) do
-                           # XXX: https://github.com/jruby/jruby/issues/6652
-                           char = value.chr(Encoding::UTF_8) rescue nil
-                           char || UNPRINTABLE
-                         end
-                       }
-                     end
+                     nil # disable the printable characters for floats
                    end
     end
 
@@ -334,34 +333,90 @@ module Hexdump
     def each(data)
       return enum_for(__method__,data) unless block_given?
 
-      index = 0
       count = 0
+      index = 0
+      slice_size = (@columns * @type.size)
 
       numeric   = Array.new(@columns)
       printable = Array.new(@columns)
 
       @reader.each(data) do |word|
         numeric[count]   = @numeric[word]
-        printable[count] = @printable[word]
+        printable[count] = @printable[word] if @printable
 
         count += 1
 
         if count >= @columns
-          yield index, numeric, printable
+          if @printable
+            yield index, numeric, printable
+          else
+            yield index, numeric
+          end
 
-          index += (@columns * @type.size)
+          index += slice_size
           count = 0
         end
       end
 
       if count > 0
         # yield the remaining data
-        yield index, numeric[0,count], printable[0,count]
+        if @printable
+          yield index, numeric[0,count], printable[0,count]
+        else
+          yield index, numeric[0,count]
+        end
 
         index += (count * @type.size)
       end
 
       return index
+    end
+
+    #
+    # Enumerates over each line in the hexdump.
+    #
+    # @param [#each_byte] data
+    #   The data to be hexdumped.
+    #
+    # @yield [line]
+    #   The given block will be passed each line from the hexdump.
+    #
+    # @yieldparam [String] line
+    #   Each line from the hexdump output, terminated with a newline character.
+    #
+    # @return [Enumerator]
+    #   If no block is given, an Enumerator object will be returne.d
+    #
+    # @return [nil]
+    #
+    # @since 1.0.0
+    #
+    def each_line(data)
+      return enum_for(__method__,data) unless block_given?
+
+      chars_per_column = if @type.signed? then @max_digits + 1
+                         else                  @max_digits
+                         end
+      numeric_width = ((chars_per_column * @columns) + (@columns - 1))
+      index_format = "%.8x"
+      spacer = "  "
+
+      if @printable
+        format_string = "#{index_format}#{spacer}%-#{numeric_width}s#{spacer}|%s|#{$/}"
+
+        index = each(data) do |index,numeric,printable|
+          yield sprintf(format_string,index,numeric.join(' '),printable.join)
+        end
+      else
+        format_string = "#{index_format}#{spacer}%-#{numeric_width}s"
+
+        index = each(data) do |index,numeric,printable|
+          yield sprintf(format_string,index,numeric.join(' '))
+        end
+      end
+
+      yield sprintf("#{index_format}#{$/}",index)
+      return nil
     end
 
     #
@@ -385,22 +440,10 @@ module Hexdump
         raise(ArgumentError,"output must support the #<< method")
       end
 
-      chars_per_column = if @type.signed?
-                           @max_digits + 1
-                         else
-                           @max_digits
-                         end
-      numeric_segment_width = ((chars_per_column * @columns) + (@columns - 1))
-      index_format = "%.8x"
-      spacer = "  "
-      line_format = "#{index_format}#{spacer}%-#{numeric_segment_width}s#{spacer}|%s|#{$/}"
-
-      length = each(data) do |index,numeric,printable|
-        output << sprintf(line_format,index,numeric.join(' '),printable.join)
+      each_line(data) do |line|
+        output << line
       end
-
-      output << sprintf("#{index_format}#{$/}",length)
-      return nil
     end
+
   end
 end
