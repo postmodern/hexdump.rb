@@ -121,7 +121,7 @@ describe Hexdump::Type do
         expect(subject.size).to be(2)
       end
 
-      it "must default #endian to nil" do
+      it "must default #endian to NATIVE_ENDIAN" do
         expect(subject.endian).to eq(Hexdump::Type::NATIVE_ENDIAN)
       end
     end
@@ -139,7 +139,7 @@ describe Hexdump::Type do
         expect(subject.size).to be(4)
       end
 
-      it "must default #endian to nil" do
+      it "must default #endian to NATIVE_ENDIAN" do
         expect(subject.endian).to eq(Hexdump::Type::NATIVE_ENDIAN)
       end
     end
@@ -157,7 +157,7 @@ describe Hexdump::Type do
         expect(subject.size).to be(8)
       end
 
-      it "must default #endian to nil" do
+      it "must default #endian to NATIVE_ENDIAN" do
         expect(subject.endian).to eq(Hexdump::Type::NATIVE_ENDIAN)
       end
     end
