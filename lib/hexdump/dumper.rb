@@ -209,7 +209,7 @@ module Hexdump
 
           @format = "% #{@max_digits}g"
         else
-          raise(ArgumentError,"float units can only be printed in base 10")
+          raise(ArgumentError,"float units can only be printed in base 10 or 16")
         end
       else
         @base = base || 16
