@@ -47,7 +47,7 @@ describe Hexdump::Dumper do
           it do
             expect {
               described_class.new(type: type, base: 8)
-            }.to raise_error(ArgumentError,"float units can only be printed in base 10")
+            }.to raise_error(TypeError)
           end
         end
       end
@@ -72,25 +72,18 @@ describe Hexdump::Dumper do
 
   describe "#numeric" do
     it do
-      expect(subject.numeric).to be_kind_of(Hash)
+      expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Hexadecimal)
     end
 
     it "must map numeric values to their hex String representations" do
-      expect(subject.numeric[0xff]).to eq("ff")
-    end
-
-    it "must cache numeric values" do
-      subject.numeric[0x41]
-      subject.numeric[0xff]
-
-      expect(subject.numeric).to eq({0x41 => '41', 0xff => 'ff'})
+      expect(subject.numeric % 0xff).to eq("ff")
     end
 
     context "when initialized with base: 10" do
       subject { described_class.new(base: 10) }
 
       it "must return numeric Strings in base 10" do
-        expect(subject.numeric[0xff]).to eq("255")
+        expect(subject.numeric % 0xff).to eq("255")
       end
     end
 
@@ -98,7 +91,7 @@ describe Hexdump::Dumper do
       subject { described_class.new(base: 8) }
 
       it "must return numeric Strings in base 8" do
-        expect(subject.numeric[0xff]).to eq("377")
+        expect(subject.numeric % 0xff).to eq("377")
       end
     end
 
@@ -106,7 +99,7 @@ describe Hexdump::Dumper do
       subject { described_class.new(base: 2) }
 
       it "must return numeric Strings in base 2" do
-        expect(subject.numeric[0xff]).to eq("11111111")
+        expect(subject.numeric % 0xff).to eq("11111111")
       end
     end
 
@@ -114,83 +107,73 @@ describe Hexdump::Dumper do
       subject { described_class.new(type: :char) }
 
       it do
-        expect(subject.numeric).to be_kind_of(Hash)
+        expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Chars)
+        expect(subject.numeric.base).to be_kind_of(Hexdump::Numeric::Base::Decimal)
       end
 
       context "when given a value that maps to a printable character" do
         it "must return the printable character with left-padding" do
-          expect(subject.numeric[0x41]).to eq("  A")
+          expect(subject.numeric % 0x41).to eq("  A")
         end
       end
 
       context "when given a value that does not map to a printable character" do
         it "must return the hex String representation, with left-padding" do
-          expect(subject.numeric[0xff]).to eq(" ff")
+          expect(subject.numeric % 0xff).to eq(" 255")
         end
       end
 
       context "when given a negative value" do
         it "must return the hex String representation with a '-' character" do
-          expect(subject.numeric[-0xff]).to eq('-ff')
+          expect(subject.numeric % -0xff).to eq('-255')
         end
       end
 
-      it "must cache mapped values" do
-        subject.numeric[0x41]
-        subject.numeric[0xff]
-
-        expect(subject.numeric).to eq({0x41 => "  A", 0xff => " ff"})
-      end
-
       it "must map 0x00 to \\0" do
-        expect(subject.numeric[0x00]).to eq(" \\0")
+        expect(subject.numeric % 0x00).to eq(" \\0")
       end
 
       it "must map 0x07 to \\a" do
-        expect(subject.numeric[0x07]).to eq(" \\a")
+        expect(subject.numeric % 0x07).to eq(" \\a")
       end
 
       it "must map 0x08 to \\b" do
-        expect(subject.numeric[0x08]).to eq(" \\b")
+        expect(subject.numeric % 0x08).to eq(" \\b")
       end
 
       it "must map 0x09 to \\t" do
-        expect(subject.numeric[0x09]).to eq(" \\t")
+        expect(subject.numeric % 0x09).to eq(" \\t")
       end
 
       it "must map 0x0a to \\n" do
-        expect(subject.numeric[0x0a]).to eq(" \\n")
+        expect(subject.numeric % 0x0a).to eq(" \\n")
       end
 
       it "must map 0x0b to \\v" do
-        expect(subject.numeric[0x0b]).to eq(" \\v")
+        expect(subject.numeric % 0x0b).to eq(" \\v")
       end
 
       it "must map 0x0c to \\f" do
-        expect(subject.numeric[0x0c]).to eq(" \\f")
+        expect(subject.numeric % 0x0c).to eq(" \\f")
       end
 
       it "must map 0x0d to \\r" do
-        expect(subject.numeric[0x0d]).to eq(" \\r")
+        expect(subject.numeric % 0x0d).to eq(" \\r")
       end
     end
 
     context "when initialized with type: :uint16" do
       subject { described_class.new(type: :uint16) }
 
-      it do
-        expect(subject.numeric).to be_kind_of(Proc)
-      end
-
       it "must map numeric values to their numeric String representation" do
-        expect(subject.numeric[0x4241]).to eq('4241')
+        expect(subject.numeric % 0x4241).to eq('4241')
       end
 
       context "when initialized with base: 10" do
         subject { described_class.new(base: 10) }
 
         it "must return numeric Strings in base 10" do
-          expect(subject.numeric[0xffff]).to eq("65535")
+          expect(subject.numeric % 0xffff).to eq("65535")
         end
       end
 
@@ -198,7 +181,7 @@ describe Hexdump::Dumper do
         subject { described_class.new(base: 8) }
 
         it "must return numeric Strings in base 8" do
-          expect(subject.numeric[0xffff]).to eq("177777")
+          expect(subject.numeric % 0xffff).to eq("177777")
         end
       end
 
@@ -206,7 +189,7 @@ describe Hexdump::Dumper do
         subject { described_class.new(base: 2) }
 
         it "must return numeric Strings in base 2" do
-          expect(subject.numeric[0xffff]).to eq("1111111111111111")
+          expect(subject.numeric % 0xffff).to eq("1111111111111111")
         end
       end
     end
@@ -216,13 +199,13 @@ describe Hexdump::Dumper do
 
       context "when given a positive value" do
         it "must left-pad the value to accomodate for the missing '-'" do
-          expect(subject.numeric[0x41]).to eq(" 41")
+          expect(subject.numeric % 0x41).to eq(" 41")
         end
       end
 
       context "when given a negative value" do
         it "must start with a '-' character" do
-          expect(subject.numeric[-0x41]).to eq("-41")
+          expect(subject.numeric % -0x41).to eq("-41")
         end
       end
 
@@ -231,13 +214,13 @@ describe Hexdump::Dumper do
 
         context "when given a positive value" do
           it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric[0xff]).to eq(" 255")
+            expect(subject.numeric % 0xff).to eq(" 255")
           end
         end
 
         context "when given a negative value" do
           it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric[-0xff]).to eq("-255")
+            expect(subject.numeric % -0xff).to eq("-255")
           end
         end
       end
@@ -247,13 +230,13 @@ describe Hexdump::Dumper do
 
         context "when given a positive value" do
           it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric[0xff]).to eq(" 377")
+            expect(subject.numeric % 0xff).to eq(" 377")
           end
         end
 
         context "when given a negative value" do
           it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric[-0xff]).to eq("-377")
+            expect(subject.numeric % -0xff).to eq("-377")
           end
         end
       end
@@ -263,13 +246,13 @@ describe Hexdump::Dumper do
 
         context "when given a positive value" do
           it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric[0xff]).to eq(" 11111111")
+            expect(subject.numeric % 0xff).to eq(" 11111111")
           end
         end
 
         context "when given a negative value" do
           it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric[-0xff]).to eq("-11111111")
+            expect(subject.numeric % -0xff).to eq("-11111111")
           end
         end
       end
@@ -280,13 +263,13 @@ describe Hexdump::Dumper do
 
       context "when given a positive value" do
         it "must left-pad the value to accomodate for the missing '-'" do
-          expect(subject.numeric[0xffff]).to eq(" ffff")
+          expect(subject.numeric % 0xffff).to eq(" ffff")
         end
       end
 
       context "when given a negative value" do
         it "must start with a '-' character" do
-          expect(subject.numeric[-0xffff]).to eq("-ffff")
+          expect(subject.numeric % -0xffff).to eq("-ffff")
         end
       end
 
@@ -295,13 +278,13 @@ describe Hexdump::Dumper do
 
         context "when given a positive value" do
           it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric[0xffff]).to eq(" 65535")
+            expect(subject.numeric % 0xffff).to eq(" 65535")
           end
         end
 
         context "when given a negative value" do
           it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric[-0xffff]).to eq("-65535")
+            expect(subject.numeric % -0xffff).to eq("-65535")
           end
         end
       end
@@ -311,13 +294,13 @@ describe Hexdump::Dumper do
 
         context "when given a positive value" do
           it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric[0xffff]).to eq(" 177777")
+            expect(subject.numeric % 0xffff).to eq(" 177777")
           end
         end
 
         context "when given a negative value" do
           it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric[-0xffff]).to eq("-177777")
+            expect(subject.numeric % -0xffff).to eq("-177777")
           end
         end
       end
@@ -327,50 +310,46 @@ describe Hexdump::Dumper do
 
         context "when given a positive value" do
           it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric[0xffff]).to eq(" 1111111111111111")
+            expect(subject.numeric % 0xffff).to eq(" 1111111111111111")
           end
         end
 
         context "when given a negative value" do
           it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric[-0xffff]).to eq("-1111111111111111")
+            expect(subject.numeric % -0xffff).to eq("-1111111111111111")
           end
         end
       end
     end
   end
 
-  describe "#characters" do
-    it do
-      expect(subject.characters).to be_kind_of(Proc)
-    end
-
+  describe "#char_map" do
     context "when initialized with a type: :char" do
       subject { described_class.new(type: :char) }
 
-      it { expect(subject.characters).to be(nil) }
+      it { expect(subject.char_map).to be(nil) }
     end
 
     context "when initialized with type: :uchar" do
       subject { described_class.new(type: :uchar) }
 
-      it { expect(subject.characters).to be(nil) }
+      it { expect(subject.char_map).to be(nil) }
     end
 
     context "when initialized with type: :uint8" do
       subject { described_class.new(type: :uint8) }
 
       it do
-        expect(subject.characters).to be_kind_of(Proc)
+        expect(subject.char_map).to be(Hexdump::CharMap::ASCII)
       end
 
       it "must map numeric values to characters character Strings" do
-        expect(subject.characters[0x41]).to eq("A")
+        expect(subject.char_map[0x41]).to eq("A")
       end
 
       context "when given a value that does not map to a characters char" do
         it "must return '.'" do
-          expect(subject.characters[0xff]).to eq('.')
+          expect(subject.char_map[0xff]).to eq('.')
         end
       end
     end
@@ -379,19 +358,19 @@ describe Hexdump::Dumper do
       subject { described_class.new(type: :uint16_le) }
 
       it do
-        expect(subject.characters).to be_kind_of(Proc)
+        expect(subject.char_map).to be(Hexdump::CharMap::UTF8)
       end
 
       context "when given a single byte value" do
         context "and it maps to a characters ASCII character" do
           it "must return the ASCII character" do
-            expect(subject.characters[0x41]).to eq("A")
+            expect(subject.char_map[0x41]).to eq("A")
           end
         end
 
         context "and it does not map to a characters ASCII character" do
-          it "must convert it to a UTF character" do
-            expect(subject.characters[0xff]).to eq('ÿ')
+          it "must return '.'" do
+            expect(subject.char_map[0xff]).to eq('.')
           end
         end
       end
@@ -399,13 +378,13 @@ describe Hexdump::Dumper do
       context "when given a multi-byte value" do
         context "and it maps to a valid UTF character" do
           it "must return the UTF character" do
-            expect(subject.characters[0x4241]).to eq("䉁")
+            expect(subject.char_map[0x4241]).to eq("䉁")
           end
         end
 
         context "but it does not map to a UTF character" do
           it "must return '.'" do
-            expect(subject.characters[0xd800]).to eq('.')
+            expect(subject.char_map[0xd800]).to eq('.')
           end
         end
       end
@@ -414,43 +393,43 @@ describe Hexdump::Dumper do
     context "when initialized with type: :int" do
       subject { described_class.new(type: :int) }
 
-      it { expect(subject.characters).to be(nil) }
+      it { expect(subject.char_map).to be(nil) }
     end
 
     context "when initialized with type: :int8" do
       subject { described_class.new(type: :int8) }
 
-      it { expect(subject.characters).to be(nil) }
+      it { expect(subject.char_map).to be(nil) }
     end
 
     context "when initialized with type: :int16" do
       subject { described_class.new(type: :int16) }
 
-      it { expect(subject.characters).to be(nil) }
+      it { expect(subject.char_map).to be(nil) }
     end
 
     context "when initialized with type: :int32" do
       subject { described_class.new(type: :int32) }
 
-      it { expect(subject.characters).to be(nil) }
+      it { expect(subject.char_map).to be(nil) }
     end
 
     context "when initialized with type: :int64" do
       subject { described_class.new(type: :int64) }
 
-      it { expect(subject.characters).to be(nil) }
+      it { expect(subject.char_map).to be(nil) }
     end
 
     context "when initialized with type: :float" do
       subject { described_class.new(type: :float) }
 
-      it { expect(subject.characters).to be(nil) }
+      it { expect(subject.char_map).to be(nil) }
     end
 
     context "when initialized with type: :double" do
       subject { described_class.new(type: :double) }
 
-      it { expect(subject.characters).to be(nil) }
+      it { expect(subject.char_map).to be(nil) }
     end
   end
 

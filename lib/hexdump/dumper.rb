@@ -2,6 +2,9 @@
 
 require 'hexdump/types'
 require 'hexdump/reader'
+require 'hexdump/numeric/base'
+require 'hexdump/numeric/chars'
+require 'hexdump/char_map'
 
 module Hexdump
   #
@@ -17,122 +20,6 @@ module Hexdump
     #
     # @since 1.0.0
     DEFAULT_COLUMNS = 16
-
-    # Character to represent unprintable characters
-    UNPRINTABLE = '.'
-
-    # ASCII printable bytes and characters
-    PRINTABLE = {
-      0x20 => " ",
-      0x21 => "!",
-      0x22 => "\"",
-      0x23 => "#",
-      0x24 => "$",
-      0x25 => "%",
-      0x26 => "&",
-      0x27 => "'",
-      0x28 => "(",
-      0x29 => ")",
-      0x2a => "*",
-      0x2b => "+",
-      0x2c => ",",
-      0x2d => "-",
-      0x2e => ".",
-      0x2f => "/",
-      0x30 => "0",
-      0x31 => "1",
-      0x32 => "2",
-      0x33 => "3",
-      0x34 => "4",
-      0x35 => "5",
-      0x36 => "6",
-      0x37 => "7",
-      0x38 => "8",
-      0x39 => "9",
-      0x3a => ":",
-      0x3b => ";",
-      0x3c => "<",
-      0x3d => "=",
-      0x3e => ">",
-      0x3f => "?",
-      0x40 => "@",
-      0x41 => "A",
-      0x42 => "B",
-      0x43 => "C",
-      0x44 => "D",
-      0x45 => "E",
-      0x46 => "F",
-      0x47 => "G",
-      0x48 => "H",
-      0x49 => "I",
-      0x4a => "J",
-      0x4b => "K",
-      0x4c => "L",
-      0x4d => "M",
-      0x4e => "N",
-      0x4f => "O",
-      0x50 => "P",
-      0x51 => "Q",
-      0x52 => "R",
-      0x53 => "S",
-      0x54 => "T",
-      0x55 => "U",
-      0x56 => "V",
-      0x57 => "W",
-      0x58 => "X",
-      0x59 => "Y",
-      0x5a => "Z",
-      0x5b => "[",
-      0x5c => "\\",
-      0x5d => "]",
-      0x5e => "^",
-      0x5f => "_",
-      0x60 => "`",
-      0x61 => "a",
-      0x62 => "b",
-      0x63 => "c",
-      0x64 => "d",
-      0x65 => "e",
-      0x66 => "f",
-      0x67 => "g",
-      0x68 => "h",
-      0x69 => "i",
-      0x6a => "j",
-      0x6b => "k",
-      0x6c => "l",
-      0x6d => "m",
-      0x6e => "n",
-      0x6f => "o",
-      0x70 => "p",
-      0x71 => "q",
-      0x72 => "r",
-      0x73 => "s",
-      0x74 => "t",
-      0x75 => "u",
-      0x76 => "v",
-      0x77 => "w",
-      0x78 => "x",
-      0x79 => "y",
-      0x7a => "z",
-      0x7b => "{",
-      0x7c => "|",
-      0x7d => "}",
-      0x7e => "~"
-    }
-
-    # Printable characters including escape characters.
-    #
-    # @since 1.0.0
-    ESCAPE_CHARS = {
-      0x00 => "\\0",
-      0x07 => "\\a",
-      0x08 => "\\b",
-      0x09 => "\\t",
-      0x0a => "\\n",
-      0x0b => "\\v",
-      0x0c => "\\f",
-      0x0d => "\\r"
-    }
 
     # The word type to decode the byte stream as.
     #
@@ -162,10 +49,10 @@ module Hexdump
 
     # Mapping of numeric values to their character strings.
     #
-    # @return [Proc]
+    # @return [CharMap::ASCII, CharMap::UTF8]
     #
     # @since 1.0.0
-    attr_reader :characters
+    attr_reader :char_map
 
     #
     # Creates a new Hexdump dumper.
@@ -184,120 +71,41 @@ module Hexdump
     #
     # @since 0.2.0
     #
-    def initialize(type: :byte, columns: nil, base: nil)
+    def initialize(type: :byte, columns: nil, base: nil, **kwargs)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
 
-      @reader = Reader.new(@type)
-
       @columns = columns || (DEFAULT_COLUMNS / @type.size)
 
-      case @type
-      when Type::Float
-        @base = base || 10
+      @base = base || case @type
+                      when Type::Float, Type::Char, Type::UChar then 10
+                      else                                           16
+                      end
 
-        case @base
-        when 16
-          @max_digits = 20 # ("%a" % Float::MAX).length
-          @format     = "% #{@max_digits}a"
-        when 10
-          @max_digits = case @type.size
-                        when 4 then 13
-                        when 8 then 23
-                        end
+      @reader = Reader.new(@type)
 
-          @format = "% #{@max_digits}g"
-        else
-          raise(ArgumentError,"float units can only be printed in base 10 or 16")
-        end
-      else
-        @base = base || 16
-
-        case @base
-        when 16
-          @max_digits = case @type.size
-                        when 1 then 2  # 0xff.to_s(16).length
-                        when 2 then 4  # 0xffff.to_s(16).length
-                        when 4 then 8  # 0xffffffff.to_s(16).length
-                        when 8 then 16 # 0xffffffffffffffff.to_s(16).length
-                        end
-
-          @format = if @type.signed? then "% .#{@max_digits}x"
-                    else                  "%.#{@max_digits}x"
-                    end
-        when 10
-          @max_digits = case @type.size
-                        when 1 then 3  # 0xff.to_s(10).length
-                        when 2 then 5  # 0xffff.to_s(10).length
-                        when 4 then 10 # 0xffffffff.to_s(10).length
-                        when 8 then 20 # 0xffffffffffffffff.to_s(10).length
-                        end
-
-          @format = if @type.signed? then "% #{@max_digits}.d"
-                    else                  "%#{@max_digits}.d"
-                    end
-        when 8
-          @max_digits = case @type.size
-                        when 1 then 3  # 0xff.to_s(7).length
-                        when 2 then 6  # 0xffff.to_s(7).length
-                        when 4 then 11 # 0xffffffff.to_s(7).length
-                        when 8 then 22 # 0xffffffffffffffff.to_s(7).length
-                        end
-
-          @format = if @type.signed? then "% .#{@max_digits}o"
-                    else                  "%.#{@max_digits}o"
-                    end
-        when 2
-          @max_digits = case @type.size
-                        when 1 then 8  # 0xff.to_s(2).length
-                        when 2 then 16 # 0xffff.to_s(2).length
-                        when 4 then 32 # 0xffffffff.to_s(2).length
-                        when 8 then 64 # 0xffffffffffffffff.to_s(2).length
-                        end
-
-          @format = if @type.signed? then "% .#{@max_digits}b"
-                    else                  "%.#{@max_digits}b"
-                    end
-        else
-          raise(ArgumentError,"unsupported base: #{base.inspect}")
-        end
-      end
-
-      @numeric = case @type
-                 when Type::Char, Type::UChar
-                   Hash.new do |hash,key|
-                     hash[key] = if (char = PRINTABLE[key])
-                                   "  #{char}"
-                                 elsif (char = ESCAPE_CHARS[key])
-                                   " #{char}"
-                                 else
-                                   sprintf(@format,key)
-                                 end
-                   end
+      @numeric = case @base
+                 when 16 then Numeric::Base::Hexadecimal.new(@type)
+                 when 10 then Numeric::Base::Decimal.new(@type)
+                 when 8  then Numeric::Base::Octal.new(@type)
+                 when 2  then Numeric::Base::Binary.new(@type)
                  else
-                   if @type.size == 1
-                     Hash.new do |hash,key|
-                       hash[key] = sprintf(@format,key)
-                     end
-                   else
-                     ->(value) { sprintf(@format,value) }
-                   end
+                   raise(ArgumentError,"unsupported base: #{@base.inspect}")
                  end
 
-      @characters = case @type
+      case @type
+      when Type::Char, Type::UChar
+        @numeric = Numeric::Chars.new(@numeric)
+      end
+
+      @char_map = case @type
                     when Type::Char, Type::UChar
                       nil # disable the printable characters for chars
                     when Type::UInt8
-                      ->(value) { PRINTABLE.fetch(value,UNPRINTABLE) }
+                      CharMap::ASCII
                     when Type::UInt
-                      ->(value) {
-                        PRINTABLE.fetch(value) do
-                          # XXX: https://github.com/jruby/jruby/issues/6652
-                          char = value.chr(Encoding::UTF_8) rescue nil
-                          char || UNPRINTABLE
-                        end
-                      }
+                      CharMap::UTF8
                     when Type::Int
                       nil # disable the printable characters for signed ints
                     when Type::Float
@@ -341,13 +149,13 @@ module Hexdump
       characters = Array.new(@columns)
 
       @reader.each(data) do |word|
-        numeric[count]    = @numeric[word]
-        characters[count] = @characters[word] if @characters
+        numeric[count]    = @numeric % word
+        characters[count] = @char_map[word] if @char_map
 
         count += 1
 
         if count >= @columns
-          if @characters
+          if @char_map
             yield index, numeric, characters
           else
             yield index, numeric
@@ -360,7 +168,7 @@ module Hexdump
 
       if count > 0
         # yield the remaining data
-        if @characters
+        if @char_map
           yield index, numeric[0,count], characters[0,count]
         else
           yield index, numeric[0,count]
@@ -394,14 +202,12 @@ module Hexdump
     def each_line(data)
       return enum_for(__method__,data) unless block_given?
 
-      chars_per_column = if @type.signed? then @max_digits + 1
-                         else                  @max_digits
-                         end
+      chars_per_column = @numeric.width
       numeric_width = ((chars_per_column * @columns) + (@columns - 1))
       index_format = "%.8x"
       spacer = "  "
 
-      if @characters
+      if @char_map
         format_string = "#{index_format}#{spacer}%-#{numeric_width}s#{spacer}|%s|#{$/}"
 
         index = each(data) do |index,numeric,characters|
