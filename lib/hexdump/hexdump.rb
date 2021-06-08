@@ -1,4 +1,4 @@
-require 'hexdump/dumper'
+require 'hexdump/format'
 
 #
 # Provides the {Hexdump.dump} method and can add hexdumping to other classes
@@ -57,10 +57,10 @@ module Hexdump
   #   the `:base` value was unknown.
   #
   def self.dump(data, output: $stdout, **kwargs, &block)
-    dumper = Dumper.new(**kwargs)
+    hexdump = Format.new(**kwargs)
 
-    if block then dumper.each(data,&block)
-    else          dumper.dump(data,output)
+    if block then hexdump.each(data,&block)
+    else          hexdump.dump(data,output)
     end
 
     return nil

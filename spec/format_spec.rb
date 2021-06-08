@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'hexdump/dumper'
+require 'hexdump/format'
 
-describe Hexdump::Dumper do
+describe Hexdump::Format do
   let(:bytes)         { [104, 101, 108, 108, 111] }
   let(:hex_chars)     { %w[68 65 6c 6c 6f] }
   let(:decimal_chars) { %w[104 101 108 108 111] }
