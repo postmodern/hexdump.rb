@@ -110,6 +110,16 @@ describe Hexdump::Numeric::Base::Binary do
       let(:type) { Hexdump::Type::Float32.new }
 
       it do
+        expect {
+          described_class.new(type)
+        }.to raise_error(Hexdump::Numeric::Base::IncompatibleTypeError,"cannot format floating-point numbers in binary")
+      end
+    end
+
+    context "when given a non-Type object" do
+      let(:type) { Object.new }
+
+      it do
         expect { described_class.new(type) }.to raise_error(TypeError)
       end
     end

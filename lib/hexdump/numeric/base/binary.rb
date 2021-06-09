@@ -1,3 +1,4 @@
+require 'hexdump/numeric/base/exceptions'
 require 'hexdump/numeric/format_string'
 
 module Hexdump
@@ -22,6 +23,8 @@ module Hexdump
         #
         # @raise [NotImplementedError]
         #
+        # @raise [IncompatibleTypeError]
+        #
         # @raise [TypeError]
         #
         def initialize(type)
@@ -36,8 +39,10 @@ module Hexdump
             else
               super("%.#{@width}b")
             end
+          when Type::Float
+            raise(IncompatibleTypeError,"cannot format floating-point numbers in binary")
           else
-            raise(TypeError,"#{type} type cannot be formatted as binary")
+            raise(TypeError,"unsupported type: #{type.inspect}")
           end
         end
 
