@@ -25,6 +25,7 @@ module Hexdump
         def initialize(type)
           case type
           when Type::Float
+            # NOTE: jruby does not currently support the %a format string
             @width = FLOAT_WIDTH
             super("% #{@width}a"); @width += 1
           else
