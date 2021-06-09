@@ -23,7 +23,11 @@ describe Hexdump::Format do
       expect(subject.base).to eq(16)
     end
 
-    context "when given a custom type name" do
+    it "must initialize #numeric to a Hexdump::Numeric::Base::Hexadecimal" do
+      expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Hexadecimal)
+    end
+
+    context "when given a type: keyword" do
       let(:type) { :uint16_le }
 
       subject { described_class.new(type: type) }
@@ -36,7 +40,103 @@ describe Hexdump::Format do
         expect(subject.columns).to eq(16 / Hexdump::TYPES[type].size)
       end
 
-      context "and the type is of a Type::Float type" do
+      context "when initialized with a type: :char" do
+        subject { described_class.new(type: :char) }
+
+        it "must initialize #numeric to Hexdump::Numeric::Chars" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Chars)
+        end
+
+        it "must set #char_map to nil" do
+          expect(subject.char_map).to be(nil)
+        end
+      end
+
+      context "when with type: is :uchar" do
+        let(:type) { :uchar }
+
+        it "must initialize #numeric to Hexdump::Numeric::Chars" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Chars)
+        end
+
+        it "must set #char_map to nil" do
+          expect(subject.char_map).to be(nil)
+        end
+      end
+
+      context "when the type: is :byte" do
+        let(:type) { :byte }
+
+        it "must initialize #char_map to Hexdump::CharMap::ASCII" do
+          expect(subject.char_map).to be(Hexdump::CharMap::ASCII)
+        end
+      end
+
+      context "when the type: is :uint8" do
+        let(:type) { :uint8 }
+
+        it "must initialize #char_map to Hexdump::CharMap::ASCII" do
+          expect(subject.char_map).to be(Hexdump::CharMap::ASCII)
+        end
+      end
+
+      context "when the type: is :int8" do
+        let(:type) { :int8 }
+
+        it "must initialize #char_map to nil" do
+          expect(subject.char_map).to be(nil)
+        end
+      end
+
+      context "when the type: is :uint16" do
+        let(:type) { :uint16 }
+
+        it "must initialize #char_map to Hexdump::CharMap::UTF8" do
+          expect(subject.char_map).to be(Hexdump::CharMap::UTF8)
+        end
+      end
+
+      context "when the type: is :int16" do
+        let(:type) { :int16 }
+
+        it "must initialize #char_map to nil" do
+          expect(subject.char_map).to be(nil)
+        end
+      end
+
+      context "when the type: is :uint32" do
+        let(:type) { :uint32 }
+
+        it "must initialize #char_map to Hexdump::CharMap::UTF8" do
+          expect(subject.char_map).to be(Hexdump::CharMap::UTF8)
+        end
+      end
+
+      context "when the type: is :int32" do
+        let(:type) { :int32 }
+
+        it "must initialize #char_map to nil" do
+          expect(subject.char_map).to be(nil)
+        end
+      end
+
+      context "when the type: is :uint64" do
+        let(:type) { :uint64 }
+
+        it "must initialize #char_map to Hexdump::CharMap::UTF8" do
+          expect(subject.char_map).to be(Hexdump::CharMap::UTF8)
+        end
+      end
+
+      context "when the type: is :int64" do
+        let(:type) { :int64 }
+
+        it "must initialize #char_map to nil" do
+          expect(subject.char_map).to be(nil)
+        end
+      end
+
+      context "and the type is :float, :float32, :float64, or :double" do
         let(:type) { :float }
 
         it "must default the #base to 10" do
@@ -47,7 +147,7 @@ describe Hexdump::Format do
           it do
             expect {
               described_class.new(type: type, base: 8)
-            }.to raise_error(TypeError)
+            }.to raise_error(Hexdump::Numeric::Base::IncompatibleTypeError)
           end
         end
       end
@@ -61,375 +161,48 @@ describe Hexdump::Format do
       end
     end
 
+    context "when given base: keyword" do
+      subject { described_class.new(base: base) }
+
+      context "when the base: is 16" do
+        let(:base) { 16 }
+
+        it "must initialize #numeric to Hexdump::Numeric::Base::Hexdecimal" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Hexadecimal)
+        end
+      end
+
+      context "when the base: is 10" do
+        let(:base) { 10 }
+
+        it "must initialize #numeric to Hexdump::Numeric::Base::Decimal" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Decimal)
+        end
+      end
+
+      context "when given base: 8" do
+        let(:base) { 8 }
+
+        it "must initialize #numeric to Hexdump::Numeric::Base::Octal" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Octal)
+        end
+      end
+
+      context "when given base: 2" do
+        let(:base) { 2 }
+
+        it "must initialize #numeric to Hexdump::Numeric::Base::Binary" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Binary)
+        end
+      end
+    end
+
     context "when given an unsupported base: value" do
       it do
         expect {
           described_class.new(base: 3)
         }.to raise_error(ArgumentError,"unsupported base: 3")
       end
-    end
-  end
-
-  describe "#numeric" do
-    it do
-      expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Hexadecimal)
-    end
-
-    it "must map numeric values to their hex String representations" do
-      expect(subject.numeric % 0xff).to eq("ff")
-    end
-
-    context "when initialized with base: 10" do
-      subject { described_class.new(base: 10) }
-
-      it "must return numeric Strings in base 10" do
-        expect(subject.numeric % 0xff).to eq("255")
-      end
-    end
-
-    context "when initialized with base: 8" do
-      subject { described_class.new(base: 8) }
-
-      it "must return numeric Strings in base 8" do
-        expect(subject.numeric % 0xff).to eq("377")
-      end
-    end
-
-    context "when initialized with base: 2" do
-      subject { described_class.new(base: 2) }
-
-      it "must return numeric Strings in base 2" do
-        expect(subject.numeric % 0xff).to eq("11111111")
-      end
-    end
-
-    context "when initialized with type: :char" do
-      subject { described_class.new(type: :char) }
-
-      it do
-        expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Chars)
-        expect(subject.numeric.base).to be_kind_of(Hexdump::Numeric::Base::Decimal)
-      end
-
-      context "when given a value that maps to a printable character" do
-        it "must return the printable character with left-padding" do
-          expect(subject.numeric % 0x41).to eq("  A")
-        end
-      end
-
-      context "when given a value that does not map to a printable character" do
-        it "must return the hex String representation, with left-padding" do
-          expect(subject.numeric % 0xff).to eq(" 255")
-        end
-      end
-
-      context "when given a negative value" do
-        it "must return the hex String representation with a '-' character" do
-          expect(subject.numeric % -0xff).to eq('-255')
-        end
-      end
-
-      it "must map 0x00 to \\0" do
-        expect(subject.numeric % 0x00).to eq(" \\0")
-      end
-
-      it "must map 0x07 to \\a" do
-        expect(subject.numeric % 0x07).to eq(" \\a")
-      end
-
-      it "must map 0x08 to \\b" do
-        expect(subject.numeric % 0x08).to eq(" \\b")
-      end
-
-      it "must map 0x09 to \\t" do
-        expect(subject.numeric % 0x09).to eq(" \\t")
-      end
-
-      it "must map 0x0a to \\n" do
-        expect(subject.numeric % 0x0a).to eq(" \\n")
-      end
-
-      it "must map 0x0b to \\v" do
-        expect(subject.numeric % 0x0b).to eq(" \\v")
-      end
-
-      it "must map 0x0c to \\f" do
-        expect(subject.numeric % 0x0c).to eq(" \\f")
-      end
-
-      it "must map 0x0d to \\r" do
-        expect(subject.numeric % 0x0d).to eq(" \\r")
-      end
-    end
-
-    context "when initialized with type: :uint16" do
-      subject { described_class.new(type: :uint16) }
-
-      it "must map numeric values to their numeric String representation" do
-        expect(subject.numeric % 0x4241).to eq('4241')
-      end
-
-      context "when initialized with base: 10" do
-        subject { described_class.new(base: 10) }
-
-        it "must return numeric Strings in base 10" do
-          expect(subject.numeric % 0xffff).to eq("65535")
-        end
-      end
-
-      context "when initialized with base: 8" do
-        subject { described_class.new(base: 8) }
-
-        it "must return numeric Strings in base 8" do
-          expect(subject.numeric % 0xffff).to eq("177777")
-        end
-      end
-
-      context "when initialized with base: 2" do
-        subject { described_class.new(base: 2) }
-
-        it "must return numeric Strings in base 2" do
-          expect(subject.numeric % 0xffff).to eq("1111111111111111")
-        end
-      end
-    end
-
-    context "when initialized with type: :int8" do
-      subject { described_class.new(type: :int8) }
-
-      context "when given a positive value" do
-        it "must left-pad the value to accomodate for the missing '-'" do
-          expect(subject.numeric % 0x41).to eq(" 41")
-        end
-      end
-
-      context "when given a negative value" do
-        it "must start with a '-' character" do
-          expect(subject.numeric % -0x41).to eq("-41")
-        end
-      end
-
-      context "when initialized with base: 10" do
-        subject { described_class.new(type: :int8, base: 10) }
-
-        context "when given a positive value" do
-          it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric % 0xff).to eq(" 255")
-          end
-        end
-
-        context "when given a negative value" do
-          it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric % -0xff).to eq("-255")
-          end
-        end
-      end
-
-      context "when initialized with base: 8" do
-        subject { described_class.new(type: :int8, base: 8) }
-
-        context "when given a positive value" do
-          it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric % 0xff).to eq(" 377")
-          end
-        end
-
-        context "when given a negative value" do
-          it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric % -0xff).to eq("-377")
-          end
-        end
-      end
-
-      context "when initialized with base: 2" do
-        subject { described_class.new(type: :int8, base: 2) }
-
-        context "when given a positive value" do
-          it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric % 0xff).to eq(" 11111111")
-          end
-        end
-
-        context "when given a negative value" do
-          it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric % -0xff).to eq("-11111111")
-          end
-        end
-      end
-    end
-
-    context "when initialized with type: :int16 or greater" do
-      subject { described_class.new(type: :int16) }
-
-      context "when given a positive value" do
-        it "must left-pad the value to accomodate for the missing '-'" do
-          expect(subject.numeric % 0xffff).to eq(" ffff")
-        end
-      end
-
-      context "when given a negative value" do
-        it "must start with a '-' character" do
-          expect(subject.numeric % -0xffff).to eq("-ffff")
-        end
-      end
-
-      context "when initialized with base: 10" do
-        subject { described_class.new(type: :int16_le, base: 10) }
-
-        context "when given a positive value" do
-          it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric % 0xffff).to eq(" 65535")
-          end
-        end
-
-        context "when given a negative value" do
-          it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric % -0xffff).to eq("-65535")
-          end
-        end
-      end
-
-      context "when initialized with base: 8" do
-        subject { described_class.new(type: :int16_le, base: 8) }
-
-        context "when given a positive value" do
-          it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric % 0xffff).to eq(" 177777")
-          end
-        end
-
-        context "when given a negative value" do
-          it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric % -0xffff).to eq("-177777")
-          end
-        end
-      end
-
-      context "when initialized with base: 2" do
-        subject { described_class.new(type: :int16_le, base: 2) }
-
-        context "when given a positive value" do
-          it "must return numeric Strings in base 10, with left-padding" do
-            expect(subject.numeric % 0xffff).to eq(" 1111111111111111")
-          end
-        end
-
-        context "when given a negative value" do
-          it "must return numeric Strings in base 10, with a '-' character" do
-            expect(subject.numeric % -0xffff).to eq("-1111111111111111")
-          end
-        end
-      end
-    end
-  end
-
-  describe "#char_map" do
-    context "when initialized with a type: :char" do
-      subject { described_class.new(type: :char) }
-
-      it { expect(subject.char_map).to be(nil) }
-    end
-
-    context "when initialized with type: :uchar" do
-      subject { described_class.new(type: :uchar) }
-
-      it { expect(subject.char_map).to be(nil) }
-    end
-
-    context "when initialized with type: :uint8" do
-      subject { described_class.new(type: :uint8) }
-
-      it do
-        expect(subject.char_map).to be(Hexdump::CharMap::ASCII)
-      end
-
-      it "must map numeric values to characters character Strings" do
-        expect(subject.char_map[0x41]).to eq("A")
-      end
-
-      context "when given a value that does not map to a characters char" do
-        it "must return '.'" do
-          expect(subject.char_map[0xff]).to eq('.')
-        end
-      end
-    end
-
-    context "when initialized with a type: :uint16 or greater" do
-      subject { described_class.new(type: :uint16_le) }
-
-      it do
-        expect(subject.char_map).to be(Hexdump::CharMap::UTF8)
-      end
-
-      context "when given a single byte value" do
-        context "and it maps to a characters ASCII character" do
-          it "must return the ASCII character" do
-            expect(subject.char_map[0x41]).to eq("A")
-          end
-        end
-
-        context "and it does not map to a characters ASCII character" do
-          it "must return '.'" do
-            expect(subject.char_map[0xff]).to eq('.')
-          end
-        end
-      end
-
-      context "when given a multi-byte value" do
-        context "and it maps to a valid UTF character" do
-          it "must return the UTF character" do
-            expect(subject.char_map[0x4241]).to eq("䉁")
-          end
-        end
-
-        context "but it does not map to a UTF character" do
-          it "must return '.'" do
-            expect(subject.char_map[0xd800]).to eq('.')
-          end
-        end
-      end
-    end
-
-    context "when initialized with type: :int" do
-      subject { described_class.new(type: :int) }
-
-      it { expect(subject.char_map).to be(nil) }
-    end
-
-    context "when initialized with type: :int8" do
-      subject { described_class.new(type: :int8) }
-
-      it { expect(subject.char_map).to be(nil) }
-    end
-
-    context "when initialized with type: :int16" do
-      subject { described_class.new(type: :int16) }
-
-      it { expect(subject.char_map).to be(nil) }
-    end
-
-    context "when initialized with type: :int32" do
-      subject { described_class.new(type: :int32) }
-
-      it { expect(subject.char_map).to be(nil) }
-    end
-
-    context "when initialized with type: :int64" do
-      subject { described_class.new(type: :int64) }
-
-      it { expect(subject.char_map).to be(nil) }
-    end
-
-    context "when initialized with type: :float" do
-      subject { described_class.new(type: :float) }
-
-      it { expect(subject.char_map).to be(nil) }
-    end
-
-    context "when initialized with type: :double" do
-      subject { described_class.new(type: :double) }
-
-      it { expect(subject.char_map).to be(nil) }
     end
   end
 
