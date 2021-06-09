@@ -1,8 +1,9 @@
+require 'hexdump/numeric/format_string'
 require 'hexdump/char_map/ascii'
 
 module Hexdump
   module Numeric
-    class Chars
+    class Chars < FormatString
 
       # Printable characters including escape characters.
       #
@@ -30,6 +31,8 @@ module Hexdump
       #
       def initialize(base)
         @base = base
+        
+        super("%#{@base.width}s")
       end
 
       def width
@@ -47,9 +50,9 @@ module Hexdump
       #
       def %(value)
         if (char = CharMap::ASCII::PRINTABLE[value])
-          "  #{char}"
+          super(char)
         elsif (char = ESCAPE_CHARS[value])
-          " #{char}"
+          super(char)
         else
           @base % value
         end
