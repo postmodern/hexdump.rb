@@ -10,7 +10,7 @@ module Hexdump
   #
   # Handles the parsing of data and formatting of the hexdump.
   #
-  # @since 0.2.0
+  # @since 1.0.0
   #
   # @api semipublic
   #
@@ -68,8 +68,6 @@ module Hexdump
     #
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
-    #
-    # @since 0.2.0
     #
     def initialize(type: :byte, columns: nil, base: nil, **kwargs)
       @type = TYPES.fetch(type) do
@@ -136,8 +134,6 @@ module Hexdump
     #   If a block is given, then the final number of bytes read is returned.
     #   If no block is given, an Enumerator will be returned.
     #
-    # @since 0.2.0
-    #
     def each(data)
       return enum_for(__method__,data) unless block_given?
 
@@ -197,8 +193,6 @@ module Hexdump
     #
     # @return [nil]
     #
-    # @since 1.0.0
-    #
     def each_line(data)
       return enum_for(__method__,data) unless block_given?
 
@@ -238,8 +232,6 @@ module Hexdump
     #
     # @raise [ArgumentError]
     #   The output value does not support the `#<<` method.
-    #
-    # @since 0.2.0
     #
     def dump(data,output=$stdout)
       unless output.respond_to?(:<<)
