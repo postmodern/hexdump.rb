@@ -115,7 +115,11 @@ describe Hexdump::Numeric::Base::Hexadecimal do
         let(:type) { Hexdump::Type::Float32.new }
 
         it "must set #width to 20 + 1" do
-          expect(subject.width).to eq(20 + 1)
+          begin
+            expect(subject.width).to eq(20 + 1)
+          rescue NotImplementedError => error
+            skip error.message
+          end
         end
       end
 
@@ -123,7 +127,11 @@ describe Hexdump::Numeric::Base::Hexadecimal do
         let(:type) { Hexdump::Type::Float64.new }
 
         it "must set #width to 20 + 1" do
-          expect(subject.width).to eq(20 + 1)
+          begin
+            expect(subject.width).to eq(20 + 1)
+          rescue NotImplementedError => error
+            skip error.message
+          end
         end
       end
     end
@@ -265,13 +273,21 @@ describe Hexdump::Numeric::Base::Hexadecimal do
 
         context "and the value is positive" do
           it "must return a hexadecimal string of length 20 prefixed with a ' '" do
-            expect(subject % value).to eq(" #{hex}")
+            begin
+              expect(subject % value).to eq(" #{hex}")
+            rescue NotImplementedError => error
+              skip error.message
+            end
           end
         end
 
         context "and the value is negative" do
           it "must return a hexadecimal string of length 20 prefixed with a '-'" do
-            expect(subject % -value).to eq("-#{hex}")
+            begin
+              expect(subject % -value).to eq("-#{hex}")
+            rescue NotImplementedError => error
+              skip error.message
+            end
           end
         end
       end
@@ -281,13 +297,21 @@ describe Hexdump::Numeric::Base::Hexadecimal do
 
         context "and the value is positive" do
           it "must return a hexadecimal string of length 20 prefixed with a ' '" do
-            expect(subject % value).to eq(" #{hex}")
+            begin
+              expect(subject % value).to eq(" #{hex}")
+            rescue NotImplementedError => error
+              skip error.message
+            end
           end
         end
 
         context "and the value is negative" do
           it "must return a hexadecimal string of length 20 prefixed with a '-'" do
-            expect(subject % -value).to eq("-#{hex}")
+            begin
+              expect(subject % -value).to eq("-#{hex}")
+            rescue NotImplementedError => error
+              skip error.message
+            end
           end
         end
       end
