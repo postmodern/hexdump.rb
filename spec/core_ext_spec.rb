@@ -19,7 +19,6 @@ describe "Hexdump core_ext" do
   end
 
   it "should define Kernel.hexdump" do
-    expect(Kernel).to include(Hexdump::ModuleMethods)
-    expect(Kernel).to respond_to(:hexdump)
+    expect(::Kernel).to include(Hexdump::ModuleMethods)
   end
 end
