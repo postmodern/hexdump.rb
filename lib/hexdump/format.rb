@@ -208,7 +208,7 @@ module Hexdump
           yield sprintf(format_string,index,numeric.join(' '),characters.join)
         end
       else
-        format_string = "#{index_format}#{spacer}%-#{numeric_width}s"
+        format_string = "#{index_format}#{spacer}%-#{numeric_width}s#{$/}"
 
         index = each(data) do |index,numeric|
           yield sprintf(format_string,index,numeric.join(' '))
