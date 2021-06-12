@@ -25,6 +25,14 @@ module Hexdump
         def initialize(type)
           case type
           when Type::Float
+            if RUBY_ENGINE == 'jruby'
+              begin
+                "%a" % 1.0
+              rescue ArgumentError
+                raise(NotImplementedError,"jruby #{RUBY_ENGINE_VERSION} does not support the \"%a\" format string")
+              end
+            end
+
             # NOTE: jruby does not currently support the %a format string
             @width = FLOAT_WIDTH
             super("% #{@width}a"); @width += 1
