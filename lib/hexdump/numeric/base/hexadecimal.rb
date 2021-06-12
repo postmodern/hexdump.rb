@@ -26,6 +26,7 @@ module Hexdump
           case type
           when Type::Float
             if RUBY_ENGINE == 'jruby'
+              # XXX: https://github.com/jruby/jruby/issues/5122
               begin
                 "%a" % 1.0
               rescue ArgumentError
