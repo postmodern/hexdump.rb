@@ -44,7 +44,7 @@ module Hexdump
     #   the `:output` value does not support the `#print` method or
     #   the `:base` value was unknown.
     #
-    def hexdump(output: $stdout, **kwargs,&block)
+    def hexdump(output: $stdout, **kwargs)
       hexdump = Hexdump::Format.new(**kwargs)
 
       hexdump.print(self,output)

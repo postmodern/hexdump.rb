@@ -54,7 +54,6 @@ Simple and Fast hexdumping for Ruby.
   * `double_ne` - single precision 64bit floating-point number (network endian)
 * Can hexdump any Object supporting the `each_byte` method.
 * Can send the hexdump output to any Object supporting the `<<` method.
-* Can yield each line of hexdump, instead of printing the output.
 * Makes {String}, {StringIO}, {IO}, {File} objects hexdumpable.
 * Fast-ish.
 
