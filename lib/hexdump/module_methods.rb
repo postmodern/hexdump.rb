@@ -2,27 +2,21 @@ require 'hexdump/format'
 
 module Hexdump
   #
-  # Provides a {hexdump Mixin#hexdump} method that can be included into objects.
+  # Provides the {hexdump ModuleMethods#hexdump} top-level method that can be
+  # extended into modules.
   #
-  #     class DataObject
+  #     module Context
   #     
-  #       include Hexdump::Mixin
+  #       extend Hexdump::ModuleMethods
   #       
-  #       def each_byte
-  #         # ...
-  #       end
-  #     
   #     end
   #     
-  #     data.hexdump
-  #
-  # @api public
-  #
-  # @since 1.0.0
-  #
-  module Mixin
+  module ModuleMethods
     #
-    # Prints a hexdumps of the object.
+    # Hexdumps the given data.
+    #
+    # @param [#each_byte] data
+    #   The data to be hexdumped.
     #
     # @param [#print] output ($stdout)
     #   The output to print the hexdump to.
@@ -44,10 +38,10 @@ module Hexdump
     #   the `:output` value does not support the `#print` method or
     #   the `:base` value was unknown.
     #
-    def hexdump(output: $stdout, **kwargs,&block)
+    def hexdump(data, output: $stdout, **kwargs)
       hexdump = Hexdump::Format.new(**kwargs)
 
-      hexdump.print(self,output)
+      hexdump.print(data,output)
     end
   end
 end

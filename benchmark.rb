@@ -11,17 +11,17 @@ OUTPUT = Class.new { def print(data); end }.new
 TYPES = Hexdump::TYPES.values.uniq.map(&Hexdump::TYPES.method(:key))
 
 Benchmark.bm(33) do |b|
-  b.report('Hexdump.print(output)') do
-    Hexdump.print(DATA, output:  OUTPUT)
+  b.report('Hexdump.hexdump(data))') do
+    Hexdump.hexdump(DATA, output:  OUTPUT)
   end
 
-  b.report('Hexdump.print columns: 256 (output)') do
-    Hexdump.print(DATA, columns: 256, output: OUTPUT)
+  b.report('Hexdump.hexdump(data, columns: 256)') do
+    Hexdump.hexdump(DATA, columns: 256, output: OUTPUT)
   end
 
   TYPES.each do |type|
-    b.report("Hexdump.print type: #{type} (output)") do
-      Hexdump.print(DATA, type: type, output: OUTPUT)
+    b.report("Hexdump.hexdump(data, type: #{type.inspect})") do
+      Hexdump.hexdump(DATA, type: type, output: OUTPUT)
     end
   end
 end

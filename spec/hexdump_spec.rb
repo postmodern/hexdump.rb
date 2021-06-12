@@ -2,7 +2,7 @@ require 'spec_helper'
 require 'hexdump'
 
 describe Hexdump do
-  describe ".print" do
+  describe ".hexdump" do
     let(:bytes)       { [104, 101, 108, 108, 111] }
     let(:hex_chars)   { ['68', '65', '6c', '6c', '6f'] }
     let(:print_chars) { %w[h e l l o] }
@@ -14,7 +14,7 @@ describe Hexdump do
     let(:lines)  { output.string.lines }
 
     it "should print the hexdump of the given data" do
-      subject.print(data, output: output)
+      subject.hexdump(data, output: output)
 
       expect(lines.length).to be(2)
       expect(lines[0]).to start_with(index_format % 0)
