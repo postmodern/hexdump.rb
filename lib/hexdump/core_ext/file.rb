@@ -1,4 +1,4 @@
-require 'hexdump/hexdump'
+require 'hexdump/core_ext/io'
 
 class File
 
@@ -15,7 +15,7 @@ class File
   #
   def self.hexdump(path,**kwargs,&block)
     self.open(path,'rb') do |file|
-      Hexdump.dump(file,**kwargs,&block)
+      file.hexdump(**kwargs,&block)
     end
   end
 
