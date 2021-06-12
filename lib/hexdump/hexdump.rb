@@ -36,33 +36,14 @@ module Hexdump
   # @param [#<<] output ($stdout)
   #   The output to print the hexdump to.
   #
-  # @yield [index,numeric,printable]
-  #   The given block will be passed the hexdump break-down of each
-  #   segment.
-  #
-  # @yieldparam [Integer] index
-  #   The index of the hexdumped segment.
-  #
-  # @yieldparam [Array<String>] numeric
-  #   The numeric representation of the segment.
-  #
-  # @yieldparam [Array<String>] printable
-  #   The printable representation of the segment.
-  #
-  # @return [nil]
-  #
   # @raise [ArgumentError]
   #   The given data does not define the `#each_byte` method,
-  #   the `:output` value does not support the `#<<` method or
+  #   the `:output` value does not support the `#print` method or
   #   the `:base` value was unknown.
   #
-  def self.dump(data, output: $stdout, **kwargs, &block)
+  def self.print(data, output: $stdout, **kwargs, &block)
     hexdump = Format.new(**kwargs)
 
-    if block then hexdump.each(data,&block)
-    else          hexdump.dump(data,output)
-    end
-
-    return nil
+    hexdump.print(data,output)
   end
 end

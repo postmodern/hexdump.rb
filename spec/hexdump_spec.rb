@@ -2,26 +2,25 @@ require 'spec_helper'
 require 'hexdump'
 
 describe Hexdump do
-  describe ".dump" do
-    let(:bytes) { [0x41, 0x42, 0x43, 0x44, 0x45] }
-    let(:chars) { bytes.map(&:chr) }
-    let(:data)  { chars.join }
-    let(:hex_chars) { ['41', '42', '43', '44', '45'] }
+  describe ".print" do
+    let(:bytes)       { [104, 101, 108, 108, 111] }
+    let(:hex_chars)   { ['68', '65', '6c', '6c', '6f'] }
+    let(:print_chars) { %w[h e l l o] }
+    let(:data)        { print_chars.join }
 
-    it "should hexdump the given data" do
-      yielded_indices = []
-      yielded_numeric = []
-      yielded_printable = []
+    let(:index_format) { "%.8x" }
 
-      subject.dump(data) do |index,numeric,printable|
-        yielded_indices << index
-        yielded_numeric += numeric
-        yielded_printable += printable
-      end
+    let(:output) { StringIO.new }
+    let(:lines)  { output.string.lines }
 
-      expect(yielded_indices).to eq([0x00000000])
-      expect(yielded_numeric).to be == hex_chars
-      expect(yielded_printable).to be == chars
+    it "should print the hexdump of the given data" do
+      subject.print(data, output: output)
+
+      expect(lines.length).to be(2)
+      expect(lines[0]).to start_with(index_format % 0)
+      expect(lines[0]).to include(hex_chars.join(' '))
+      expect(lines[0]).to end_with("|#{print_chars.join}|#{$/}")
+      expect(lines[1]).to start_with(index_format % bytes.length)
     end
   end
 end

@@ -220,26 +220,26 @@ module Hexdump
     end
 
     #
-    # Dumps the hexdump.
+    # Prints the hexdump.
     #
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
-    # @param [#<<] output
+    # @param [#print] output
     #   The output to dump the hexdump to.
     #
     # @return [nil]
     #
     # @raise [ArgumentError]
-    #   The output value does not support the `#<<` method.
+    #   The output value does not support the `#print` method.
     #
-    def dump(data,output=$stdout)
-      unless output.respond_to?(:<<)
-        raise(ArgumentError,"output must support the #<< method")
+    def print(data,output=$stdout)
+      unless output.respond_to?(:print)
+        raise(ArgumentError,"output must support the #print method")
       end
 
       each_line(data) do |line|
-        output << line
+        output.print(line)
       end
     end
 

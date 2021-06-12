@@ -10,10 +10,10 @@ module Hexdump
     #
     # Hexdumps the object.
     #
-    # @see Hexdump.dump
+    # @see Hexdump.print
     #
     def hexdump(**kwargs,&block)
-      Hexdump.dump(self,**kwargs,&block)
+      Hexdump.print(self,**kwargs,&block)
     end
   end
 end

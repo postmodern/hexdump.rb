@@ -62,7 +62,7 @@ Simple and Fast hexdumping for Ruby.
 
     require 'hexdump'
 
-    Hexdump.dump("hello\0")
+    Hexdump.print("hello\0")
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
     # 00000006
     
@@ -74,38 +74,30 @@ Simple and Fast hexdumping for Ruby.
       data.hexdump(output: file)
     end
 
-    # iterate over the hexdump lines
-    "hello\0".hexdump do |index,hex,printable|
-      index     # => 0
-      hex       # => ["68", "65", "6c", "6c", "6f", "00"]
-      printable # => ["h", "e", "l", "l", "o", "."]
-    end
-    # => 6
-
     # configure the width of the hexdump
-    Hexdump.dump('A' * 30, columns: 10)
+    Hexdump.print('A' * 30, columns: 10)
     # 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     # 0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     # 00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     # 0000001e
 
-    Hexdump.dump("hello\0", type: :char)
+    Hexdump.print("hello\0", type: :char)
     # 00000000    h   e   l   l   o  \0                                          |hello.|
     # 00000006
 
-    Hexdump.dump("hello\0", base: 16)
+    Hexdump.print("hello\0", base: 16)
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
     # 00000006
 
-    Hexdump.dump("hello\0", base: 10)
+    Hexdump.print("hello\0", base: 10)
     # 00000000  104 101 108 108 111   0                                          |hello.|
     # 00000006
 
-    Hexdump.dump("hello\0", base: 8)
+    Hexdump.print("hello\0", base: 8)
     # 00000000  0150 0145 0154 0154 0157 0000                                                    |hello.|
     # 00000006
 
-    Hexdump.dump("hello\0", base: 2)
+    Hexdump.print("hello\0", base: 2)
     # 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
     # 00000006
 
@@ -120,7 +112,7 @@ Simple and Fast hexdumping for Ruby.
 
 ## Benchmarks
 
-Benchmarks show {Hexdump.dump} processing 25M of data.
+Benchmarks show {Hexdump.print} processing 25M of data.
 
 ### Ruby 2.7.3
 
