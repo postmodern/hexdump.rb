@@ -11,7 +11,7 @@ class File
   # @param [Hash] options
   #   Additional options.
   #
-  # @see Hexdump.dump
+  # @see IO#hexdump
   #
   def self.hexdump(path,**kwargs)
     self.open(path,'rb') do |file|
