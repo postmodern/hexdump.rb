@@ -109,7 +109,7 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
-    # @yield [index,numeric,characters]
+    # @yield [index, numeric, chars]
     #   The given block will be passed the hexdump break-down of each
     #   segment.
     #
@@ -119,7 +119,7 @@ module Hexdump
     # @yieldparam [Array<String>] numeric
     #   The numeric representation of the segment.
     #
-    # @yieldparam [Array<String>] characters
+    # @yieldparam [Array<String>] chars
     #   The printable representation of the segment.
     #
     # @return [Integer, Enumerator]
@@ -133,18 +133,18 @@ module Hexdump
       index = 0
       slice_size = (@columns * @type.size)
 
-      numeric    = Array.new(@columns)
-      characters = Array.new(@columns)
+      numeric = Array.new(@columns)
+      chars   = Array.new(@columns)
 
       @reader.each(data) do |word|
-        numeric[count]    = @numeric % word
-        characters[count] = @char_map[word] if @char_map
+        numeric[count] = @numeric % word
+        chars[count]   = @char_map[word] if @char_map
 
         count += 1
 
         if count >= @columns
           if @char_map
-            yield index, numeric, characters
+            yield index, numeric, chars
           else
             yield index, numeric
           end
@@ -157,7 +157,7 @@ module Hexdump
       if count > 0
         # yield the remaining data
         if @char_map
-          yield index, numeric[0,count], characters[0,count]
+          yield index, numeric[0,count], chars[0,count]
         else
           yield index, numeric[0,count]
         end
@@ -196,8 +196,8 @@ module Hexdump
       if @char_map
         format_string = "#{index_format}#{spacer}%-#{numeric_width}s#{spacer}|%s|#{$/}"
 
-        index = each(data) do |index,numeric,characters|
-          yield sprintf(format_string,index,numeric.join(' '),characters.join)
+        index = each(data) do |index,numeric,chars|
+          yield sprintf(format_string,index,numeric.join(' '),chars.join)
         end
       else
         format_string = "#{index_format}#{spacer}%-#{numeric_width}s#{$/}"
