@@ -24,8 +24,6 @@ module Hexdump
     # The word type to decode the byte stream as.
     #
     # @return [Type]
-    #
-    # @since 1.0.0
     attr_reader :type
 
     # The base to dump words as.
@@ -36,22 +34,16 @@ module Hexdump
     # The number of columns per hexdump line.
     #
     # @return [Integer]
-    #
-    # @since 1.0.0
     attr_reader :columns
 
     # Mapping of values to their numeric strings.
     #
     # @return [Hash, Proc]
-    #
-    # @since 1.0.0
     attr_reader :numeric
 
     # Mapping of numeric values to their character strings.
     #
     # @return [CharMap::ASCII, CharMap::UTF8]
-    #
-    # @since 1.0.0
     attr_reader :char_map
 
     #
