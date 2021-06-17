@@ -3,6 +3,11 @@ require 'hexdump/char_map/ascii'
 
 module Hexdump
   module Numeric
+    #
+    # @api private
+    #
+    # @since 1.0.0
+    #
     class Chars < FormatString
 
       # Printable characters including escape characters.

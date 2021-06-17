@@ -1,5 +1,10 @@
 module Hexdump
   module CharMap
+    #
+    # @api private
+    #
+    # @since 1.0.0
+    #
     module ASCII
       # Character to represent unprintable characters
       UNPRINTABLE = '.'

@@ -2,6 +2,11 @@ require 'hexdump/char_map/ascii'
 
 module Hexdump
   module CharMap
+    #
+    # @api private
+    #
+    # @since 1.0.0
+    #
     module UTF8
       include ASCII
 

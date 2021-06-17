@@ -4,6 +4,11 @@ require 'hexdump/numeric/format_string'
 module Hexdump
   module Numeric
     module Base
+      #
+      # @api private
+      #
+      # @since 1.0.0
+      #
       class Binary < FormatString
 
         SIZE_TO_WIDTH = {
