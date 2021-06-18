@@ -17,6 +17,15 @@ module Hexdump
         @fmt = fmt
       end
 
+      #
+      # Formats the given value.
+      #
+      # @param [Integer, Float]
+      #   The given value.
+      #
+      # @return [String]
+      #   The formatted value.
+      #
       def %(value)
         sprintf(@fmt,value)
       end
