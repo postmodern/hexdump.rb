@@ -1,4 +1,4 @@
-require 'hexdump/numeric/format_string'
+require 'hexdump/format_string'
 require 'hexdump/char_map/ascii'
 
 module Hexdump
