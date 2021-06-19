@@ -191,19 +191,14 @@ module Hexdump
       chars_per_column = @numeric.width
       numeric_width = ((chars_per_column * @columns) + (@columns - 1))
       index_format = "%.8x"
-      spacer = "  "
 
       if @char_map
-        format_string = "#{index_format}#{spacer}%-#{numeric_width}s#{spacer}|%s|#{$/}"
-
         index = each(data) do |index,numeric,chars|
-          yield sprintf(format_string,index,numeric.join(' '),chars.join)
+          yield "#{index_format % index}  #{numeric.join(' ').ljust(numeric_width)}  |#{chars.join}|#{$/}"
         end
       else
-        format_string = "#{index_format}#{spacer}%-#{numeric_width}s#{$/}"
-
         index = each(data) do |index,numeric|
-          yield sprintf(format_string,index,numeric.join(' '))
+          yield "#{index_format % index}  #{numeric.join(' ').ljust(numeric_width)}#{$/}"
         end
       end
 
