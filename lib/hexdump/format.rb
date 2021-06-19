@@ -54,7 +54,10 @@ module Hexdump
 
     # Mapping of values to their numeric strings.
     #
-    # @return [Hash, Proc]
+    # @return [Numeric::Base::Hexadecimal,
+    #          Numeric::Base::Decimal,
+    #          Numeric::Base::Octal,
+    #          Numeric::Base::Binary]
     attr_reader :numeric
 
     # Mapping of numeric values to their character strings.
