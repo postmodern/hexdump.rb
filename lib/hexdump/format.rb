@@ -104,7 +104,7 @@ module Hexdump
     end
 
     #
-    # Iterates over the hexdump.
+    # Enumerates each row of hexdumped data.
     #
     # @param [#each_byte] data
     #   The data to be hexdumped.
@@ -126,7 +126,7 @@ module Hexdump
     #   If a block is given, then the final number of bytes read is returned.
     #   If no block is given, an Enumerator will be returned.
     #
-    def each(data)
+    def each_row(data)
       return enum_for(__method__,data) unless block_given?
 
       count = 0
@@ -193,11 +193,11 @@ module Hexdump
       index_format = "%.8x"
 
       if @char_map
-        index = each(data) do |index,numeric,chars|
+        index = each_row(data) do |index,numeric,chars|
           yield "#{index_format % index}  #{numeric.join(' ').ljust(numeric_width)}  |#{chars.join}|#{$/}"
         end
       else
-        index = each(data) do |index,numeric|
+        index = each_row(data) do |index,numeric|
           yield "#{index_format % index}  #{numeric.join(' ').ljust(numeric_width)}#{$/}"
         end
       end

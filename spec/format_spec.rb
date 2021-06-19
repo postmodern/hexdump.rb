@@ -206,11 +206,11 @@ describe Hexdump::Format do
     end
   end
 
-  describe "#each" do
+  describe "#each_row" do
     it "should yield the parts of each hexdump line to the given block" do
       lines = []
 
-      subject.each(data) do |index,hex,print|
+      subject.each_row(data) do |index,hex,print|
         lines << [index, hex, print]
       end
 
@@ -223,7 +223,7 @@ describe Hexdump::Format do
     it "should provide the index within the data for each line" do
       indices = []
 
-      subject.each('A' * (16 * 10)) do |index,hex,print|
+      subject.each_row('A' * (16 * 10)) do |index,hex,print|
         indices << index
       end
 
@@ -239,7 +239,7 @@ describe Hexdump::Format do
         columnss = []
         count  = 10
 
-        subject.each('A' * (columns * count)) do |index,hex,print|
+        subject.each_row('A' * (columns * count)) do |index,hex,print|
           columnss << hex.length
         end
 
@@ -259,7 +259,7 @@ describe Hexdump::Format do
       it "should hexdump the remaining bytes" do
         remainder = nil
 
-        subject.each(leading + string) do |index,hex,print|
+        subject.each_row(leading + string) do |index,hex,print|
           remainder = print
         end
 
@@ -271,7 +271,7 @@ describe Hexdump::Format do
       chars = []
       length = (16 * 10)
 
-      subject.each(data * length) do |index,hex,print|
+      subject.each_row(data * length) do |index,hex,print|
         chars += hex
       end
 
@@ -282,7 +282,7 @@ describe Hexdump::Format do
       chars = []
       length = (16 * 10)
 
-      subject.each(data * length) do |index,hex,print|
+      subject.each_row(data * length) do |index,hex,print|
         chars += print
       end
 
@@ -293,7 +293,7 @@ describe Hexdump::Format do
       unprintable = ((0x00..0x1f).map(&:chr) + (0x7f..0xff).map(&:chr)).join
       chars = []
 
-      subject.each(unprintable) do |index,hex,print|
+      subject.each_row(unprintable) do |index,hex,print|
         chars += print
       end
 
@@ -306,7 +306,7 @@ describe Hexdump::Format do
       it "should support dumping bytes in decimal format" do
         chars = []
 
-        subject.each(data) do |index,hex,print|
+        subject.each_row(data) do |index,hex,print|
           chars += hex
         end
 
@@ -320,7 +320,7 @@ describe Hexdump::Format do
       it "should support dumping bytes in octal format" do
         chars = []
 
-        subject.each(data) do |index,hex,print|
+        subject.each_row(data) do |index,hex,print|
           chars += hex
         end
 
@@ -334,7 +334,7 @@ describe Hexdump::Format do
       it "should support dumping bytes in binary format" do
         chars = []
 
-        subject.each(data) do |index,hex,print|
+        subject.each_row(data) do |index,hex,print|
           chars += hex
         end
 
@@ -351,7 +351,7 @@ describe Hexdump::Format do
       it "should dump words in hexadecimal by default" do
         words = []
 
-        subject.each(data) do |index,hex,print|
+        subject.each_row(data) do |index,hex,print|
           words += hex
         end
 
@@ -366,7 +366,7 @@ describe Hexdump::Format do
         it "should dump words in decimal" do
           words = []
 
-          subject.each(data) do |index,dec,print|
+          subject.each_row(data) do |index,dec,print|
             words += dec
           end
 
@@ -382,7 +382,7 @@ describe Hexdump::Format do
         it "should dump words in octal" do
           words = []
 
-          subject.each(data) do |index,oct,print|
+          subject.each_row(data) do |index,oct,print|
             words += oct
           end
 
@@ -398,7 +398,7 @@ describe Hexdump::Format do
         it "should dump words in binary" do
           words = []
 
-          subject.each(data) do |index,bin,print|
+          subject.each_row(data) do |index,bin,print|
             words += bin
           end
 
@@ -411,12 +411,12 @@ describe Hexdump::Format do
       length = 100
       data   = 'A' * length
 
-      expect(subject.each(data) { |index,hex,print| }).to be == length
+      expect(subject.each_row(data) { |index,hex,print| }).to be == length
     end
 
     context "when no block is given" do
       it "must return an Enumerator" do
-        expect(subject.each(data)).to be_kind_of(Enumerator)
+        expect(subject.each_row(data)).to be_kind_of(Enumerator)
       end
     end
   end
