@@ -25,8 +25,8 @@ module Hexdump
     # @return [String]
     #   The formatted value.
     #
-    def %(value)
-      sprintf(@fmt,value)
+    def %(*values)
+      sprintf(@fmt,*values)
     end
 
   end
