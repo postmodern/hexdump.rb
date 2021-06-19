@@ -29,5 +29,15 @@ module Hexdump
       sprintf(@fmt,*values)
     end
 
+    #
+    # Converts the format string back into a String.
+    #
+    # @return [String]
+    #   The raw format string.
+    #
+    def to_s
+      @fmt
+    end
+
   end
 end
