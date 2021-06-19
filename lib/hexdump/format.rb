@@ -21,6 +21,14 @@ module Hexdump
     # @since 1.0.0
     DEFAULT_COLUMNS = 16
 
+    # Numeric bases and their formatting classes.
+    BASES = {
+      16 => Numeric::Base::Hexadecimal,
+      10 => Numeric::Base::Decimal,
+      8  => Numeric::Base::Octal,
+      2  => Numeric::Base::Binary
+    }
+
     # The word type to decode the byte stream as.
     #
     # @return [Type]
@@ -35,6 +43,14 @@ module Hexdump
     #
     # @return [Integer]
     attr_reader :columns
+
+    # The format of the index number.
+    #
+    # @return [Numeric::Base::Hexadecimal,
+    #          Numeric::Base::Decimal,
+    #          Numeric::Base::Octal,
+    #          Numeric::Base::Binary]
+    attr_reader :index
 
     # Mapping of values to their numeric strings.
     #
@@ -75,14 +91,10 @@ module Hexdump
 
       @reader = Reader.new(@type)
 
-      @numeric = case @base
-                 when 16 then Numeric::Base::Hexadecimal.new(@type)
-                 when 10 then Numeric::Base::Decimal.new(@type)
-                 when 8  then Numeric::Base::Octal.new(@type)
-                 when 2  then Numeric::Base::Binary.new(@type)
-                 else
+      @numeric = BASES.fetch(@base) {
                    raise(ArgumentError,"unsupported base: #{@base.inspect}")
-                 end
+                 }.new(@type)
+      @index = @numeric.class.new(TYPES[:uint32])
 
       case @type
       when Type::Char, Type::UChar
@@ -190,19 +202,18 @@ module Hexdump
 
       chars_per_column = @numeric.width
       numeric_width = ((chars_per_column * @columns) + (@columns - 1))
-      index_format = "%.8x"
 
       if @char_map
         index = each_row(data) do |index,numeric,chars|
-          yield "#{index_format % index}  #{numeric.join(' ').ljust(numeric_width)}  |#{chars.join}|#{$/}"
+          yield "#{@index % index}  #{numeric.join(' ').ljust(numeric_width)}  |#{chars.join}|#{$/}"
         end
       else
         index = each_row(data) do |index,numeric|
-          yield "#{index_format % index}  #{numeric.join(' ').ljust(numeric_width)}#{$/}"
+          yield "#{@index % index}  #{numeric.join(' ').ljust(numeric_width)}#{$/}"
         end
       end
 
-      yield sprintf("#{index_format}#{$/}",index)
+      yield "#{@index % index}#{$/}"
       return nil
     end
 

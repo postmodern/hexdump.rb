@@ -167,6 +167,10 @@ describe Hexdump::Format do
       context "when the base: is 16" do
         let(:base) { 16 }
 
+        it "must initialize #index to Hexdump::Numeric::Base::Hexdecimal" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Base::Hexadecimal)
+        end
+
         it "must initialize #numeric to Hexdump::Numeric::Base::Hexdecimal" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Hexadecimal)
         end
@@ -174,6 +178,10 @@ describe Hexdump::Format do
 
       context "when the base: is 10" do
         let(:base) { 10 }
+
+        it "must initialize #index to Hexdump::Numeric::Base::Decimal" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Base::Decimal)
+        end
 
         it "must initialize #numeric to Hexdump::Numeric::Base::Decimal" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Decimal)
@@ -183,6 +191,10 @@ describe Hexdump::Format do
       context "when given base: 8" do
         let(:base) { 8 }
 
+        it "must initialize #index to Hexdump::Numeric::Base::Octal" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Base::Octal)
+        end
+
         it "must initialize #numeric to Hexdump::Numeric::Base::Octal" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Octal)
         end
@@ -190,6 +202,10 @@ describe Hexdump::Format do
 
       context "when given base: 2" do
         let(:base) { 2 }
+
+        it "must initialize #index to Hexdump::Numeric::Base::Binary" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Base::Binary)
+        end
 
         it "must initialize #numeric to Hexdump::Numeric::Base::Binary" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Binary)
