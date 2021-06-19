@@ -102,17 +102,17 @@ module Hexdump
       end
 
       @char_map = case @type
-                    when Type::Char, Type::UChar
-                      nil # disable the printable characters for chars
-                    when Type::UInt8
-                      CharMap::ASCII
-                    when Type::UInt
-                      CharMap::UTF8
-                    when Type::Int
-                      nil # disable the printable characters for signed ints
-                    when Type::Float
-                      nil # disable the printable characters for floats
-                    end
+                  when Type::Char, Type::UChar
+                    nil # disable the printable characters for chars
+                  when Type::UInt8
+                    CharMap::ASCII
+                  when Type::UInt
+                    CharMap::UTF8
+                  when Type::Int
+                    nil # disable the printable characters for signed ints
+                  when Type::Float
+                    nil # disable the printable characters for floats
+                  end
     end
 
     #
