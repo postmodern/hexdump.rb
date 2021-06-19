@@ -203,14 +203,11 @@ module Hexdump
       chars_per_column = @numeric.width
       numeric_width = ((chars_per_column * @columns) + (@columns - 1))
 
-      if @char_map
-        index = each_row(data) do |index,numeric,chars|
-          yield "#{@index % index}  #{numeric.join(' ').ljust(numeric_width)}  |#{chars.join}|#{$/}"
-        end
-      else
-        index = each_row(data) do |index,numeric|
-          yield "#{@index % index}  #{numeric.join(' ').ljust(numeric_width)}#{$/}"
-        end
+      index = each_row(data) do |index,numeric,chars|
+        line = "#{@index % index}  #{numeric.join(' ').ljust(numeric_width)}"
+        line << "  |#{chars.join}|" if @char_map
+        line << $/
+        yield line
       end
 
       yield "#{@index % index}#{$/}"
