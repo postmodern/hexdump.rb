@@ -2,8 +2,7 @@
 
 require 'hexdump/types'
 require 'hexdump/reader'
-require 'hexdump/numeric/base'
-require 'hexdump/numeric/chars'
+require 'hexdump/numeric'
 require 'hexdump/char_map'
 
 module Hexdump
@@ -23,10 +22,10 @@ module Hexdump
 
     # Numeric bases and their formatting classes.
     BASES = {
-      16 => Numeric::Base::Hexadecimal,
-      10 => Numeric::Base::Decimal,
-      8  => Numeric::Base::Octal,
-      2  => Numeric::Base::Binary
+      16 => Numeric::Hexadecimal,
+      10 => Numeric::Decimal,
+      8  => Numeric::Octal,
+      2  => Numeric::Binary
     }
 
     # The word type to decode the byte stream as.
@@ -46,18 +45,18 @@ module Hexdump
 
     # The format of the index number.
     #
-    # @return [Numeric::Base::Hexadecimal,
-    #          Numeric::Base::Decimal,
-    #          Numeric::Base::Octal,
-    #          Numeric::Base::Binary]
+    # @return [Numeric::Hexadecimal,
+    #          Numeric::Decimal,
+    #          Numeric::Octal,
+    #          Numeric::Binary]
     attr_reader :index
 
     # Mapping of values to their numeric strings.
     #
-    # @return [Numeric::Base::Hexadecimal,
-    #          Numeric::Base::Decimal,
-    #          Numeric::Base::Octal,
-    #          Numeric::Base::Binary]
+    # @return [Numeric::Hexadecimal,
+    #          Numeric::Decimal,
+    #          Numeric::Octal,
+    #          Numeric::Binary]
     attr_reader :numeric
 
     # Mapping of numeric values to their character strings.

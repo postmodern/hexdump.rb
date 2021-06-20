@@ -23,8 +23,8 @@ describe Hexdump::Format do
       expect(subject.base).to eq(16)
     end
 
-    it "must initialize #numeric to a Hexdump::Numeric::Base::Hexadecimal" do
-      expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Hexadecimal)
+    it "must initialize #numeric to a Hexdump::Numeric::Hexadecimal" do
+      expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Hexadecimal)
     end
 
     context "when given a type: keyword" do
@@ -147,7 +147,7 @@ describe Hexdump::Format do
           it do
             expect {
               described_class.new(type: type, base: 8)
-            }.to raise_error(Hexdump::Numeric::Base::IncompatibleTypeError)
+            }.to raise_error(Hexdump::Numeric::IncompatibleTypeError)
           end
         end
       end
@@ -167,48 +167,48 @@ describe Hexdump::Format do
       context "when the base: is 16" do
         let(:base) { 16 }
 
-        it "must initialize #index to Hexdump::Numeric::Base::Hexdecimal" do
-          expect(subject.index).to be_kind_of(Hexdump::Numeric::Base::Hexadecimal)
+        it "must initialize #index to Hexdump::Numeric::Hexdecimal" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Hexadecimal)
         end
 
-        it "must initialize #numeric to Hexdump::Numeric::Base::Hexdecimal" do
-          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Hexadecimal)
+        it "must initialize #numeric to Hexdump::Numeric::Hexdecimal" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Hexadecimal)
         end
       end
 
       context "when the base: is 10" do
         let(:base) { 10 }
 
-        it "must initialize #index to Hexdump::Numeric::Base::Decimal" do
-          expect(subject.index).to be_kind_of(Hexdump::Numeric::Base::Decimal)
+        it "must initialize #index to Hexdump::Numeric::Decimal" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Decimal)
         end
 
-        it "must initialize #numeric to Hexdump::Numeric::Base::Decimal" do
-          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Decimal)
+        it "must initialize #numeric to Hexdump::Numeric::Decimal" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Decimal)
         end
       end
 
       context "when given base: 8" do
         let(:base) { 8 }
 
-        it "must initialize #index to Hexdump::Numeric::Base::Octal" do
-          expect(subject.index).to be_kind_of(Hexdump::Numeric::Base::Octal)
+        it "must initialize #index to Hexdump::Numeric::Octal" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Octal)
         end
 
-        it "must initialize #numeric to Hexdump::Numeric::Base::Octal" do
-          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Octal)
+        it "must initialize #numeric to Hexdump::Numeric::Octal" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Octal)
         end
       end
 
       context "when given base: 2" do
         let(:base) { 2 }
 
-        it "must initialize #index to Hexdump::Numeric::Base::Binary" do
-          expect(subject.index).to be_kind_of(Hexdump::Numeric::Base::Binary)
+        it "must initialize #index to Hexdump::Numeric::Binary" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Binary)
         end
 
-        it "must initialize #numeric to Hexdump::Numeric::Base::Binary" do
-          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Base::Binary)
+        it "must initialize #numeric to Hexdump::Numeric::Binary" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Binary)
         end
       end
     end

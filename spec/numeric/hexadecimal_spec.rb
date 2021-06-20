@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'hexdump/numeric/base/hexadecimal'
+require 'hexdump/numeric/hexadecimal'
 require 'hexdump/type'
 
-describe Hexdump::Numeric::Base::Hexadecimal do
+describe Hexdump::Numeric::Hexadecimal do
   describe "#initialize" do
     subject { described_class.new(type) }
 

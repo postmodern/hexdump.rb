@@ -1,11 +1,11 @@
 require 'spec_helper'
 require 'hexdump/numeric/chars'
-require 'hexdump/numeric/base'
+require 'hexdump/numeric/hexadecimal'
 require 'hexdump/type'
 
 describe Hexdump::Numeric::Chars do
   let(:type) { Hexdump::Type::UInt8.new }
-  let(:base) { Hexdump::Numeric::Base::Hexadecimal.new(type) }
+  let(:base) { Hexdump::Numeric::Hexadecimal.new(type) }
 
   subject { described_class.new(base) }
 

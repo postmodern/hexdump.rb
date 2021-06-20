@@ -1,8 +1,8 @@
 require 'spec_helper'
-require 'hexdump/numeric/base/binary'
+require 'hexdump/numeric/octal'
 require 'hexdump/type'
 
-describe Hexdump::Numeric::Base::Binary do
+describe Hexdump::Numeric::Octal do
   describe "#initialize" do
     subject { described_class.new(type) }
 
@@ -10,32 +10,32 @@ describe Hexdump::Numeric::Base::Binary do
       context "and size is 1" do
         let(:type) { Hexdump::Type::Int8.new }
 
-        it "must set #width to 8 + 1" do
-          expect(subject.width).to eq(8 + 1)
+        it "must set #width to 3 + 1" do
+          expect(subject.width).to eq(3 + 1)
         end
       end
 
       context "and size is 2" do
         let(:type) { Hexdump::Type::Int16.new }
 
-        it "must set #width to 16 + 1" do
-          expect(subject.width).to eq(16 + 1)
+        it "must set #width to 6 + 1" do
+          expect(subject.width).to eq(6 + 1)
         end
       end
 
       context "and size is 4" do
         let(:type) { Hexdump::Type::Int32.new }
 
-        it "must set #width to 32 + 1" do
-          expect(subject.width).to eq(32 + 1)
+        it "must set #width to 11 + 1" do
+          expect(subject.width).to eq(11 + 1)
         end
       end
 
       context "and size is 8" do
         let(:type) { Hexdump::Type::Int64.new }
 
-        it "must set #width to 64 + 1" do
-          expect(subject.width).to eq(64 + 1)
+        it "must set #width to 22 + 1" do
+          expect(subject.width).to eq(22 + 1)
         end
       end
 
@@ -60,32 +60,32 @@ describe Hexdump::Numeric::Base::Binary do
       context "and size is 1" do
         let(:type) { Hexdump::Type::UInt8.new }
 
-        it "must set #width to 8" do
-          expect(subject.width).to eq(8)
+        it "must set #width to 3" do
+          expect(subject.width).to eq(3)
         end
       end
 
       context "and size is 2" do
         let(:type) { Hexdump::Type::UInt16.new }
 
-        it "must set #width to 16" do
-          expect(subject.width).to eq(16)
+        it "must set #width to 6" do
+          expect(subject.width).to eq(6)
         end
       end
 
       context "and size is 4" do
         let(:type) { Hexdump::Type::UInt32.new }
 
-        it "must set #width to 32" do
-          expect(subject.width).to eq(32)
+        it "must set #width to 11" do
+          expect(subject.width).to eq(11)
         end
       end
 
       context "and size is 8" do
         let(:type) { Hexdump::Type::UInt64.new }
 
-        it "must set #width to 64" do
-          expect(subject.width).to eq(64)
+        it "must set #width to 22" do
+          expect(subject.width).to eq(22)
         end
       end
 
@@ -112,7 +112,7 @@ describe Hexdump::Numeric::Base::Binary do
       it do
         expect {
           described_class.new(type)
-        }.to raise_error(Hexdump::Numeric::Base::IncompatibleTypeError,"cannot format floating-point numbers in binary")
+        }.to raise_error(Hexdump::Numeric::IncompatibleTypeError,"cannot format floating-point numbers in octal")
       end
     end
 
@@ -132,24 +132,24 @@ describe Hexdump::Numeric::Base::Binary do
       let(:type) { Hexdump::Type::UInt8.new }
 
       let(:value) { 0xf }
-      let(:binary) { '00001111' }
+      let(:octal) { '017' }
 
-      it "must return a binary string of length 8" do
-        expect(subject % value).to eq(binary)
+      it "must return a octal string of length 8" do
+        expect(subject % value).to eq(octal)
       end
 
       context "and is signed" do
         let(:type) { Hexdump::Type::Int8.new }
 
         context "and the value is positive" do
-          it "must return a binary string of length 8 prefixed with a ' '" do
-            expect(subject % value).to eq(" #{binary}")
+          it "must return a octal string of length 8 prefixed with a ' '" do
+            expect(subject % value).to eq(" #{octal}")
           end
         end
 
         context "and the value is negative" do
-          it "must return a binary string of length 8 prefixed with a '-'" do
-            expect(subject % -value).to eq("-#{binary}")
+          it "must return a octal string of length 8 prefixed with a '-'" do
+            expect(subject % -value).to eq("-#{octal}")
           end
         end
       end
@@ -159,24 +159,24 @@ describe Hexdump::Numeric::Base::Binary do
       let(:type) { Hexdump::Type::UInt16.new }
 
       let(:value) { 0xff }
-      let(:binary) { '0000000011111111' }
+      let(:octal) { '000377' }
 
-      it "must return a binary string of length 16" do
-        expect(subject % value).to eq(binary)
+      it "must return a octal string of length 16" do
+        expect(subject % value).to eq(octal)
       end
 
       context "and is signed" do
         let(:type) { Hexdump::Type::Int16.new }
 
         context "and the value is positive" do
-          it "must return a binary string of length 16 prefixed with a ' '" do
-            expect(subject % value).to eq(" #{binary}")
+          it "must return a octal string of length 16 prefixed with a ' '" do
+            expect(subject % value).to eq(" #{octal}")
           end
         end
 
         context "and the value is negative" do
-          it "must return a binary string of length 16 prefixed with a '-'" do
-            expect(subject % -value).to eq("-#{binary}")
+          it "must return a octal string of length 16 prefixed with a '-'" do
+            expect(subject % -value).to eq("-#{octal}")
           end
         end
       end
@@ -186,24 +186,24 @@ describe Hexdump::Numeric::Base::Binary do
       let(:type) { Hexdump::Type::UInt32.new }
 
       let(:value) { 0xffff }
-      let(:binary) { '00000000000000001111111111111111' }
+      let(:octal) { '00000177777' }
 
-      it "must return a binary string of length 32" do
-        expect(subject % value).to eq(binary)
+      it "must return a octal string of length 32" do
+        expect(subject % value).to eq(octal)
       end
 
       context "and is signed" do
         let(:type) { Hexdump::Type::Int32.new }
 
         context "and the value is positive" do
-          it "must return a binary string of length 32 prefixed with a ' '" do
-            expect(subject % value).to eq(" #{binary}")
+          it "must return a octal string of length 32 prefixed with a ' '" do
+            expect(subject % value).to eq(" #{octal}")
           end
         end
 
         context "and the value is negative" do
-          it "must return a binary string of length 32 prefixed with a '-'" do
-            expect(subject % -value).to eq("-#{binary}")
+          it "must return a octal string of length 32 prefixed with a '-'" do
+            expect(subject % -value).to eq("-#{octal}")
           end
         end
       end
@@ -213,24 +213,24 @@ describe Hexdump::Numeric::Base::Binary do
       let(:type) { Hexdump::Type::UInt64.new }
 
       let(:value)  { 0xffffffff }
-      let(:binary) { '0000000000000000000000000000000011111111111111111111111111111111' }
+      let(:octal) { '0000000000037777777777' }
 
-      it "must return a binary string of length 64" do
-        expect(subject % value).to eq(binary)
+      it "must return a octal string of length 64" do
+        expect(subject % value).to eq(octal)
       end
 
       context "and is signed" do
         let(:type) { Hexdump::Type::Int64.new }
 
         context "and the value is positive" do
-          it "must return a binary string of length 64 prefixed with a ' '" do
-            expect(subject % value).to eq(" #{binary}")
+          it "must return a octal string of length 64 prefixed with a ' '" do
+            expect(subject % value).to eq(" #{octal}")
           end
         end
 
         context "and the value is negative" do
-          it "must return a binary string of length 64 prefixed with a '-'" do
-            expect(subject % -value).to eq("-#{binary}")
+          it "must return a octal string of length 64 prefixed with a '-'" do
+            expect(subject % -value).to eq("-#{octal}")
           end
         end
       end
