@@ -215,9 +215,14 @@ module Hexdump
         if index == '*'
           yield index
         else
-          line = "#{@index % index}  #{numeric.join(' ').ljust(numeric_width)}"
-          line << "  |#{chars.join}|" if @char_map
-          line << $/
+          index   = @index % index
+          numeric = numeric.join(' ').ljust(numeric_width)
+          line    = if @char_map
+                      "#{index}  #{numeric}  |#{chars.join}|#{$/}"
+                    else
+                      "#{index}  #{numeric}#{$/}"
+                    end
+
           yield line
         end
       end
