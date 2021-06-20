@@ -236,30 +236,76 @@ describe Hexdump::Format do
       expect(lines[0][2]).to be == print_chars
     end
 
-    it "should provide the index within the data for each line" do
-      indices = []
+    it "should yield the index of the row within the given data" do
+      rows = [
+        'A' * subject.columns,
+        'B' * subject.columns,
+        'C' * subject.columns
+      ]
+      data = rows.join
 
-      subject.each_row('A' * (16 * 10)) do |index,hex,print|
-        indices << index
+      yielded_indices = []
+
+      subject.each_row(data) do |index,hex,print|
+        yielded_indices << index
       end
 
-      expect(indices).to be == [0, 16, 32, 48, 64, 80, 96, 112, 128, 144]
+      expect(yielded_indices).to be == [
+        0,
+        rows[0].length,
+        rows[0].length + rows[1].length
+      ]
     end
 
-    context "when initialized with a custom wdith:" do
-      let(:columns) { 10 }
+    context "when there is repeating rows of data" do
+      it "should yield a '*' index to denote the beginning of repeating rows" do
+        rows = [
+          'A' * subject.columns,
+          'B' * subject.columns,
+          'B' * subject.columns,
+          'B' * subject.columns,
+          'C' * subject.columns
+        ]
+        data = rows.join
+
+        yielded_indices = []
+
+        subject.each_row(data) do |index,hex,print|
+          yielded_indices << index
+        end
+
+        expect(yielded_indices).to be == [
+          0,
+          rows[0].length,
+          '*',
+          rows[0].length + rows[1].length + rows[2].length + rows[3].length
+        ]
+      end
+    end
+
+    context "when initialized with a custom columns:" do
+      let(:columns) { 20 }
 
       subject { described_class.new(columns: columns) }
 
-      it "should change the columns, in bytes, of each line" do
-        columnss = []
-        count  = 10
+      it "should yield rows with the same number of formatted columns" do
+        rows = [
+          'A' * subject.columns,
+          'B' * subject.columns,
+          'C' * subject.columns
+        ]
+        data = rows.join
 
-        subject.each_row('A' * (columns * count)) do |index,hex,print|
-          columnss << hex.length
+        yielded_numeric = []
+        yielded_chars   = []
+
+        subject.each_row(data) do |index,numeric,chars|
+          yielded_numeric << numeric
+          yielded_chars   << chars
         end
 
-        expect(columnss).to be == ([columns] * count)
+        expect(yielded_numeric.map(&:length)).to all(eq(columns))
+        expect(yielded_chars.map(&:length)).to   all(eq(columns))
       end
     end
 
@@ -424,10 +470,14 @@ describe Hexdump::Format do
     end
 
     it "must return the number of bytes read" do
-      length = 100
-      data   = 'A' * length
+      rows = [
+        'A' * subject.columns,
+        'B' * subject.columns,
+        'C' * subject.columns
+      ]
+      data = rows.join
 
-      expect(subject.each_row(data) { |index,hex,print| }).to be == length
+      expect(subject.each_row(data) { |index,hex,print| }).to be == data.length
     end
 
     context "when no block is given" do

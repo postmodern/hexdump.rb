@@ -127,13 +127,15 @@ module Hexdump
     #   The given block will be passed the hexdump break-down of each
     #   segment.
     #
-    # @yieldparam [Integer] index
+    # @yieldparam [Integer, '*'] index
     #   The index of the hexdumped segment.
+    #   If the index is `'*'`, then it indicates the beginning of repeating
+    #   rows of data.
     #
-    # @yieldparam [Array<String>] numeric
+    # @yieldparam [Array<String>, nil] numeric
     #   The numeric representation of the segment.
     #
-    # @yieldparam [Array<String>] chars
+    # @yieldparam [Array<String>, nil] chars
     #   The printable representation of the segment.
     #
     # @return [Integer, Enumerator]
@@ -149,22 +151,37 @@ module Hexdump
       numeric = Array.new(@columns)
       chars   = Array.new(@columns)
 
+      previous_row = nil
+      repeating = false
+
       @reader.each(data).each_slice(@columns) do |row|
-        row.each_with_index do |value,i|
-          numeric[i] = @numeric % value
-          chars[i]   = @char_map[value] if @char_map
-        end
-
-        if row.length == @columns
-          yield index, numeric, chars
-
-          index += slice_size
+        if row == previous_row
+          unless repeating
+            yield '*'
+            repeating = true
+          end
         else
-          # yield the remaining data
-          yield index, numeric[0,row.length], chars[0,row.length]
+          if repeating
+            previous_row = nil
+            repeating    = false
+          end
 
-          index += (row.length * @type.size)
+          row.each_with_index do |value,i|
+            numeric[i] = @numeric % value
+            chars[i]   = @char_map[value] if @char_map
+          end
+
+          if row.length == @columns
+            yield index, numeric, chars
+          else
+            # yield the remaining data
+            yield index, numeric[0,row.length], chars[0,row.length]
+          end
+
+          previous_row = row
         end
+
+        index += (row.length * @type.size)
       end
 
       return index
@@ -195,10 +212,14 @@ module Hexdump
       numeric_width    = ((chars_per_column * @columns) + number_of_spaces)
 
       index = each_row(data) do |index,numeric,chars|
-        line = "#{@index % index}  #{numeric.join(' ').ljust(numeric_width)}"
-        line << "  |#{chars.join}|" if @char_map
-        line << $/
-        yield line
+        if index == '*'
+          yield index
+        else
+          line = "#{@index % index}  #{numeric.join(' ').ljust(numeric_width)}"
+          line << "  |#{chars.join}|" if @char_map
+          line << $/
+          yield line
+        end
       end
 
       yield "#{@index % index}#{$/}"
