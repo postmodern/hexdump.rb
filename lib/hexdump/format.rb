@@ -143,40 +143,28 @@ module Hexdump
     def each_row(data)
       return enum_for(__method__,data) unless block_given?
 
-      count = 0
       index = 0
       slice_size = (@columns * @type.size)
 
       numeric = Array.new(@columns)
       chars   = Array.new(@columns)
 
-      @reader.each(data) do |word|
-        numeric[count] = @numeric % word
-        chars[count]   = @char_map[word] if @char_map
+      @reader.each(data).each_slice(@columns) do |row|
+        row.each_with_index do |value,i|
+          numeric[i] = @numeric % value
+          chars[i]   = @char_map[value] if @char_map
+        end
 
-        count += 1
-
-        if count >= @columns
-          if @char_map
-            yield index, numeric, chars
-          else
-            yield index, numeric
-          end
+        if row.length == @columns
+          yield index, numeric, chars
 
           index += slice_size
-          count = 0
-        end
-      end
-
-      if count > 0
-        # yield the remaining data
-        if @char_map
-          yield index, numeric[0,count], chars[0,count]
         else
-          yield index, numeric[0,count]
-        end
+          # yield the remaining data
+          yield index, numeric[0,row.length], chars[0,row.length]
 
-        index += (count * @type.size)
+          index += (row.length * @type.size)
+        end
       end
 
       return index
