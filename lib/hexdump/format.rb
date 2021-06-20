@@ -203,7 +203,8 @@ module Hexdump
       return enum_for(__method__,data) unless block_given?
 
       chars_per_column = @numeric.width
-      numeric_width = ((chars_per_column * @columns) + (@columns - 1))
+      number_of_spaces = (@columns - 1)
+      numeric_width    = ((chars_per_column * @columns) + number_of_spaces)
 
       index = each_row(data) do |index,numeric,chars|
         line = "#{@index % index}  #{numeric.join(' ').ljust(numeric_width)}"
