@@ -1,9 +1,9 @@
 require 'spec_helper'
-require 'hexdump/numeric/chars'
+require 'hexdump/numeric/char_or_int'
 require 'hexdump/numeric/hexadecimal'
 require 'hexdump/type'
 
-describe Hexdump::Numeric::Chars do
+describe Hexdump::Numeric::CharOrInt do
   let(:type) { Hexdump::Type::UInt8.new }
   let(:base) { Hexdump::Numeric::Hexadecimal.new(type) }
 

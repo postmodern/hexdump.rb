@@ -8,7 +8,7 @@ module Hexdump
     #
     # @since 1.0.0
     #
-    class Chars < FormatString
+    class CharOrInt < FormatString
 
       # Printable characters including escape characters.
       #

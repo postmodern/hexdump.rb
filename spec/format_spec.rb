@@ -43,8 +43,8 @@ describe Hexdump::Format do
       context "when initialized with a type: :char" do
         subject { described_class.new(type: :char) }
 
-        it "must initialize #numeric to Hexdump::Numeric::Chars" do
-          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Chars)
+        it "must initialize #numeric to Hexdump::Numeric::CharOrInt" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::CharOrInt)
         end
 
         it "must set #char_map to nil" do
@@ -55,8 +55,8 @@ describe Hexdump::Format do
       context "when with type: is :uchar" do
         let(:type) { :uchar }
 
-        it "must initialize #numeric to Hexdump::Numeric::Chars" do
-          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Chars)
+        it "must initialize #numeric to Hexdump::Numeric::CharOrInt" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::CharOrInt)
         end
 
         it "must set #char_map to nil" do

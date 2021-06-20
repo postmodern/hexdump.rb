@@ -100,7 +100,7 @@ module Hexdump
 
       case @type
       when Type::Char, Type::UChar
-        @numeric = Numeric::Chars.new(@numeric)
+        @numeric = Numeric::CharOrInt.new(@numeric)
       end
 
       @char_map = case @type
