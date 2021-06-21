@@ -333,7 +333,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The output value does not support the `#print` method.
     #
-    def print(data,output=$stdout)
+    def print(data, output: $stdout)
       unless output.respond_to?(:print)
         raise(ArgumentError,"output must support the #print method")
       end

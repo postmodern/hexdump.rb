@@ -493,7 +493,7 @@ describe Hexdump::Format do
 
       it do
         expect {
-          subject.print(data,output)
+          subject.print(data, output: output)
         }.to raise_error(ArgumentError,"output must support the #print method")
       end
     end
@@ -504,7 +504,7 @@ describe Hexdump::Format do
     let(:index_format) { "%.8x" }
 
     it "must append each line of the hexdump to the output" do
-      subject.print(data,output)
+      subject.print(data, output: output)
 
       expect(lines.length).to be(2)
       expect(lines[0]).to start_with(index_format % 0)
@@ -513,7 +513,7 @@ describe Hexdump::Format do
     end
 
     it "must always print the total number of bytes read on the last line" do
-      subject.print(data,output)
+      subject.print(data, output: output)
 
       expect(lines.last).to start_with(index_format % data.length)
     end

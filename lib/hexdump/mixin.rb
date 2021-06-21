@@ -47,7 +47,7 @@ module Hexdump
     def hexdump(output: $stdout, **kwargs)
       hexdump = Hexdump::Format.new(**kwargs)
 
-      hexdump.print(self,output)
+      hexdump.print(self, output: output)
     end
   end
 end
