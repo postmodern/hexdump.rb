@@ -18,6 +18,9 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
+    # @param [Integer] offset
+    #   The offset to start the index at.
+    #
     # @param [#print] output ($stdout)
     #   The output to print the hexdump to.
     #
@@ -38,10 +41,10 @@ module Hexdump
     #   the `:output` value does not support the `#print` method or
     #   the `:base` value was unknown.
     #
-    def hexdump(data, output: $stdout, **kwargs)
+    def hexdump(data, offset: 0, output: $stdout, **kwargs)
       hexdump = Hexdump::Format.new(**kwargs)
 
-      hexdump.print(data, output: output)
+      hexdump.print(data, offset: 0, output: output)
     end
   end
 end

@@ -27,6 +27,9 @@ module Hexdump
     # @param [#print] output ($stdout)
     #   The output to print the hexdump to.
     #
+    # @param [Integer] offset
+    #   The offset to start the index at.
+    #
     # @param [Hash{Symbol => Object}] kwargs
     #   Additional keyword arguments for {Format#initialize}.
     #
@@ -44,10 +47,10 @@ module Hexdump
     #   the `:output` value does not support the `#print` method or
     #   the `:base` value was unknown.
     #
-    def hexdump(output: $stdout, **kwargs)
+    def hexdump(offset: 0, output: $stdout, **kwargs)
       hexdump = Hexdump::Format.new(**kwargs)
 
-      hexdump.print(self, output: output)
+      hexdump.print(self, offset: 0, output: output)
     end
   end
 end

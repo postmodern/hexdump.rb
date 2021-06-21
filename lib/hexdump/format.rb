@@ -151,6 +151,9 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
+    # @param [Integer] offset
+    #   The offset to start the index at.
+    #
     # @yield [index, row]
     #   The given block will be passed the hexdump break-down of each
     #   segment.
@@ -165,10 +168,10 @@ module Hexdump
     #   If a block is given, then the final number of bytes read is returned.
     #   If no block is given, an Enumerator will be returned.
     #
-    def each_row_with_index(data)
-      return enum_for(__method__,data) unless block_given?
+    def each_row_with_index(data, offset: 0)
+      return enum_for(__method__,data, offset: offset) unless block_given?
 
-      index = 0
+      index = offset
 
       each_row(data) do |row|
         yield index, row
@@ -184,6 +187,12 @@ module Hexdump
     #
     # @param [#each_byte] data
     #   The data to be hexdumped.
+    #
+    # @param [Hash{Symbol => Object}] kwargs
+    #   Additional keyword arguments.
+    #
+    # @option kwargs [Integer] offset
+    #   The offset to start the index at.
     #
     # @yield [index, row]
     #   The given block will be passed the hexdump break-down of each
@@ -201,13 +210,13 @@ module Hexdump
     #   If a block is given, the final number of bytes read will be returned.
     #   If no block is given, an Enumerator will be returned.
     #
-    def each_non_repeating_row(data)
-      return enum_for(__method__,data) unless block_given?
+    def each_non_repeating_row(data,**kwargs)
+      return enum_for(__method__,data,**kwargs) unless block_given?
 
       previous_row = nil
       repeating = false
 
-      each_row_with_index(data) do |index,row|
+      each_row_with_index(data,**kwargs) do |index,row|
         if row == previous_row
           unless repeating
             yield '*'
@@ -231,6 +240,12 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
+    # @param [Hash{Symbol => Object}] kwargs
+    #   Additional keyword arguments.
+    #
+    # @option kwargs [Integer] offset
+    #   The offset to start the index at.
+    #
     # @yield [index, numeric, chars]
     #   The given block will be passed the hexdump break-down of each
     #   segment.
@@ -250,13 +265,13 @@ module Hexdump
     #   If a block is given, the final number of bytes read will be returned.
     #   If no block is given, an Enumerator will be returned.
     #
-    def each_formatted_row(data)
-      return enum_for(__method__,data) unless block_given?
+    def each_formatted_row(data,**kwargs)
+      return enum_for(__method__,data,**kwargs) unless block_given?
 
       numeric = Array.new(@columns)
       chars   = Array.new(@columns)
 
-      each_non_repeating_row(data) do |index,row|
+      each_non_repeating_row(data,**kwargs) do |index,row|
         if index == '*'
           yield index
         else
@@ -281,6 +296,12 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
+    # @param [Hash{Symbol => Object}] kwargs
+    #   Additional keyword arguments.
+    #
+    # @option kwargs [Integer] offset
+    #   The offset to start the index at.
+    #
     # @yield [line]
     #   The given block will be passed each line from the hexdump.
     #
@@ -292,14 +313,14 @@ module Hexdump
     #
     # @return [nil]
     #
-    def each_line(data)
+    def each_line(data,**kwargs)
       return enum_for(__method__,data) unless block_given?
 
       chars_per_column = @numeric.width
       number_of_spaces = (@columns - 1)
       numeric_width    = ((chars_per_column * @columns) + number_of_spaces)
 
-      index = each_formatted_row(data) do |index,numeric,chars|
+      index = each_formatted_row(data,**kwargs) do |index,numeric,chars|
         if index == '*'
           yield index
         else
@@ -328,17 +349,23 @@ module Hexdump
     # @param [#print] output
     #   The output to dump the hexdump to.
     #
+    # @param [Hash{Symbol => Object}] kwargs
+    #   Additional keyword arguments.
+    #
+    # @option kwargs [Integer] offset
+    #   The offset to start the index at.
+    #
     # @return [nil]
     #
     # @raise [ArgumentError]
     #   The output value does not support the `#print` method.
     #
-    def print(data, output: $stdout)
+    def print(data, output: $stdout, **kwargs)
       unless output.respond_to?(:print)
         raise(ArgumentError,"output must support the #print method")
       end
 
-      each_line(data) do |line|
+      each_line(data,**kwargs) do |line|
         output.print(line)
       end
     end
