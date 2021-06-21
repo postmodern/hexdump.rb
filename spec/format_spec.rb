@@ -222,11 +222,11 @@ describe Hexdump::Format do
     end
   end
 
-  describe "#each_row" do
+  describe "#each_formatted_row" do
     it "should yield the parts of each hexdump line to the given block" do
       lines = []
 
-      subject.each_row(data) do |index,hex,print|
+      subject.each_formatted_row(data) do |index,hex,print|
         lines << [index, hex, print]
       end
 
@@ -246,7 +246,7 @@ describe Hexdump::Format do
 
       yielded_indices = []
 
-      subject.each_row(data) do |index,hex,print|
+      subject.each_formatted_row(data) do |index,hex,print|
         yielded_indices << index
       end
 
@@ -270,7 +270,7 @@ describe Hexdump::Format do
 
         yielded_indices = []
 
-        subject.each_row(data) do |index,hex,print|
+        subject.each_formatted_row(data) do |index,hex,print|
           yielded_indices << index
         end
 
@@ -299,7 +299,7 @@ describe Hexdump::Format do
         yielded_numeric = []
         yielded_chars   = []
 
-        subject.each_row(data) do |index,numeric,chars|
+        subject.each_formatted_row(data) do |index,numeric,chars|
           yielded_numeric << numeric
           yielded_chars   << chars
         end
@@ -321,7 +321,7 @@ describe Hexdump::Format do
       it "should hexdump the remaining bytes" do
         remainder = nil
 
-        subject.each_row(leading + string) do |index,hex,print|
+        subject.each_formatted_row(leading + string) do |index,hex,print|
           remainder = print
         end
 
@@ -333,7 +333,7 @@ describe Hexdump::Format do
       chars = []
       length = (16 * 10)
 
-      subject.each_row(data * length) do |index,hex,print|
+      subject.each_formatted_row(data * length) do |index,hex,print|
         chars += hex
       end
 
@@ -344,7 +344,7 @@ describe Hexdump::Format do
       chars = []
       length = (16 * 10)
 
-      subject.each_row(data * length) do |index,hex,print|
+      subject.each_formatted_row(data * length) do |index,hex,print|
         chars += print
       end
 
@@ -355,7 +355,7 @@ describe Hexdump::Format do
       unprintable = ((0x00..0x1f).map(&:chr) + (0x7f..0xff).map(&:chr)).join
       chars = []
 
-      subject.each_row(unprintable) do |index,hex,print|
+      subject.each_formatted_row(unprintable) do |index,hex,print|
         chars += print
       end
 
@@ -368,7 +368,7 @@ describe Hexdump::Format do
       it "should support dumping bytes in decimal format" do
         chars = []
 
-        subject.each_row(data) do |index,hex,print|
+        subject.each_formatted_row(data) do |index,hex,print|
           chars += hex
         end
 
@@ -382,7 +382,7 @@ describe Hexdump::Format do
       it "should support dumping bytes in octal format" do
         chars = []
 
-        subject.each_row(data) do |index,hex,print|
+        subject.each_formatted_row(data) do |index,hex,print|
           chars += hex
         end
 
@@ -396,7 +396,7 @@ describe Hexdump::Format do
       it "should support dumping bytes in binary format" do
         chars = []
 
-        subject.each_row(data) do |index,hex,print|
+        subject.each_formatted_row(data) do |index,hex,print|
           chars += hex
         end
 
@@ -413,7 +413,7 @@ describe Hexdump::Format do
       it "should dump words in hexadecimal by default" do
         words = []
 
-        subject.each_row(data) do |index,hex,print|
+        subject.each_formatted_row(data) do |index,hex,print|
           words += hex
         end
 
@@ -428,7 +428,7 @@ describe Hexdump::Format do
         it "should dump words in decimal" do
           words = []
 
-          subject.each_row(data) do |index,dec,print|
+          subject.each_formatted_row(data) do |index,dec,print|
             words += dec
           end
 
@@ -444,7 +444,7 @@ describe Hexdump::Format do
         it "should dump words in octal" do
           words = []
 
-          subject.each_row(data) do |index,oct,print|
+          subject.each_formatted_row(data) do |index,oct,print|
             words += oct
           end
 
@@ -460,7 +460,7 @@ describe Hexdump::Format do
         it "should dump words in binary" do
           words = []
 
-          subject.each_row(data) do |index,bin,print|
+          subject.each_formatted_row(data) do |index,bin,print|
             words += bin
           end
 
@@ -477,12 +477,12 @@ describe Hexdump::Format do
       ]
       data = rows.join
 
-      expect(subject.each_row(data) { |index,hex,print| }).to be == data.length
+      expect(subject.each_formatted_row(data) { |index,hex,print| }).to be == data.length
     end
 
     context "when no block is given" do
       it "must return an Enumerator" do
-        expect(subject.each_row(data)).to be_kind_of(Enumerator)
+        expect(subject.each_formatted_row(data)).to be_kind_of(Enumerator)
       end
     end
   end

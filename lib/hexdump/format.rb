@@ -118,7 +118,115 @@ module Hexdump
     end
 
     #
-    # Enumerates each row of hexdumped data.
+    # Enumerates each row of values read from the given data.
+    #
+    # @param [#each_byte] data
+    #   The data to be hexdumped.
+    #
+    # @yield [index, numeric, chars]
+    #   The given block will be passed the hexdump break-down of each
+    #   segment.
+    #
+    # @yieldparam [Integer, '*'] index
+    #   The index of the hexdumped segment.
+    #   If the index is `'*'`, then it indicates the beginning of repeating
+    #   rows of data.
+    #
+    # @yieldparam [Array<String>, nil] numeric
+    #   The numeric representation of the segment.
+    #
+    # @yieldparam [Array<String>, nil] chars
+    #   The printable representation of the segment.
+    #
+    # @return [ Enumerator]
+    #   If no block is given, an Enumerator will be returned.
+    #
+    def each_row(data,&block)
+      @reader.each(data).each_slice(@columns,&block)
+    end
+
+    #
+    # Enumerates each row, including an index, of hexdumped data.
+    #
+    # @param [#each_byte] data
+    #   The data to be hexdumped.
+    #
+    # @yield [index, row]
+    #   The given block will be passed the hexdump break-down of each
+    #   segment.
+    #
+    # @yieldparam [Integer] index
+    #   The index of the hexdumped segment.
+    #
+    # @yieldparam [Array<Integer>, Array<Float>] row
+    #   The row of values.
+    #
+    # @return [Integer, Enumerator]
+    #   If a block is given, then the final number of bytes read is returned.
+    #   If no block is given, an Enumerator will be returned.
+    #
+    def each_row_with_index(data)
+      return enum_for(__method__,data) unless block_given?
+
+      index = 0
+
+      each_row(data) do |row|
+        yield index, row
+
+        index += (row.length * @type.size)
+      end
+
+      return index
+    end
+
+    #
+    # Enumerates each non-repeating row of hexdumped data.
+    #
+    # @param [#each_byte] data
+    #   The data to be hexdumped.
+    #
+    # @yield [index, row]
+    #   The given block will be passed the hexdump break-down of each
+    #   segment.
+    #
+    # @yieldparam [Integer, '*'] index
+    #   The index of the hexdumped segment.
+    #   If the index is `'*'`, then it indicates the beginning of repeating
+    #   rows of data.
+    #
+    # @yieldparam [Array<Integer>, Array<Float>] row
+    #   The numeric representation of the segment.
+    #
+    # @return [Integer, Enumerator]
+    #   If a block is given, the final number of bytes read will be returned.
+    #   If no block is given, an Enumerator will be returned.
+    #
+    def each_non_repeating_row(data)
+      return enum_for(__method__,data) unless block_given?
+
+      previous_row = nil
+      repeating = false
+
+      each_row_with_index(data) do |index,row|
+        if row == previous_row
+          unless repeating
+            yield '*'
+            repeating = true
+          end
+        else
+          if repeating
+            previous_row = nil
+            repeating    = false
+          end
+
+          yield index, row
+          previous_row = row
+        end
+      end
+    end
+
+    #
+    # Enumerates each formatted row of hexdumped data.
     #
     # @param [#each_byte] data
     #   The data to be hexdumped.
@@ -139,33 +247,19 @@ module Hexdump
     #   The printable representation of the segment.
     #
     # @return [Integer, Enumerator]
-    #   If a block is given, then the final number of bytes read is returned.
+    #   If a block is given, the final number of bytes read will be returned.
     #   If no block is given, an Enumerator will be returned.
     #
-    def each_row(data)
+    def each_formatted_row(data)
       return enum_for(__method__,data) unless block_given?
-
-      index = 0
-      slice_size = (@columns * @type.size)
 
       numeric = Array.new(@columns)
       chars   = Array.new(@columns)
 
-      previous_row = nil
-      repeating = false
-
-      @reader.each(data).each_slice(@columns) do |row|
-        if row == previous_row
-          unless repeating
-            yield '*'
-            repeating = true
-          end
+      each_non_repeating_row(data) do |index,row|
+        if index == '*'
+          yield index
         else
-          if repeating
-            previous_row = nil
-            repeating    = false
-          end
-
           row.each_with_index do |value,i|
             numeric[i] = @numeric % value
             chars[i]   = @char_map[value] if @char_map
@@ -177,14 +271,8 @@ module Hexdump
             # yield the remaining data
             yield index, numeric[0,row.length], chars[0,row.length]
           end
-
-          previous_row = row
         end
-
-        index += (row.length * @type.size)
       end
-
-      return index
     end
 
     #
@@ -211,7 +299,7 @@ module Hexdump
       number_of_spaces = (@columns - 1)
       numeric_width    = ((chars_per_column * @columns) + number_of_spaces)
 
-      index = each_row(data) do |index,numeric,chars|
+      index = each_formatted_row(data) do |index,numeric,chars|
         if index == '*'
           yield index
         else
