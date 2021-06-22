@@ -268,24 +268,19 @@ module Hexdump
     def each_formatted_row(data,**kwargs)
       return enum_for(__method__,data,**kwargs) unless block_given?
 
-      numeric = Array.new(@columns)
-      chars   = Array.new(@columns)
-
       each_non_repeating_row(data,**kwargs) do |index,row|
         if index == '*'
           yield index
         else
+          numeric = Array.new(row.length)
+          chars   = Array.new(row.length)
+
           row.each_with_index do |value,i|
             numeric[i] = @numeric % value
             chars[i]   = @char_map[value] if @char_map
           end
 
-          if row.length == @columns
-            yield index, numeric, chars
-          else
-            # yield the remaining data
-            yield index, numeric[0,row.length], chars[0,row.length]
-          end
+          yield index, numeric, chars
         end
       end
     end
