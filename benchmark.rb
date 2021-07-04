@@ -5,23 +5,30 @@ $LOAD_PATH.unshift(File.expand_path('../lib',__FILE__))
 require 'hexdump'
 require 'benchmark'
 
-DATA = ((0..255).map { |b| b.chr }.join) * (1024 * 20)
-OUTPUT = Class.new { def print(data); end }.new
+class NullOutput
+  def print(data)
+  end
+end
 
-TYPES = Hexdump::TYPES.values.uniq.map(&Hexdump::TYPES.method(:key))
+size_mb = 10
+puts "Generating #{size_mb}Mb of random data ..."
+data = Array.new(size_mb * 1_000 * 1024) { rand(255).chr }.join
+output = NullOutput.new
+
+types = Hexdump::TYPES.values.uniq.map(&Hexdump::TYPES.method(:key))
 
 Benchmark.bm(33) do |b|
   b.report('Hexdump.hexdump(data))') do
-    Hexdump.hexdump(DATA, output:  OUTPUT)
+    Hexdump.hexdump(data, output:  output)
   end
 
   b.report('Hexdump.hexdump(data, columns: 256)') do
-    Hexdump.hexdump(DATA, columns: 256, output: OUTPUT)
+    Hexdump.hexdump(data, columns: 256, output: output)
   end
 
-  TYPES.each do |type|
+  types.each do |type|
     b.report("Hexdump.hexdump(data, type: #{type.inspect})") do
-      Hexdump.hexdump(DATA, type: type, output: OUTPUT)
+      Hexdump.hexdump(data, type: type, output: output)
     end
   end
 end
