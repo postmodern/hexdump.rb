@@ -17,7 +17,7 @@ output = NullOutput.new
 
 types = Hexdump::TYPES.values.uniq.map(&Hexdump::TYPES.method(:key))
 
-Benchmark.bm(33) do |b|
+Benchmark.bm(40) do |b|
   b.report('Hexdump.hexdump(data))') do
     Hexdump.hexdump(data, output:  output)
   end
