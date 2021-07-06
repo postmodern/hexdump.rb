@@ -463,9 +463,9 @@ describe Hexdump::Format do
 
       expect(yielded_indices).to eq(
         [
-          0,
-          rows[0].length,
-          rows[0].length + rows[1].length
+          subject.index % 0,
+          subject.index % rows[0].length,
+          subject.index % (rows[0].length + rows[1].length)
         ]
       )
     end
@@ -494,7 +494,7 @@ describe Hexdump::Format do
       index = subject.each_formatted_row(data) do |index,numeric,chars|
       end
 
-      expect(index).to eq(data.length)
+      expect(index).to eq(subject.index % data.length)
     end
 
     context "when the data's length is not evenly divisble by the columns" do
@@ -549,10 +549,10 @@ describe Hexdump::Format do
         end
 
         expect(yielded_indices).to be == [
-          0,
-          rows[0].length,
+          subject.index % 0,
+          subject.index % rows[0].length,
           '*',
-          rows[0].length + rows[1].length + rows[2].length + rows[3].length
+          subject.index % (rows[0].length + rows[1].length + rows[2].length + rows[3].length)
         ]
       end
     end

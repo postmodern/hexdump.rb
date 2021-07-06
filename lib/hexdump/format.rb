@@ -261,7 +261,7 @@ module Hexdump
     # @yieldparam [Array<String>, nil] chars
     #   The printable representation of the segment.
     #
-    # @return [Integer, Enumerator]
+    # @return [String, Enumerator]
     #   If a block is given, the final number of bytes read will be returned.
     #   If no block is given, an Enumerator will be returned.
     #
@@ -284,10 +284,11 @@ module Hexdump
         char_cache    = nil
       end
 
-      each_non_repeating_row(data,**kwargs) do |index,row|
+      index = each_non_repeating_row(data,**kwargs) do |index,row|
         if index == '*'
           yield index
         else
+          index   = @index % index
           numeric = Array.new(row.length)
           chars   = Array.new(row.length)
 
@@ -310,6 +311,8 @@ module Hexdump
           yield index, numeric, chars
         end
       end
+
+      return @index % index
     end
 
     #
@@ -346,7 +349,6 @@ module Hexdump
         if index == '*'
           yield index
         else
-          index   = @index % index
           numeric = numeric.join(' ').ljust(numeric_width)
           line    = if @char_map
                       "#{index}  #{numeric}  |#{chars.join}|#{$/}"
@@ -358,7 +360,7 @@ module Hexdump
         end
       end
 
-      yield "#{@index % index}#{$/}"
+      yield "#{index}#{$/}"
       return nil
     end
 
