@@ -268,20 +268,23 @@ module Hexdump
     def each_formatted_row(data,**kwargs)
       return enum_for(__method__,data,**kwargs) unless block_given?
 
+      format_numeric = lambda { |value| @numeric % value }
+      format_char    = lambda { |value| @char_map[value] }
+
       # cache the formatted values for 8bit and 16bit values
       if @type.size <= 2
         numeric_cache = Hash.new do |hash,value|
-                          hash[value] = @numeric % value
+                          hash[value] = format_numeric.call(value)
                         end
 
         char_cache = if @char_map
                        Hash.new do |hash,value|
-                         hash[value] = @char_map[value]
+                         hash[value] = format_char.call(value)
                        end
                      end
       else
-        numeric_cache = nil
-        char_cache    = nil
+        numeric_cache = format_numeric
+        char_cache    = format_char
       end
 
       index = each_non_repeating_row(data,**kwargs) do |index,row|
@@ -293,19 +296,8 @@ module Hexdump
           chars   = Array.new(row.length)
 
           row.each_with_index do |value,i|
-            numeric[i] = if numeric_cache
-                           numeric_cache[value]
-                         else
-                           @numeric % value
-                         end
-
-            chars[i]   = if @char_map
-                           if char_cache
-                             char_cache[value]
-                           else
-                             @char_map[value]
-                           end
-                         end
+            numeric[i] = numeric_cache[value]
+            chars[i]   = char_cache[value] if @char_map
           end
 
           yield index, numeric, chars
