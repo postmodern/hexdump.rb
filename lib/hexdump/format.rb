@@ -79,7 +79,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, columns: nil, base: nil, **kwargs)
+    def initialize(type: :byte, columns: nil, base: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
