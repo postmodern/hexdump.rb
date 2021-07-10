@@ -58,7 +58,7 @@ module Hexdump
           index += 1
 
           if index >= @type.size
-            yield buffer
+            yield buffer.dup
             index = 0
           end
         end

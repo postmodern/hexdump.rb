@@ -31,6 +31,16 @@ describe Hexdump::Reader do
         }.to yield_successive_args(*strings)
       end
 
+      it "must yield a new String instance for each slice" do
+        yielded_object_ids = []
+
+        subject.each_slice(data) do |slice|
+          yielded_object_ids << slice.object_id
+        end
+
+        expect(yielded_object_ids.uniq).to eq(yielded_object_ids)
+      end
+
       context "when the given data is not evenly divisible by the type's size" do
         let(:type)    { Hexdump::TYPES[:int32] }
         let(:strings) { %w[AABB CCDD E] }

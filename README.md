@@ -124,10 +124,10 @@ Simple and Fast hexdumping for Ruby.
     # 00000006
 
     # read multi-byte words
-    ("ABC" * 10).hexdump(type: :uint16_le)
-    00000000  4241 4143 4342 4241 4143 4342 4241 4143  |CACACACACACACACA|
-    00000010  4342 4241 4143 4342 4241 4143 4342       |BCBCBCBCBCBCBC|
-    0000001e
+    ("ABAC" * 7).hexdump(type: :uint16_le)
+    00000000  4241 4341 4241 4341 4241 4341 4241 4341  |ABACABACABACABAC|
+    00000010  4241 4341 4241 4341 4241 4341            |ABACABACABAC|
+    0000001c
 
 ## Install
 
