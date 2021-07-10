@@ -95,16 +95,13 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, columns: nil, group_columns: nil, repeating: false, base: nil, encoding: nil)
+    def initialize(type: :byte, columns: nil, group_columns: false, repeating: false, base: nil, encoding: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
 
       @columns = columns || (DEFAULT_COLUMNS / @type.size)
-      @group_columns = case group_columns
-                       when nil then (@columns / 2)
-                       else          group_columns
-                       end
+      @group_columns = group_columns
 
       @repeating = repeating
 
