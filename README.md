@@ -71,6 +71,10 @@ Simple and Fast hexdumping for Ruby.
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
     # 00000006
 
+    File.hexdump("/bin/ls")
+    # ...
+
+    # write the hexdump to a file
     File.open('dump.txt','w') do |file|
       data.hexdump(output: file)
     end
@@ -78,34 +82,52 @@ Simple and Fast hexdumping for Ruby.
     # configure the width of the hexdump
     Hexdump.hexdump('A' * 30, columns: 10)
     # 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
-    # 0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
-    # 00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+    # *
     # 0000001e
+
+    # show repeated rows
+    Hexdump.hexdump('A' * 30, columns: 10, repeating: true)
+    00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+    0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+    00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+    0000001e
+
+    # group columns together
+    Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
+    00000000  41 42 43 44  41 42 43 44  41 42 43 44  41 42 43 44  |ABCDABCDABCDABCD|
+    00000010  41 42 43 44  41 42 43 44  41 42 43 44  41 42 43 44  |ABCDABCDABCDABCD|
+    00000020
+
 
     Hexdump.hexdump("hello\0", type: :char)
     # 00000000    h   e   l   l   o  \0                                          |hello.|
     # 00000006
 
+    # hexdump in hexadecimal (default)
     Hexdump.hexdump("hello\0", base: 16)
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
     # 00000006
 
+    # hexdump in decimal
     Hexdump.hexdump("hello\0", base: 10)
     # 00000000  104 101 108 108 111   0                                          |hello.|
     # 00000006
 
+    # hexdump in octal
     Hexdump.hexdump("hello\0", base: 8)
     # 00000000  0150 0145 0154 0154 0157 0000                                                    |hello.|
     # 00000006
 
+    # hexdump in binary
     Hexdump.hexdump("hello\0", base: 2)
     # 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
     # 00000006
 
+    # read multi-byte words
     ("ABC" * 10).hexdump(type: :uint16_le)
-    # 00000000  4241 4143 4342 4241 4143 4342 4241 4143  |䉁䅃䍂䉁䅃䍂䉁䅃|
-    # 00000010  4342 4241 4143 4342 4241 4143 4342       |䍂䉁䅃䍂䉁䅃䍂|
-    # 0000001e
+    00000000  4241 4143 4342 4241 4143 4342 4241 4143  |CACACACACACACACA|
+    00000010  4342 4241 4143 4342 4241 4143 4342       |BCBCBCBCBCBCBC|
+    0000001e
 
 ## Install
 
