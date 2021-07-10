@@ -23,6 +23,10 @@ describe Hexdump::Format do
       expect(subject.base).to eq(16)
     end
 
+    it "must default #encoding to nil" do
+      expect(subject.encoding).to be(nil)
+    end
+
     it "must initialize #numeric to a Hexdump::Numeric::Hexadecimal" do
       expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Hexadecimal)
     end
@@ -213,6 +217,50 @@ describe Hexdump::Format do
       end
     end
 
+    context "when given the encoding: keyword" do
+      context "and it is :ascii" do
+        subject { described_class.new(encoding: :ascii) }
+
+        it "must set #encoding to nil" do
+          expect(subject.encoding).to be(nil)
+        end
+      end
+
+      context "and it is :utf8" do
+        subject { described_class.new(encoding: :utf8) }
+
+        it "must set #encoding to Encoding::UTF_8" do
+          expect(subject.encoding).to be(Encoding::UTF_8)
+        end
+      end
+
+      context "and is nil" do
+        subject { described_class.new(encoding: nil) }
+
+        it "must set #encoding to nil" do
+          expect(subject.encoding).to be(nil)
+        end
+      end
+
+      context "and is an Encoding object" do
+        let(:encoding) { Encoding::UTF_7 }
+
+        subject { described_class.new(encoding: nil) }
+
+        it "must set #encoding" do
+          expect(subject.encoding).to be(nil)
+        end
+      end
+
+      context "otherwise" do
+        it "must raise an ArgumentError" do
+          expect {
+            described_class.new(encoding: Object.new)
+          }.to raise_error(ArgumentError,"encoding must be :ascii, :utf8 or an Encoding object")
+        end
+      end
+    end
+
     context "when given an unsupported base: value" do
       it do
         expect {
@@ -325,6 +373,23 @@ describe Hexdump::Format do
         expect(yielded_rows).to eq(rows)
       end
     end
+
+    context "when #encoding is set" do
+      let(:encoding) { Encoding::UTF_8 }
+
+      subject { described_class.new(encoding: encoding) }
+
+      it "must encode the characters to the given Encoding" do
+        yielded_char_encodings = []
+
+        subject.each_row(data) do |index,numeric,chars|
+          yielded_char_encodings << chars.encoding
+        end
+
+        expect(yielded_char_encodings).to all(eq(encoding))
+      end
+    end
+
     context "when no block is given" do
       it "must return an Enumerator" do
         expect(subject.each_row(data)).to be_kind_of(Enumerator)

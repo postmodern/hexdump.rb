@@ -43,6 +43,11 @@ module Hexdump
     # @return [Integer]
     attr_reader :columns
 
+    # The encoding to display the characters in.
+    #
+    # @return [Encoding, nil]
+    attr_reader :encoding
+
     # The format of the index number.
     #
     # @return [Numeric::Hexadecimal,
@@ -76,10 +81,13 @@ module Hexdump
     # @param [16, 10, 8, 2] base
     #   The base to print bytes in. Defaults to 16, or to 10 if printing floats.
     #
+    # @param [:ascii, :utf8, Encoding, nil] encoding
+    #   The encoding to display the characters in.
+    #
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, columns: nil, base: nil)
+    def initialize(type: :byte, columns: nil, base: nil, encoding: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
@@ -102,6 +110,15 @@ module Hexdump
       when Type::Char, Type::UChar
         @numeric = Numeric::CharOrInt.new(@numeric)
       end
+
+      @encoding = case encoding
+                  when :ascii   then nil
+                  when :utf8    then Encoding::UTF_8
+                  when Encoding then encoding
+                  when nil      then nil
+                  else
+                    raise(ArgumentError,"encoding must be :ascii, :utf8 or an Encoding object")
+                  end
 
       @char_map = case @type
                   when Type::Char, Type::UChar
@@ -152,8 +169,10 @@ module Hexdump
 
       @reader.each(data).each_slice(@columns) do |slice|
         numeric = []
-        chars   = String.new("", capacity: @type.size * @columns,
-                                 encoding: Encoding::BINARY)
+        chars   = if @char_map
+                    String.new("", capacity: @type.size * @columns,
+                                   encoding: Encoding::BINARY)
+                  end
 
         next_index = index
 
@@ -165,6 +184,8 @@ module Hexdump
         end
 
         if @char_map
+          chars = chars.force_encoding(@encoding) if @encoding
+
           yield index, numeric, chars
         else
           yield index, numeric
