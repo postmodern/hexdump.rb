@@ -124,7 +124,7 @@ module Hexdump
                       end
 
         each_slice(data) do |slice|
-          yield slice, slice.unpack(pack_format).first
+          yield slice, slice.unpack1(pack_format)
         end
       end
     end
@@ -172,7 +172,7 @@ module Hexdump
                     end
 
       each_slice(data) do |slice|
-        yield slice, slice.unpack(pack_format).first
+        yield slice, slice.unpack1(pack_format)
       end
     end
 
@@ -210,7 +210,7 @@ module Hexdump
                     end
 
       each_slice(data) do |slice|
-        yield slice, slice.unpack(pack_format).first
+        yield slice, slice.unpack1(pack_format)
       end
     end
 
