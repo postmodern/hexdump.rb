@@ -330,7 +330,7 @@ module Hexdump
           formatted_numbers = numeric.map { |value| numeric_cache[value] }
 
           if @char_map
-            formatted_chars = String.new
+            formatted_chars = String.new(encoding: @encoding)
             chars.codepoints.each do |b|
               formatted_chars << char_cache[b]
             end
