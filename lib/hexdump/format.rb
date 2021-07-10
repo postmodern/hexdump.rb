@@ -362,7 +362,7 @@ module Hexdump
 
       index = each_formatted_row(data,**kwargs) do |index,numeric,chars|
         if index == '*'
-          yield index
+          yield "#{index}#{$/}"
         else
           numeric = numeric.join(' ').ljust(numeric_width)
           line    = if @char_map
