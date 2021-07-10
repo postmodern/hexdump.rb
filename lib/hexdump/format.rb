@@ -43,6 +43,11 @@ module Hexdump
     # @return [Integer]
     attr_reader :columns
 
+    # The number of columns to group together.
+    #
+    # @return [Integer, false]
+    attr_reader :group_columns
+
     # The encoding to display the characters in.
     #
     # @return [Encoding, nil]
@@ -78,6 +83,9 @@ module Hexdump
     # @param [Integer] columns
     #   The number of columns per hexdump line. Defaults to `16 / sizeof(type)`.
     #
+    # @param [Integer, false, nil] group_columns
+    #   Separate groups of columns with an additional space.
+    #
     # @param [16, 10, 8, 2] base
     #   The base to print bytes in. Defaults to 16, or to 10 if printing floats.
     #
@@ -87,12 +95,16 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, columns: nil, base: nil, encoding: nil)
+    def initialize(type: :byte, columns: nil, group_columns: nil, base: nil, encoding: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
 
       @columns = columns || (DEFAULT_COLUMNS / @type.size)
+      @group_columns = case group_columns
+                       when nil then (@columns / 2)
+                       else          group_columns
+                       end
 
       @base = base || case @type
                       when Type::Float, Type::Char, Type::UChar then 10
@@ -358,13 +370,20 @@ module Hexdump
 
       chars_per_column = @numeric.width
       number_of_spaces = (@columns - 1)
+      number_of_spaces += ((@columns / @group_columns) - 1) if @group_columns
       numeric_width    = ((chars_per_column * @columns) + number_of_spaces)
 
       index = each_formatted_row(data,**kwargs) do |index,numeric,chars|
         if index == '*'
           yield "#{index}#{$/}"
         else
-          numeric = numeric.join(' ').ljust(numeric_width)
+          numeric = if @group_columns
+                      numeric.each_slice(@group_columns).map { |numbers|
+                        numbers.join(' ')
+                      }.join('  ').ljust(numeric_width)
+                    else
+                      numeric.join(' ').ljust(numeric_width)
+                    end
           line    = if @char_map
                       "#{index}  #{numeric}  |#{chars}|#{$/}"
                     else
