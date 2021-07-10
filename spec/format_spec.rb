@@ -571,7 +571,7 @@ describe Hexdump::Format do
           [columns * 4, [0x43] * columns, 'C' * columns]
         ]
       end
-  
+
       it "must yield the formatted rows and a '*' row to denote the beginning of repeating rows" do
         yielded_rows = []
 
@@ -580,6 +580,30 @@ describe Hexdump::Format do
         end
 
         expect(yielded_rows).to eq(formatted_rows)
+      end
+
+      context "and #repeating is true" do
+        subject { described_class.new(repeating: true) }
+
+        let(:rows) do
+          [
+            [columns * 0, [0x41] * columns, 'A' * columns],
+            [columns * 1, [0x42] * columns, 'B' * columns],
+            [columns * 2, [0x42] * columns, 'B' * columns],
+            [columns * 3, [0x42] * columns, 'B' * columns],
+            [columns * 4, [0x43] * columns, 'C' * columns]
+          ]
+        end
+
+        it "must yield the formatted repeating rows" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
       end
     end
 

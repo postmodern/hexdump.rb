@@ -95,7 +95,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, columns: nil, group_columns: nil, base: nil, encoding: nil)
+    def initialize(type: :byte, columns: nil, group_columns: nil, repeating: false, base: nil, encoding: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
@@ -105,6 +105,8 @@ module Hexdump
                        when nil then (@columns / 2)
                        else          group_columns
                        end
+
+      @repeating = repeating
 
       @base = base || case @type
                       when Type::Float, Type::Char, Type::UChar then 10
@@ -318,7 +320,11 @@ module Hexdump
         char_cache    = format_char
       end
 
-      index = each_non_repeating_row(data,**kwargs) do |index,numeric,chars|
+      enum = if @repeating then each_row(data,**kwargs)
+             else               each_non_repeating_row(data,**kwargs)
+             end
+
+      index = enum.each do |index,numeric,chars|
         if index == '*'
           yield index
         else
