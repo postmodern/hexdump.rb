@@ -19,6 +19,10 @@ describe Hexdump::Format do
       expect(subject.columns).to eq(16)
     end
 
+    it "must default #group_columns to false" do
+      expect(subject.group_columns).to eq(false)
+    end
+
     it "must default #base to 16" do
       expect(subject.base).to eq(16)
     end
@@ -214,6 +218,26 @@ describe Hexdump::Format do
         it "must initialize #numeric to Hexdump::Numeric::Binary" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Binary)
         end
+      end
+    end
+
+    context "when given the columns: keyword" do
+      let(:columns) { 7 }
+
+      subject { described_class.new(columns: columns) }
+
+      it "must set #columns" do
+        expect(subject.columns).to eq(columns)
+      end
+    end
+
+    context "when given the group_columns: keyword" do
+      let(:group_columns) { 4 }
+
+      subject { described_class.new(group_columns: group_columns) }
+
+      it "must set #group_columns" do
+        expect(subject.group_columns).to eq(group_columns)
       end
     end
 
