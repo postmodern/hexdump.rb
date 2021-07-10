@@ -26,58 +26,6 @@ module Hexdump
     end
 
     #
-    # @param [#each_byte] data
-    #
-    # @yield [uint]
-    #
-    # @yieldparam [Integer] uint
-    #
-    # @return [Enumerator]
-    #
-    # @raise [ArgumentError]
-    #
-    def each_uint(data,&block)
-      return enum_for(__method__,data) unless block_given?
-
-      unless data.respond_to?(:each_byte)
-        raise(ArgumentError,"the given data must respond to #each_byte")
-      end
-
-      if @type.size == 1
-        data.each_byte(&block)
-      else
-        uint  = 0
-        count = 0
-
-        init_shift = if @type.endian == :big then ((@type.size - 1) * 8)
-                     else                         0
-                     end
-        shift = init_shift
-
-        data.each_byte do |b|
-          uint |= (b << shift)
-
-          if @type.endian == :big then shift -= 8
-          else                         shift += 8
-          end
-
-          count += 1
-
-          if count >= @type.size
-            yield uint
-
-            uint  = 0
-            count = 0
-            shift = init_shift
-          end
-        end
-
-        # yield the remaining uint
-        yield uint if count > 0
-      end
-    end
-
-    #
     # Reads each string of the same number of bytes as the {#type}'s
     # {Type#size size}.
     #
@@ -115,13 +63,8 @@ module Hexdump
         end
 
         if index > 0
-          # zero pad the partially filled buffer
-          until index >= @type.size
-            buffer[index] = "\0"
-            index += 1
-          end
-
-          yield buffer
+          # yield the reamining partial buffer
+          yield buffer[0,index]
         end
       end
     end
@@ -129,7 +72,68 @@ module Hexdump
     #
     # @param [#each_byte] data
     #
-    # @yield [int]
+    # @yield [raw, uint]
+    #
+    # @yieldparam [String] raw
+    #
+    # @yieldparam [Integer] uint
+    #
+    # @return [Enumerator]
+    #
+    # @raise [ArgumentError]
+    #
+    def each_uint(data,&block)
+      return enum_for(__method__,data) unless block_given?
+
+      unless data.respond_to?(:each_byte)
+        raise(ArgumentError,"the given data must respond to #each_byte")
+      end
+
+      if @type.size == 1
+        data.each_byte do |b|
+          yield b.chr, b
+        end
+      else
+        pack_format = case @type.size
+                      when 1
+                        'c'
+                      when 2
+                        case @type.endian
+                        when :little then 'S<'
+                        when :big    then 'S>'
+                        else
+                          raise(TypeError,"unsupported endian #{@type.endian} for #{@type.name}")
+                        end
+                      when 4
+                        case @type.endian
+                        when :little then 'L<'
+                        when :big    then 'L>'
+                        else
+                          raise(TypeError,"unsupported endian #{@type.endian} for #{@type.name}")
+                        end
+                      when 8
+                        case @type.endian
+                        when :little then 'Q<'
+                        when :big    then 'Q>'
+                        else
+                          raise(TypeError,"unsupported endian #{@type.endian} for #{@type.name}")
+                        end
+                      else
+                        raise(TypeError,"unsupported type size #{@type.size} for #{@type.name}")
+                      end
+
+        each_slice(data) do |slice|
+          yield slice, slice.unpack(pack_format).first
+        end
+      end
+    end
+
+    #
+    # @param [#each_byte] data
+    #
+    # @yield [raw, int]
+    #
+    # @yieldparam [String] raw
     #
     # @yieldparam [Integer] int
     #
@@ -167,14 +171,16 @@ module Hexdump
                     end
 
       each_slice(data) do |slice|
-        yield slice.unpack(pack_format).first
+        yield slice, slice.unpack(pack_format).first
       end
     end
 
     #
     # @param [#each_byte] data
     #
-    # @yield [float]
+    # @yield [raw, float]
+    #
+    # @yieldparam [String] raw
     #
     # @yieldparam [Float] float
     #
@@ -203,14 +209,16 @@ module Hexdump
                     end
 
       each_slice(data) do |slice|
-        yield slice.unpack(pack_format).first
+        yield slice, slice.unpack(pack_format).first
       end
     end
 
     #
     # @param [#each_byte] data
     #
-    # @yield [value]
+    # @yield [raw, value]
+    #
+    # @yieldparam [String] raw
     #
     # @yieldparam [Integer, Float] value
     #

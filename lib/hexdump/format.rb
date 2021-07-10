@@ -123,7 +123,10 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
-    # @yield [index, numeric, chars]
+    # @param [Integer] offset
+    #   The offset to start the index at.
+    #
+    # @yield [index, values, chars]
     #   The given block will be passed the hexdump break-down of each
     #   segment.
     #
@@ -132,51 +135,41 @@ module Hexdump
     #   If the index is `'*'`, then it indicates the beginning of repeating
     #   rows of data.
     #
-    # @yieldparam [Array<String>, nil] numeric
-    #   The numeric representation of the segment.
+    # @yieldparam [Array<Integer>, Array<Float>] values
+    #   The decoded values.
     #
-    # @yieldparam [Array<String>, nil] chars
-    #   The printable representation of the segment.
-    #
-    # @return [ Enumerator]
-    #   If no block is given, an Enumerator will be returned.
-    #
-    def each_row(data,&block)
-      @reader.each(data).each_slice(@columns,&block)
-    end
-
-    #
-    # Enumerates each row, including an index, of hexdumped data.
-    #
-    # @param [#each_byte] data
-    #   The data to be hexdumped.
-    #
-    # @param [Integer] offset
-    #   The offset to start the index at.
-    #
-    # @yield [index, row]
-    #   The given block will be passed the hexdump break-down of each
-    #   segment.
-    #
-    # @yieldparam [Integer] index
-    #   The index of the hexdumped segment.
-    #
-    # @yieldparam [Array<Integer>, Array<Float>] row
-    #   The row of values.
+    # @yieldparam [String] chars
+    #   A raw characters that were read.
     #
     # @return [Integer, Enumerator]
     #   If a block is given, then the final number of bytes read is returned.
     #   If no block is given, an Enumerator will be returned.
     #
-    def each_row_with_index(data, offset: 0)
+    def each_row(data, offset: 0, &block)
       return enum_for(__method__,data, offset: offset) unless block_given?
 
       index = offset
 
-      each_row(data) do |row|
-        yield index, row
+      @reader.each(data).each_slice(@columns) do |slice|
+        numeric = []
+        chars   = String.new("", encoding: Encoding::BINARY)
 
-        index += (row.length * @type.size)
+        next_index = index
+
+        slice.each do |(raw,value)|
+          numeric << value
+          chars   << raw if @char_map
+
+          next_index += raw.length
+        end
+
+        if @char_map
+          yield index, numeric, chars
+        else
+          yield index, numeric
+        end
+
+        index = next_index
       end
 
       return index
@@ -194,7 +187,7 @@ module Hexdump
     # @option kwargs [Integer] offset
     #   The offset to start the index at.
     #
-    # @yield [index, row]
+    # @yield [index, numeric, chars]
     #   The given block will be passed the hexdump break-down of each
     #   segment.
     #
@@ -203,8 +196,11 @@ module Hexdump
     #   If the index is `'*'`, then it indicates the beginning of repeating
     #   rows of data.
     #
-    # @yieldparam [Array<Integer>, Array<Float>] row
-    #   The numeric representation of the segment.
+    # @yieldparam [Array<Integer>, Array<Float>, nil] values
+    #   The decoded values.
+    #
+    # @yieldparam [String, nil] chars
+    #   A raw characters that were read.
     #
     # @return [Integer, Enumerator]
     #   If a block is given, the final number of bytes read will be returned.
@@ -216,7 +212,7 @@ module Hexdump
       previous_row = nil
       repeating = false
 
-      each_row_with_index(data,**kwargs) do |index,row|
+      each_row(data,**kwargs) do |index,*row|
         if row == previous_row
           unless repeating
             yield '*'
@@ -228,7 +224,7 @@ module Hexdump
             repeating    = false
           end
 
-          yield index, row
+          yield index, *row
           previous_row = row
         end
       end
@@ -268,7 +264,7 @@ module Hexdump
     def each_formatted_row(data,**kwargs)
       return enum_for(__method__,data,**kwargs) unless block_given?
 
-      format_numeric = lambda { |value| @numeric % value }
+      format_numeric = lambda { |value| @numeric % value if value }
       format_char    = lambda { |value| @char_map[value] }
 
       # cache the formatted values for 8bit and 16bit values
@@ -287,20 +283,24 @@ module Hexdump
         char_cache    = format_char
       end
 
-      index = each_non_repeating_row(data,**kwargs) do |index,row|
+      index = each_non_repeating_row(data,**kwargs) do |index,numeric,chars|
         if index == '*'
           yield index
         else
-          index   = @index % index
-          numeric = Array.new(row.length)
-          chars   = Array.new(row.length)
+          formatted_index = @index % index
 
-          row.each_with_index do |value,i|
-            numeric[i] = numeric_cache[value]
-            chars[i]   = char_cache[value] if @char_map
+          formatted_numbers = numeric.map { |value| numeric_cache[value] }
+
+          if @char_map
+            formatted_chars = String.new
+            chars.codepoints.each do |b|
+              formatted_chars << char_cache[b]
+            end
+
+            yield formatted_index, formatted_numbers, formatted_chars
+          else
+            yield formatted_index, formatted_numbers
           end
-
-          yield index, numeric, chars
         end
       end
 
@@ -343,7 +343,7 @@ module Hexdump
         else
           numeric = numeric.join(' ').ljust(numeric_width)
           line    = if @char_map
-                      "#{index}  #{numeric}  |#{chars.join}|#{$/}"
+                      "#{index}  #{numeric}  |#{chars}|#{$/}"
                     else
                       "#{index}  #{numeric}#{$/}"
                     end

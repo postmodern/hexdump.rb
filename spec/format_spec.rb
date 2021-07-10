@@ -222,42 +222,60 @@ describe Hexdump::Format do
     end
   end
 
-  describe "#each_row" do
-    let(:rows) do
-      [
-        Array.new(subject.columns, 0x41),
-        Array.new(subject.columns, 0x42),
-        Array.new(subject.columns, 0x43)
-      ]
-    end
-    let(:data) do
-      rows.map { |row| row.map(&:chr).join }.join
-    end
+  let(:data) do
+    'A' * subject.columns + \
+    'B' * subject.columns + \
+    'C' * subject.columns
+  end
 
-    it "must yield each row of read values" do
+  let(:columns) { subject.columns }
+
+  let(:rows) do
+    [
+      [columns * 0, [0x41] * columns, 'A' * columns],
+      [columns * 1, [0x42] * columns, 'B' * columns],
+      [columns * 2, [0x43] * columns, 'C' * columns],
+    ]
+  end
+
+  describe "#each_row" do
+    it "must yield each row of index, numeric values, and raw characters" do
       yielded_rows = []
 
-      subject.each_row(data) do |row|
-        yielded_rows << row
+      subject.each_row(data) do |*args|
+        yielded_rows << args
       end
 
       expect(yielded_rows).to eq(rows)
     end
 
+    it "must return the total number of bytes read" do
+      index = subject.each_row(data) do |*args|
+      end
+
+      expect(index).to eq(data.length)
+    end
+
     context "when the data's length is not evenly divisble by the columns" do
       let(:rows) do
         [
-          Array.new(subject.columns, 0x41),
-          Array.new(subject.columns, 0x42),
-          Array.new(subject.columns / 2, 0x43)
+          [columns * 0, [0x41] * columns,       'A' * columns      ],
+          [columns * 1, [0x42] * columns,       'B' * columns      ],
+          [columns * 2, [0x43] * (columns / 2), 'C' * (columns / 2)]
         ]
+      end
+
+      let(:data) do
+        'A' * columns + \
+        'B' * columns + \
+        'C' * (columns / 2)
       end
 
       it "must yield a partial row of read values last" do
         yielded_rows = []
 
-        subject.each_row(data) do |row|
-          yielded_rows << row
+        subject.each_row(data) do |*args|
+          yielded_rows << args
         end
 
         expect(yielded_rows).to eq(rows)
@@ -272,14 +290,41 @@ describe Hexdump::Format do
       it "must yield rows with the same number of columns" do
         yielded_row_lengths = []
 
-        subject.each_row(data) do |row|
-          yielded_row_lengths << row.length
+        subject.each_row(data) do |index,numeric,chars|
+          yielded_row_lengths << numeric.length
         end
 
         expect(yielded_row_lengths).to all(eq(columns))
       end
     end
 
+    context "when there are not enough bytes to decode the last value" do
+      subject { described_class.new(type: :uint32) }
+
+      let(:size) { subject.type.size }
+
+      let(:data) do
+        "\x41\x41\x41\x41" * columns + \
+        "ABC"
+      end
+
+      let(:rows) do
+        [
+          [size * columns * 0, [0x41414141] * columns, "AAAA" * columns],
+          [size * columns * 1, [nil], "ABC"]
+        ]
+      end
+
+      it "must yield the read characters, but not the partially decoded value" do
+        yielded_rows = []
+
+        subject.each_row(data) do |*row|
+          yielded_rows << row
+        end
+
+        expect(yielded_rows).to eq(rows)
+      end
+    end
     context "when no block is given" do
       it "must return an Enumerator" do
         expect(subject.each_row(data)).to be_kind_of(Enumerator)
@@ -287,96 +332,36 @@ describe Hexdump::Format do
     end
   end
 
-  describe "#each_row_with_index" do
+  describe "#each_non_repeating_row" do
     let(:rows) do
       [
-        Array.new(subject.columns, 0x41),
-        Array.new(subject.columns, 0x42),
-        Array.new(subject.columns, 0x43)
+        [columns * 0, [0x41] * columns, 'A' * columns],
+        [columns * 1, [0x42] * columns, 'B' * columns],
+        ['*'                                         ],
+        [columns * 4, [0x43] * columns, 'C' * columns]
       ]
     end
+
     let(:data) do
-      rows.map { |row| row.map(&:chr).join }.join
+      'A' * subject.columns + \
+      'B' * subject.columns + \
+      'B' * subject.columns + \
+      'B' * subject.columns + \
+      'C' * subject.columns
     end
 
-    it "must yield each row with an index for how many bytes have been read" do
-      yielded_indices = []
-      yielded_rows    = []
+    it "must omit repeating rows, instead yielding an index of '*'" do
+      yielded_rows = []
 
-      subject.each_row_with_index(data) do |index,row|
-        yielded_indices << index
-        yielded_rows    << row
+      subject.each_non_repeating_row(data) do |*args|
+        yielded_rows << args
       end
 
-      expect(yielded_indices).to eq(
-        [
-          0,
-          rows[0].length,
-          rows[0].length + rows[1].length
-        ]
-      )
       expect(yielded_rows).to eq(rows)
     end
 
     it "must return the total number of bytes read" do
-      index = subject.each_row_with_index(data) do |index,row|
-      end
-
-      expect(index).to eq(data.length)
-    end
-
-    context "when no block is given" do
-      it "must return an Enumerator" do
-        expect(subject.each_row_with_index(data)).to be_kind_of(Enumerator)
-      end
-    end
-  end
-
-  describe "#each_non_repeating_row" do
-    let(:rows) do
-      [
-        Array.new(subject.columns, 0x41),
-        Array.new(subject.columns, 0x42),
-        Array.new(subject.columns, 0x42),
-        Array.new(subject.columns, 0x42),
-        Array.new(subject.columns, 0x43)
-      ]
-    end
-
-    let(:data) do
-      rows.map { |row| row.map(&:chr).join }.join
-    end
-
-    it "must omit repeating rows, instead yielding an index of '*'" do
-      yielded_indices = []
-      yielded_rows    = []
-
-      subject.each_non_repeating_row(data) do |index,row|
-        yielded_indices << index
-        yielded_rows    << row
-      end
-
-      expect(yielded_indices).to eq(
-        [
-          0,
-          rows[0].length,
-          '*',
-          rows[0].length + rows[1].length + rows[2].length + rows[3].length
-        ]
-      )
-
-      expect(yielded_rows).to eq(
-        [
-          rows[0],
-          rows[1],
-          nil,
-          rows[4]
-        ]
-      )
-    end
-
-    it "must return the total number of bytes read" do
-      index = subject.each_non_repeating_row(data) do |index,row|
+      index = subject.each_non_repeating_row(data) do |*args|
       end
 
       expect(index).to eq(data.length)
@@ -385,40 +370,29 @@ describe Hexdump::Format do
     context "when the repeating rows is at the end of the data" do
       let(:rows) do
         [
-          Array.new(subject.columns, 0x41),
-          Array.new(subject.columns, 0x42),
-          Array.new(subject.columns, 0x43),
-          Array.new(subject.columns, 0x43),
-          Array.new(subject.columns, 0x43)
+          [columns * 0, [0x41] * columns, 'A' * columns],
+          [columns * 1, [0x42] * columns, 'B' * columns],
+          [columns * 2, [0x43] * columns, 'C' * columns],
+          ['*'                                         ]
         ]
       end
 
-      it "must yield an index of '*' at the end" do
-        yielded_indices = []
-        yielded_rows    = []
+      let(:data) do
+        'A' * columns + \
+        'B' * columns + \
+        'C' * columns + \
+        'C' * columns + \
+        'C' * columns
+      end
 
-        subject.each_non_repeating_row(data) do |index,row|
-          yielded_indices << index
-          yielded_rows    << row
+      it "must yield an index of '*' at the end" do
+        yielded_rows = []
+
+        subject.each_non_repeating_row(data) do |*args|
+          yielded_rows << args
         end
 
-        expect(yielded_indices).to eq(
-          [
-            0,
-            rows[0].length,
-            rows[0].length + rows[1].length,
-            '*'
-          ]
-        )
-
-        expect(yielded_rows).to eq(
-          [
-            rows[0],
-            rows[1],
-            rows[2],
-            nil
-          ]
-        )
+        expect(yielded_rows).to eq(rows)
       end
     end
 
@@ -430,130 +404,117 @@ describe Hexdump::Format do
   end
 
   describe "#each_formatted_row" do
-    let(:rows) do
-      [
-        Array.new(subject.columns, 0x41),
-        Array.new(subject.columns, 0x42),
-        Array.new(subject.columns, 0x43)
-      ]
-    end
-
-    let(:data) do
-      rows.map { |row| row.map(&:chr).join }.join
-    end
-
-    let(:numeric_rows) do
+    let(:formatted_rows) do
       rows.map do |row|
-        row.map { |b| subject.numeric % b }
+        if row[0] == '*'
+          ['*']
+        else
+          [
+            subject.index % row[0],
+            row[1].map { |value| subject.numeric % value if value },
+            row[2].codepoints.map { |b| subject.char_map[b] }.join
+          ]
+        end
       end
     end
 
-    let(:char_rows) do
-      rows.map do |row|
-        row.map { |b| subject.char_map[b] }
-      end
-    end
+    it "should yield the formatted rows to the given block" do
+      yielded_rows = []
 
-    it "should yield the formatted indices to the given block" do
-      yielded_indices = []
-
-      subject.each_formatted_row(data) do |index,numeric,chars|
-        yielded_indices << index
+      subject.each_formatted_row(data) do |*row|
+        yielded_rows << row
       end
 
-      expect(yielded_indices).to eq(
-        [
-          subject.index % 0,
-          subject.index % rows[0].length,
-          subject.index % (rows[0].length + rows[1].length)
-        ]
-      )
+      expect(yielded_rows).to eq(formatted_rows)
     end
 
-    it "should yield Arrays of numeric formatted values to the given block" do
-      yielded_numeric_rows = []
-
-      subject.each_formatted_row(data) do |index,numeric,chars|
-        yielded_numeric_rows << numeric
-      end
-
-      expect(yielded_numeric_rows).to eq(numeric_rows)
-    end
-
-    it "should yield Arrays of mapped characters to the given block" do
-      yielded_char_rows = []
-
-      subject.each_formatted_row(data) do |index,numeric,chars|
-        yielded_char_rows << chars
-      end
-
-      expect(yielded_char_rows).to eq(char_rows)
-    end
-
-    it "must return the total number of bytes read" do
-      index = subject.each_formatted_row(data) do |index,numeric,chars|
+    it "must return the formatted total number of bytes read" do
+      index = subject.each_formatted_row(data) do |*row|
       end
 
       expect(index).to eq(subject.index % data.length)
     end
 
     context "when the data's length is not evenly divisble by the columns" do
+      let(:data) do
+        'A' * columns + \
+        'B' * columns + \
+        'C' * (columns / 2)
+      end
+
       let(:rows) do
         [
-          Array.new(subject.columns, 0x41),
-          Array.new(subject.columns, 0x42),
-          Array.new(subject.columns / 2, 0x43)
+          [columns * 0, [0x41] * columns,       'A' * columns      ],
+          [columns * 1, [0x42] * columns,       'B' * columns      ],
+          [columns * 2, [0x43] * (columns / 2), 'C' * (columns / 2)]
         ]
       end
 
-      it "must yield the partial Array of numeric formatted values last" do
-        last_yielded_numeric = nil
+      it "must yield the last formatted partial row" do
+        yielded_rows = []
 
-        subject.each_formatted_row(data) do |index,numeric,chars|
-          last_yielded_numeric = numeric
+        subject.each_formatted_row(data) do |*row|
+          yielded_rows << row
         end
 
-        expect(last_yielded_numeric).to eq(numeric_rows.last)
+        expect(yielded_rows).to eq(formatted_rows)
+      end
+    end
+
+    context "when there are not enough bytes to decode the last value" do
+      subject { described_class.new(type: :uint32) }
+
+      let(:size) { subject.type.size }
+
+      let(:data) do
+        "\x41\x41\x41\x41" * columns + \
+        "ABC"
       end
 
-      it "must yield the partial Array of mapped characters values last" do
-        last_yielded_chars = nil
+      let(:rows) do
+        [
+          [size * columns * 0, [0x41414141] * columns, "AAAA" * columns],
+          [size * columns * 1, [nil], "ABC"]
+        ]
+      end
 
-        subject.each_formatted_row(data) do |index,numeric,chars|
-          last_yielded_chars = chars
+      it "must yield the read characters, but not the partially decoded value" do
+        yielded_rows = []
+
+        subject.each_formatted_row(data) do |*row|
+          yielded_rows << row
         end
 
-        expect(last_yielded_chars).to eq(char_rows.last)
+        expect(yielded_rows).to eq(formatted_rows)
       end
     end
 
     context "when there is repeating rows of data" do
-      let(:rows) do
-        [
-          Array.new(subject.columns, 0x41),
-          Array.new(subject.columns, 0x42),
-          Array.new(subject.columns, 0x42),
-          Array.new(subject.columns, 0x42),
-          Array.new(subject.columns, 0x43)
-        ]
+      let(:data) do
+        'A' * columns + \
+        'B' * columns + \
+        'B' * columns + \
+        'B' * columns + \
+        'C' * columns
       end
 
-      let(:numeric_rows) { super.uniq }
-      let(:char_rows)    { super.uniq }
+      let(:rows) do
+        [
+          [columns * 0, [0x41] * columns, 'A' * columns],
+          [columns * 1, [0x42] * columns, 'B' * columns],
+          ['*'                                         ],
+          [columns * 4, [0x43] * columns, 'C' * columns]
+        ]
+      end
+  
+      it "must yield the formatted rows and a '*' row to denote the beginning of repeating rows" do
+        yielded_rows = []
 
-      it "should yield a '*' index to denote the beginning of repeating rows" do
-        yielded_indices = []
-
-        subject.each_formatted_row(data) do |index,numeric,chars|
-          yielded_indices << index
+        subject.each_formatted_row(data) do |*row|
+          yielded_rows << row
         end
 
-        expect(yielded_indices).to be == [
-          subject.index % 0,
-          subject.index % rows[0].length,
-          '*',
-          subject.index % (rows[0].length + rows[1].length + rows[2].length + rows[3].length)
-        ]
+        expect(yielded_rows).to eq(formatted_rows)
       end
     end
 
@@ -562,14 +523,7 @@ describe Hexdump::Format do
 
       subject { described_class.new(columns: columns) }
 
-      it "should yield rows with the same number of formatted columns" do
-        rows = [
-          'A' * subject.columns,
-          'B' * subject.columns,
-          'C' * subject.columns
-        ]
-        data = rows.join
-
+      it "must yield rows with the same number of formatted columns" do
         yielded_numeric_lengths = []
         yielded_chars_lengths   = []
 
@@ -583,26 +537,6 @@ describe Hexdump::Format do
       end
     end
 
-    context "when there are leftover bytes" do
-      let(:columns) { 10 }
-
-      subject { described_class.new(columns: columns) }
-
-      let(:chars)   { ['B'] * 4 }
-      let(:string)  { chars.join }
-      let(:leading) { 'A' * 100 }
-
-      it "should hexdump the remaining bytes" do
-        remainder = nil
-
-        subject.each_formatted_row(leading + string) do |index,hex,print|
-          remainder = print
-        end
-
-        expect(remainder).to be == chars
-      end
-    end
-
     context "when no block is given" do
       it "must return an Enumerator" do
         expect(subject.each_formatted_row(data)).to be_kind_of(Enumerator)
@@ -611,6 +545,26 @@ describe Hexdump::Format do
   end
 
   describe "#print" do
+    let(:output) { StringIO.new }
+    let(:lines)  { output.string.lines }
+
+    let(:index_format) { "%.8x" }
+
+    it "must append each line of the hexdump to the output" do
+      expected_lines = subject.each_line(data).to_a
+
+      subject.print(data, output: output)
+
+      expect(lines.length).to eq(rows.length + 1)
+      expect(lines).to eq(expected_lines)
+    end
+
+    it "must always print the total number of bytes read on the last line" do
+      subject.print(data, output: output)
+
+      expect(lines.last).to start_with(index_format % data.length)
+    end
+
     context "when given an output that does not support #print" do
       let(:output) { Object.new }
 
@@ -619,26 +573,6 @@ describe Hexdump::Format do
           subject.print(data, output: output)
         }.to raise_error(ArgumentError,"output must support the #print method")
       end
-    end
-
-    let(:output) { StringIO.new }
-    let(:lines)  { output.string.lines }
-
-    let(:index_format) { "%.8x" }
-
-    it "must append each line of the hexdump to the output" do
-      subject.print(data, output: output)
-
-      expect(lines.length).to be(2)
-      expect(lines[0]).to start_with(index_format % 0)
-      expect(lines[0]).to include(hex_chars.join(' '))
-      expect(lines[0]).to end_with("|#{print_chars.join}|#{$/}")
-    end
-
-    it "must always print the total number of bytes read on the last line" do
-      subject.print(data, output: output)
-
-      expect(lines.last).to start_with(index_format % data.length)
     end
   end
 end
