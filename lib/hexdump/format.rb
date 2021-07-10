@@ -152,7 +152,8 @@ module Hexdump
 
       @reader.each(data).each_slice(@columns) do |slice|
         numeric = []
-        chars   = String.new("", encoding: Encoding::BINARY)
+        chars   = String.new("", capacity: @type.size * @columns,
+                                 encoding: Encoding::BINARY)
 
         next_index = index
 

@@ -49,7 +49,8 @@ module Hexdump
           yield b.chr
         end
       else
-        buffer = String.new("\0" * @type.size, encoding: Encoding::BINARY)
+        buffer = String.new("\0" * @type.size, capacity: @type.size,
+                                               encoding: Encoding::BINARY)
         index  = 0
 
         data.each_byte do |b|
