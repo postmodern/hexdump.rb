@@ -166,11 +166,12 @@ module Hexdump
       return enum_for(__method__,data, offset: offset) unless block_given?
 
       index = offset
+      capacity = @type.size * @columns
 
       @reader.each(data).each_slice(@columns) do |slice|
         numeric = []
         chars   = if @char_map
-                    String.new("", capacity: @type.size * @columns,
+                    String.new("", capacity: capacity,
                                    encoding: Encoding::BINARY)
                   end
 
