@@ -19,8 +19,8 @@ describe Hexdump::Format do
       expect(subject.columns).to eq(16)
     end
 
-    it "must default #group_columns to false" do
-      expect(subject.group_columns).to eq(false)
+    it "must default #group_columns to nil" do
+      expect(subject.group_columns).to be(nil)
     end
 
     it "must default #base to 16" do

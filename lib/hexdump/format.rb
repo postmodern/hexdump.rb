@@ -87,7 +87,7 @@ module Hexdump
     # @param [Integer] columns
     #   The number of columns per hexdump line. Defaults to `16 / sizeof(type)`.
     #
-    # @param [Integer, false, nil] group_columns
+    # @param [Integer, nil] group_columns
     #   Separate groups of columns with an additional space.
     #
     # @param [16, 10, 8, 2] base
@@ -106,7 +106,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, columns: nil, group_columns: false, repeating: false, base: nil, index: 16, chars: true, encoding: nil, zero_pad: false)
+    def initialize(type: :byte, columns: nil, group_columns: nil, repeating: false, base: nil, index: 16, chars: true, encoding: nil, zero_pad: false)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
