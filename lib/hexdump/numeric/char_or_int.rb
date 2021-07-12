@@ -9,20 +9,6 @@ module Hexdump
     #
     class CharOrInt < FormatString
 
-      # Printable characters including escape characters.
-      #
-      # @since 1.0.0
-      ESCAPE_CHARS = {
-        0x00 => "\\0",
-        0x07 => "\\a",
-        0x08 => "\\b",
-        0x09 => "\\t",
-        0x0a => "\\n",
-        0x0b => "\\v",
-        0x0c => "\\f",
-        0x0d => "\\r"
-      }
-
       # @return [Base::Hexadecimal, Base::Decimal, Base::Octal, Base::Binary]
       attr_reader :base
 
@@ -60,9 +46,25 @@ module Hexdump
       #   The character or numeric formatted value.
       #
       def %(value)
-        if @encoding
-          if value >= 0x00
-            ESCAPE_CHARS.fetch(value) do
+        if value == 0x00
+          super("\\0")
+        elsif value == 0x07
+          super("\\a")
+        elsif value == 0x08
+          super("\\b")
+        elsif value == 0x09
+          super("\\t")
+        elsif value == 0x0a
+          super("\\n")
+        elsif value == 0x0b
+          super("\\v")
+        elsif value == 0x0c
+          super("\\f")
+        elsif value == 0x0d
+          super("\\r")
+        else
+          if @encoding
+            if value >= 0x00
               char = value.chr(@encoding) rescue nil
 
               if char && char =~ /[[:print:]]/
@@ -70,17 +72,15 @@ module Hexdump
               else
                 @base % value
               end
+            else
+              @base % value
             end
           else
-            @base % value
-          end
-        else
-          if (value >= 0x20 && value <= 0x7e)
-            super(value.chr)
-          elsif (char = ESCAPE_CHARS[value])
-            super(char)
-          else
-            @base % value
+            if (value >= 0x20 && value <= 0x7e)
+              super(value.chr)
+            else
+              @base % value
+            end
           end
         end
       end
