@@ -3,6 +3,16 @@ require 'hexdump/reader'
 require 'hexdump/types'
 
 describe Hexdump::Reader do
+  describe "#initialize" do
+    let(:type)  { Hexdump::TYPES[:uint8] }
+
+    subject { described_class.new(type) }
+
+    it "must set #type" do
+      expect(subject.type).to eq(type)
+    end
+  end
+
   describe "#each_slice" do
     context "when type has size of 1" do
       let(:chars) { %w[A B C D] }
