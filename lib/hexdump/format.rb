@@ -93,6 +93,9 @@ module Hexdump
     # @param [16, 10, 8, 2] base
     #   The base to print bytes in. Defaults to 16, or to 10 if printing floats.
     #
+    # @param [16, 10, 8, 2] index
+    #   Control the base that the index is displayed in. Defaults to base 16.
+    #
     # @param [:ascii, :utf8, Encoding, nil] encoding
     #   The encoding to display the characters in.
     #
@@ -103,7 +106,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, columns: nil, group_columns: false, repeating: false, base: nil, chars: true, encoding: nil, zero_pad: false)
+    def initialize(type: :byte, columns: nil, group_columns: false, repeating: false, base: nil, index: 16, chars: true, encoding: nil, zero_pad: false)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
@@ -120,10 +123,13 @@ module Hexdump
                       else                                           16
                       end
 
+      @index = BASES.fetch(index) {
+                   raise(ArgumentError,"unsupported base: #{@base.inspect}")
+                 }.new(TYPES[:uint32])
+
       @numeric = BASES.fetch(@base) {
                    raise(ArgumentError,"unsupported base: #{@base.inspect}")
                  }.new(@type)
-      @index = @numeric.class.new(TYPES[:uint32])
 
       @encoding = case encoding
                   when :ascii   then nil

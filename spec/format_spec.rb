@@ -27,6 +27,10 @@ describe Hexdump::Format do
       expect(subject.base).to eq(16)
     end
 
+    it "must initialize #index to Hexdump::Numeric::Hexdecimal by default" do
+      expect(subject.index).to be_kind_of(Hexdump::Numeric::Hexadecimal)
+    end
+
     it "must default #encoding to nil" do
       expect(subject.encoding).to be(nil)
     end
@@ -191,10 +195,6 @@ describe Hexdump::Format do
       context "when the base: is 16" do
         let(:base) { 16 }
 
-        it "must initialize #index to Hexdump::Numeric::Hexdecimal" do
-          expect(subject.index).to be_kind_of(Hexdump::Numeric::Hexadecimal)
-        end
-
         it "must initialize #numeric to Hexdump::Numeric::Hexdecimal" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Hexadecimal)
         end
@@ -202,10 +202,6 @@ describe Hexdump::Format do
 
       context "when the base: is 10" do
         let(:base) { 10 }
-
-        it "must initialize #index to Hexdump::Numeric::Decimal" do
-          expect(subject.index).to be_kind_of(Hexdump::Numeric::Decimal)
-        end
 
         it "must initialize #numeric to Hexdump::Numeric::Decimal" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Decimal)
@@ -215,10 +211,6 @@ describe Hexdump::Format do
       context "when given base: 8" do
         let(:base) { 8 }
 
-        it "must initialize #index to Hexdump::Numeric::Octal" do
-          expect(subject.index).to be_kind_of(Hexdump::Numeric::Octal)
-        end
-
         it "must initialize #numeric to Hexdump::Numeric::Octal" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Octal)
         end
@@ -227,12 +219,44 @@ describe Hexdump::Format do
       context "when given base: 2" do
         let(:base) { 2 }
 
-        it "must initialize #index to Hexdump::Numeric::Binary" do
-          expect(subject.index).to be_kind_of(Hexdump::Numeric::Binary)
-        end
-
         it "must initialize #numeric to Hexdump::Numeric::Binary" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Binary)
+        end
+      end
+    end
+
+    context "when given index: keyword" do
+      subject { described_class.new(index: index) }
+
+      context "when the index: is 16" do
+        let(:index) { 16 }
+
+        it "must initialize #index to Hexdump::Numeric::Hexdecimal" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Hexadecimal)
+        end
+      end
+
+      context "when the index: is 10" do
+        let(:index) { 10 }
+
+        it "must initialize #index to Hexdump::Numeric::Decimal" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Decimal)
+        end
+      end
+
+      context "when given index: 8" do
+        let(:index) { 8 }
+
+        it "must initialize #index to Hexdump::Numeric::Octal" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Octal)
+        end
+      end
+
+      context "when given index: 2" do
+        let(:index) { 2 }
+
+        it "must initialize #index to Hexdump::Numeric::Binary" do
+          expect(subject.index).to be_kind_of(Hexdump::Numeric::Binary)
         end
       end
     end
