@@ -139,6 +139,7 @@ module Hexdump
       case @type
       when Type::Char, Type::UChar
         @numeric = Numeric::CharOrInt.new(@numeric,@encoding)
+        @chars   = false
       end
     end
 

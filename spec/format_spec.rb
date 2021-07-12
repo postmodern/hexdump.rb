@@ -70,6 +70,10 @@ describe Hexdump::Format do
         it "must initialize #numeric to Hexdump::Numeric::CharOrInt" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::CharOrInt)
         end
+
+        it "must disable #chars" do
+          expect(subject.chars).to be(false)
+        end
       end
 
       context "when with type: is :uchar" do
