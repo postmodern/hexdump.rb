@@ -9,11 +9,27 @@ describe Hexdump::Numeric::CharOrInt do
 
   subject { described_class.new(base) }
 
+  describe "#initialize" do
+    it "must set #base" do
+      expect(subject.base).to eq(base)
+    end
+
+    it "must initialize the format string" do
+      expect(subject.to_s).to eq("%#{base.width}s")
+    end
+  end
+
+  describe "#width" do
+    it "return the base's #width" do
+      expect(subject.width).to eq(base.width)
+    end
+  end
+
   describe "#%" do
-    Hexdump::CharMap::ASCII::PRINTABLE.each do |byte,char|
+    (0x20..0x7e).each do |byte|
       context "when given #{byte.to_s(16)}" do
-        it "must return ' #{char}'" do
-          expect(subject % byte).to eq(" #{char}")
+        it "must return ' #{byte.chr}'" do
+          expect(subject % byte).to eq(" #{byte.chr}")
         end
       end
     end
