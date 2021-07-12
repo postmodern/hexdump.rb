@@ -82,42 +82,82 @@ describe Hexdump::Format do
 
       context "when the type: is :byte" do
         let(:type) { :byte }
+
+        it "must set #type to Hexdump::Type::UInt8" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::UInt8)
+        end
       end
 
       context "when the type: is :uint8" do
         let(:type) { :uint8 }
+
+        it "must set #type to Hexdump::Type::UInt8" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::UInt8)
+        end
       end
 
       context "when the type: is :int8" do
         let(:type) { :int8 }
+
+        it "must set #type to Hexdump::Type::Int8" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::Int8)
+        end
       end
 
       context "when the type: is :uint16" do
         let(:type) { :uint16 }
+
+        it "must set #type to Hexdump::Type::UInt16" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::UInt16)
+        end
       end
 
       context "when the type: is :int16" do
         let(:type) { :int16 }
+
+        it "must set #type to Hexdump::Type::Int16" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::Int16)
+        end
       end
 
       context "when the type: is :uint32" do
         let(:type) { :uint32 }
+
+        it "must set #type to Hexdump::Type::UInt32" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::UInt32)
+        end
       end
 
       context "when the type: is :int32" do
         let(:type) { :int32 }
+
+        it "must set #type to Hexdump::Type::Int32" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::Int32)
+        end
       end
 
       context "when the type: is :uint64" do
         let(:type) { :uint64 }
+
+        it "must set #type to Hexdump::Type::UInt64" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::UInt64)
+        end
       end
 
       context "when the type: is :int64" do
         let(:type) { :int64 }
+
+        it "must set #type to Hexdump::Type::Int64" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::Int64)
+        end
       end
 
       context "and the type is :float, :float32, :float64, or :double" do
         let(:type) { :float }
+
+        it "must set #type to Hexdump::Type::Float" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::Float)
+        end
 
         it "must default the #base to 10" do
           expect(subject.base).to eq(10)
