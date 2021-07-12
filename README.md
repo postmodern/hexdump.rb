@@ -125,9 +125,21 @@ Simple and Fast hexdumping for Ruby.
     # 00000006
 
     # read multi-byte words
-    ("ABAC" * 7).hexdump(type: :uint16_le)
-    00000000  4241 4341 4241 4341 4241 4341 4241 4341  |ABACABACABACABAC|
-    00000010  4241 4341 4241 4341 4241 4341            |ABACABACABAC|
+    ("ABCD" * 7).hexdump(type: :uint16)
+    00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
+    00000010  44434241 44434241 44434241           |ABCDABCDABCD|
+    0000001c
+
+    # read little-endian words
+    ("ABCD" * 7).hexdump(type: :uint32_le)
+    00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
+    00000010  44434241 44434241 44434241           |ABCDABCDABCD|
+    0000001c
+
+    # read big-endian words
+    ("ABCD" * 7).hexdump(type: :uint32_be)
+    00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
+    00000010  41424344 41424344 41424344           |ABCDABCDABCD|
     0000001c
 
     # zero-padding the data
