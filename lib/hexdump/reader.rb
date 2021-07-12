@@ -21,8 +21,13 @@ module Hexdump
     # @param [Type] type
     #   Thetype to decode the data as.
     #
-    def initialize(type)
+    def initialize(type, zero_pad: false)
       @type = type
+      @zero_pad = zero_pad
+    end
+
+    def zero_pad?
+      @zero_pad
     end
 
     #
@@ -64,8 +69,17 @@ module Hexdump
         end
 
         if index > 0
-          # yield the reamining partial buffer
-          yield buffer[0,index]
+          if @zero_pad
+            # zero pad the rest of the buffer
+            (index..(@type.size - 1)).each do |i|
+              buffer[i] = "\0"
+            end
+
+            yield buffer
+          else
+            # yield the reamining partial buffer
+            yield buffer[0,index]
+          end
         end
       end
     end

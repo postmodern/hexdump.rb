@@ -32,6 +32,11 @@ module Hexdump
     # @return [Type]
     attr_reader :type
 
+    # The reader object.
+    #
+    # @return [Reader]
+    attr_reader :reader
+
     # The base to dump words as.
     #
     # @return [16, 10, 8, 2]
@@ -91,13 +96,19 @@ module Hexdump
     # @param [:ascii, :utf8, Encoding, nil] encoding
     #   The encoding to display the characters in.
     #
+    # @param [Boolean] zero_pad
+    #   Enables or disables zero padding of data, so that the remaining bytes
+    #   can be decoded as a uint, int, or float.
+    #
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, columns: nil, group_columns: false, repeating: false, base: nil, chars: true, encoding: nil)
+    def initialize(type: :byte, columns: nil, group_columns: false, repeating: false, base: nil, chars: true, encoding: nil, zero_pad: false)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
+
+      @reader = Reader.new(@type, zero_pad: zero_pad)
 
       @columns = columns || (DEFAULT_COLUMNS / @type.size)
       @group_columns = group_columns
@@ -108,8 +119,6 @@ module Hexdump
                       when Type::Float, Type::Char, Type::UChar then 10
                       else                                           16
                       end
-
-      @reader = Reader.new(@type)
 
       @numeric = BASES.fetch(@base) {
                    raise(ArgumentError,"unsupported base: #{@base.inspect}")
@@ -306,9 +315,7 @@ module Hexdump
                         encoded_chars.gsub!(/[^[:print:]]/,'.')
                       }
                     else
-                      lambda { |chars|
-                        chars.tr!("^\x20-\x7e",'.')
-                      }
+                      lambda { |chars| chars.tr!("^\x20-\x7e",'.') }
                     end
 
       index = enum.each do |index,numeric,chars|

@@ -35,6 +35,18 @@ describe Hexdump::Format do
       expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Hexadecimal)
     end
 
+    it "must initialize the #reader with zero-padding disabled by default" do
+      expect(subject.reader.zero_pad?).to be(false)
+    end
+
+    context "when given zero_pad: true" do
+      subject { described_class.new(zero_pad: true) }
+
+      it "must initialize the #reader with zero-padding enabled" do
+        expect(subject.reader.zero_pad?).to be(true)
+      end
+    end
+
     context "when given a type: keyword" do
       let(:type) { :uint16_le }
 

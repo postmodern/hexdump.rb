@@ -11,6 +11,18 @@ describe Hexdump::Reader do
     it "must set #type" do
       expect(subject.type).to eq(type)
     end
+
+    it "must default #zero_pad? to false" do
+      expect(subject.zero_pad?).to be(false)
+    end
+
+    context "when zero_pad: is true" do
+      subject { described_class.new(type, zero_pad: true) }
+
+      it "must enable #zero_pad?" do
+        expect(subject.zero_pad?).to be(true)
+      end
+    end
   end
 
   describe "#each_slice" do
@@ -61,6 +73,16 @@ describe Hexdump::Reader do
             subject.each_slice(data,&b)
           }.to yield_successive_args('AABB', 'CCDD', "E")
         end
+
+        context "but #zero_pad? is true" do
+          subject { described_class.new(type, zero_pad: true) }
+
+          it "must zero out the rest of the buffer" do
+            expect { |b|
+              subject.each_slice(data,&b)
+            }.to yield_successive_args('AABB', 'CCDD', "E\0\0\0")
+          end
+        end
       end
     end
   end
@@ -100,10 +122,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x11".encode(Encoding::BINARY) }
 
-          it "must yield remaining bytes and the partially decoded uint" do
+          it "must yield remaining bytes and nil" do
             expect { |b|
               subject.each_uint(data,&b)
             }.to yield_with_args(data,nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded uint" do
+              expect { |b|
+                subject.each_uint(data,&b)
+              }.to yield_with_args("#{data}\x00",0x0011)
+            end
           end
         end
       end
@@ -124,10 +156,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x11".encode(Encoding::BINARY) }
 
-          it "must yield remaining bytes and the partially decoded uint" do
+          it "must yield remaining bytes and nil" do
             expect { |b|
               subject.each_uint(data,&b)
             }.to yield_with_args(data,nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded uint" do
+              expect { |b|
+                subject.each_uint(data,&b)
+              }.to yield_with_args("#{data}\x00",0x1100)
+            end
           end
         end
       end
@@ -157,6 +199,16 @@ describe Hexdump::Reader do
               subject.each_uint(data,&b)
             }.to yield_with_args(data,nil)
           end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded uint" do
+              expect { |b|
+                subject.each_uint(data,&b)
+              }.to yield_with_args("#{data}\x00",0x00332211)
+            end
+          end
         end
       end
 
@@ -176,10 +228,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x11\x22\x33".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_uint(data,&b)
             }.to yield_with_args(data,nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded uint" do
+              expect { |b|
+                subject.each_uint(data,&b)
+              }.to yield_with_args("#{data}\x00",0x11223300)
+            end
           end
         end
       end
@@ -204,10 +266,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x11\x22\x33\x44\x55\x66\x77".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_uint(data,&b)
             }.to yield_with_args(data,nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded uint" do
+              expect { |b|
+                subject.each_uint(data,&b)
+              }.to yield_with_args("#{data}\x00",0x0077665544332211)
+            end
           end
         end
       end
@@ -228,10 +300,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x11\x22\x33\x44\x55\x66\x77".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_uint(data,&b)
             }.to yield_with_args(data,nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded uint" do
+              expect { |b|
+                subject.each_uint(data,&b)
+              }.to yield_with_args("#{data}\x00",0x1122334455667700)
+            end
           end
         end
       end
@@ -281,10 +363,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x01".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_int(data,&b)
             }.to yield_with_args(data, nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded int" do
+              expect { |b|
+                subject.each_int(data,&b)
+              }.to yield_with_args("#{data}\x00",0x01)
+            end
           end
         end
       end
@@ -305,10 +397,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x01".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_int(data,&b)
             }.to yield_with_args(data, nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded int" do
+              expect { |b|
+                subject.each_int(data,&b)
+              }.to yield_with_args("#{data}\x00",0x0100)
+            end
           end
         end
       end
@@ -333,10 +435,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x01\x02\x03".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_int(data,&b)
             }.to yield_with_args(data, nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded int" do
+              expect { |b|
+                subject.each_int(data,&b)
+              }.to yield_with_args("#{data}\x00",0x00030201)
+            end
           end
         end
       end
@@ -357,10 +469,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x01\x02\x03".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_int(data,&b)
             }.to yield_with_args(data, nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded int" do
+              expect { |b|
+                subject.each_int(data,&b)
+              }.to yield_with_args("#{data}\x00",0x01020300)
+            end
           end
         end
       end
@@ -385,10 +507,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x01\x02\x03\x04\x05\x06\x07".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_int(data,&b)
             }.to yield_with_args(data, nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded int" do
+              expect { |b|
+                subject.each_int(data,&b)
+              }.to yield_with_args("#{data}\x00",0x0007060504030201)
+            end
           end
         end
       end
@@ -413,6 +545,16 @@ describe Hexdump::Reader do
             expect { |b|
               subject.each_int(data,&b)
             }.to yield_with_args(data, nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded int" do
+              expect { |b|
+                subject.each_int(data,&b)
+              }.to yield_with_args("#{data}\x00",0x0102030405060700)
+            end
           end
         end
       end
@@ -447,10 +589,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x01\x02\x03".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_float(data,&b)
             }.to yield_with_args(data, nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded int" do
+              expect { |b|
+                subject.each_float(data,&b)
+              }.to yield_with_args("#{data}\x00",2.7622535458617227e-40)
+            end
           end
         end
       end
@@ -471,10 +623,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x01\x02\x03".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_float(data,&b)
             }.to yield_with_args(data, nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded int" do
+              expect { |b|
+                subject.each_float(data,&b)
+              }.to yield_with_args("#{data}\x00",2.387938139551892e-38)
+            end
           end
         end
       end
@@ -499,10 +661,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x01\x02\x03\x04\x05\x06\x07".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_float(data,&b)
             }.to yield_with_args(data, nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded int" do
+              expect { |b|
+                subject.each_float(data,&b)
+              }.to yield_with_args("#{data}\x00",9.76739841864353e-309)
+            end
           end
         end
       end
@@ -523,10 +695,20 @@ describe Hexdump::Reader do
         context "but there is not enough bytes to decode a value" do
           let(:data) { "\x01\x02\x03\x04\x05\x06\x07".encode(Encoding::BINARY) }
 
-          it "must yield nil and the remaining bytes" do
+          it "must yield the remaining bytes and nil" do
             expect { |b|
               subject.each_float(data,&b)
             }.to yield_with_args(data, nil)
+          end
+
+          context "but #zero_pad? is true" do
+            subject { described_class.new(type, zero_pad: true) }
+
+            it "must yield the zero-padded data and partially decoded int" do
+              expect { |b|
+                subject.each_float(data,&b)
+              }.to yield_with_args("#{data}\x00",8.207880399131826e-304)
+            end
           end
         end
       end
