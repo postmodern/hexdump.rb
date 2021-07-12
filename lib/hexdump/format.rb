@@ -149,6 +149,22 @@ module Hexdump
       end
     end
 
+    #
+    # Enumerates over each slice of read values.
+    #
+    # @param [#each_byte] data
+    #   The data to be hexdumped.
+    #
+    # @yield [slice]
+    #   The given block will be passed the hexdump break-down of each
+    #   segment.
+    #
+    # @yieldparam [Array<(String, Integer)>, Array<(String, Float)>] slice
+    #   The decoded values.
+    #
+    # @return [Enumerator]
+    #   If no block is given, an Enumerator will be returned.
+    #
     def each_slice(data,&block)
       @reader.each(data).each_slice(@columns,&block)
     end
