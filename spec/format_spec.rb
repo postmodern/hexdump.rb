@@ -51,12 +51,12 @@ describe Hexdump::Format do
       context "when initialized with a type: :char" do
         subject { described_class.new(type: :char) }
 
-        it "must initialize #numeric to Hexdump::Numeric::CharOrInt" do
-          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::CharOrInt)
+        it "must set #type to Hexdump::Type::Char" do
+          expect(subject.type).to be_kind_of(Hexdump::Type::Char)
         end
 
-        it "must set #char_map to nil" do
-          expect(subject.char_map).to be(nil)
+        it "must initialize #numeric to Hexdump::Numeric::CharOrInt" do
+          expect(subject.numeric).to be_kind_of(Hexdump::Numeric::CharOrInt)
         end
       end
 
@@ -66,82 +66,42 @@ describe Hexdump::Format do
         it "must initialize #numeric to Hexdump::Numeric::CharOrInt" do
           expect(subject.numeric).to be_kind_of(Hexdump::Numeric::CharOrInt)
         end
-
-        it "must set #char_map to nil" do
-          expect(subject.char_map).to be(nil)
-        end
       end
 
       context "when the type: is :byte" do
         let(:type) { :byte }
-
-        it "must initialize #char_map to Hexdump::CharMap::ASCII" do
-          expect(subject.char_map).to be(Hexdump::CharMap::ASCII)
-        end
       end
 
       context "when the type: is :uint8" do
         let(:type) { :uint8 }
-
-        it "must initialize #char_map to Hexdump::CharMap::ASCII" do
-          expect(subject.char_map).to be(Hexdump::CharMap::ASCII)
-        end
       end
 
       context "when the type: is :int8" do
         let(:type) { :int8 }
-
-        it "must initialize #char_map to nil" do
-          expect(subject.char_map).to be(nil)
-        end
       end
 
       context "when the type: is :uint16" do
         let(:type) { :uint16 }
-
-        it "must initialize #char_map to Hexdump::CharMap::UTF8" do
-          expect(subject.char_map).to be(Hexdump::CharMap::UTF8)
-        end
       end
 
       context "when the type: is :int16" do
         let(:type) { :int16 }
-
-        it "must initialize #char_map to nil" do
-          expect(subject.char_map).to be(nil)
-        end
       end
 
       context "when the type: is :uint32" do
         let(:type) { :uint32 }
-
-        it "must initialize #char_map to Hexdump::CharMap::UTF8" do
-          expect(subject.char_map).to be(Hexdump::CharMap::UTF8)
-        end
       end
 
       context "when the type: is :int32" do
         let(:type) { :int32 }
-
-        it "must initialize #char_map to nil" do
-          expect(subject.char_map).to be(nil)
-        end
       end
 
       context "when the type: is :uint64" do
         let(:type) { :uint64 }
-
-        it "must initialize #char_map to Hexdump::CharMap::UTF8" do
-          expect(subject.char_map).to be(Hexdump::CharMap::UTF8)
-        end
       end
 
       context "when the type: is :int64" do
         let(:type) { :int64 }
-
-        it "must initialize #char_map to nil" do
-          expect(subject.char_map).to be(nil)
-        end
       end
 
       context "and the type is :float, :float32, :float64, or :double" do
@@ -304,9 +264,9 @@ describe Hexdump::Format do
 
   let(:rows) do
     [
-      [columns * 0, [0x41] * columns, 'A' * columns],
-      [columns * 1, [0x42] * columns, 'B' * columns],
-      [columns * 2, [0x43] * columns, 'C' * columns],
+      [columns * 0, [0x41] * columns, ['A'] * columns],
+      [columns * 1, [0x42] * columns, ['B'] * columns],
+      [columns * 2, [0x43] * columns, ['C'] * columns],
     ]
   end
 
@@ -331,9 +291,9 @@ describe Hexdump::Format do
     context "when the data's length is not evenly divisble by the columns" do
       let(:rows) do
         [
-          [columns * 0, [0x41] * columns,       'A' * columns      ],
-          [columns * 1, [0x42] * columns,       'B' * columns      ],
-          [columns * 2, [0x43] * (columns / 2), 'C' * (columns / 2)]
+          [columns * 0, [0x41] * columns,       ['A'] * columns      ],
+          [columns * 1, [0x42] * columns,       ['B'] * columns      ],
+          [columns * 2, [0x43] * (columns / 2), ['C'] * (columns / 2)]
         ]
       end
 
@@ -382,8 +342,8 @@ describe Hexdump::Format do
 
       let(:rows) do
         [
-          [size * columns * 0, [0x41414141] * columns, "AAAA" * columns],
-          [size * columns * 1, [nil], "ABC"]
+          [size * columns * 0, [0x41414141] * columns, ["AAAA"] * columns],
+          [size * columns * 1, [nil], ["ABC"]]
         ]
       end
 
@@ -398,22 +358,6 @@ describe Hexdump::Format do
       end
     end
 
-    context "when #encoding is set" do
-      let(:encoding) { Encoding::UTF_8 }
-
-      subject { described_class.new(encoding: encoding) }
-
-      it "must encode the characters to the given Encoding" do
-        yielded_char_encodings = []
-
-        subject.each_row(data) do |index,numeric,chars|
-          yielded_char_encodings << chars.encoding
-        end
-
-        expect(yielded_char_encodings).to all(eq(encoding))
-      end
-    end
-
     context "when no block is given" do
       it "must return an Enumerator" do
         expect(subject.each_row(data)).to be_kind_of(Enumerator)
@@ -424,10 +368,10 @@ describe Hexdump::Format do
   describe "#each_non_repeating_row" do
     let(:rows) do
       [
-        [columns * 0, [0x41] * columns, 'A' * columns],
-        [columns * 1, [0x42] * columns, 'B' * columns],
+        [columns * 0, [0x41] * columns, ['A'] * columns],
+        [columns * 1, [0x42] * columns, ['B'] * columns],
         ['*'                                         ],
-        [columns * 4, [0x43] * columns, 'C' * columns]
+        [columns * 4, [0x43] * columns, ['C'] * columns]
       ]
     end
 
@@ -459,10 +403,10 @@ describe Hexdump::Format do
     context "when the repeating rows is at the end of the data" do
       let(:rows) do
         [
-          [columns * 0, [0x41] * columns, 'A' * columns],
-          [columns * 1, [0x42] * columns, 'B' * columns],
-          [columns * 2, [0x43] * columns, 'C' * columns],
-          ['*'                                         ]
+          [columns * 0, [0x41] * columns, ['A'] * columns],
+          [columns * 1, [0x42] * columns, ['B'] * columns],
+          [columns * 2, [0x43] * columns, ['C'] * columns],
+          ['*'                                           ]
         ]
       end
 
@@ -501,7 +445,7 @@ describe Hexdump::Format do
           [
             subject.index % row[0],
             row[1].map { |value| subject.numeric % value if value },
-            row[2].codepoints.map { |b| subject.char_map[b] }.join
+            row[2].join.gsub(/[^[:print:]]/,'.')
           ]
         end
       end
@@ -524,6 +468,26 @@ describe Hexdump::Format do
       expect(index).to eq(subject.index % data.length)
     end
 
+    [*(0x00..0x20), *(0x7f..0xff)].each do |byte|
+      context "when the row contains an ASCII #{byte.chr.dump} characters" do
+        let(:row) do
+          [
+            [columns * 0, [0x41, 0x42, 0x43, byte], ['A', 'B', 'C', '.']]
+          ]
+        end
+
+        it "must replace unprintable characters with a '.'" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
+      end
+    end
+
     context "when the data's length is not evenly divisble by the columns" do
       let(:data) do
         'A' * columns + \
@@ -533,9 +497,9 @@ describe Hexdump::Format do
 
       let(:rows) do
         [
-          [columns * 0, [0x41] * columns,       'A' * columns      ],
-          [columns * 1, [0x42] * columns,       'B' * columns      ],
-          [columns * 2, [0x43] * (columns / 2), 'C' * (columns / 2)]
+          [columns * 0, [0x41] * columns,       ['A'] * columns      ],
+          [columns * 1, [0x42] * columns,       ['B'] * columns      ],
+          [columns * 2, [0x43] * (columns / 2), ['C'] * (columns / 2)]
         ]
       end
 
@@ -562,8 +526,8 @@ describe Hexdump::Format do
 
       let(:rows) do
         [
-          [size * columns * 0, [0x41414141] * columns, "AAAA" * columns],
-          [size * columns * 1, [nil], "ABC"]
+          [size * columns * 0, [0x41414141] * columns, ["AAAA"] * columns],
+          [size * columns * 1, [nil], ["ABC"]]
         ]
       end
 
@@ -589,10 +553,10 @@ describe Hexdump::Format do
 
       let(:rows) do
         [
-          [columns * 0, [0x41] * columns, 'A' * columns],
-          [columns * 1, [0x42] * columns, 'B' * columns],
+          [columns * 0, [0x41] * columns, ['A'] * columns],
+          [columns * 1, [0x42] * columns, ['B'] * columns],
           ['*'                                         ],
-          [columns * 4, [0x43] * columns, 'C' * columns]
+          [columns * 4, [0x43] * columns, ['C'] * columns]
         ]
       end
 
@@ -611,11 +575,11 @@ describe Hexdump::Format do
 
         let(:rows) do
           [
-            [columns * 0, [0x41] * columns, 'A' * columns],
-            [columns * 1, [0x42] * columns, 'B' * columns],
-            [columns * 2, [0x42] * columns, 'B' * columns],
-            [columns * 3, [0x42] * columns, 'B' * columns],
-            [columns * 4, [0x43] * columns, 'C' * columns]
+            [columns * 0, [0x41] * columns, ['A'] * columns],
+            [columns * 1, [0x42] * columns, ['B'] * columns],
+            [columns * 2, [0x42] * columns, ['B'] * columns],
+            [columns * 3, [0x42] * columns, ['B'] * columns],
+            [columns * 4, [0x43] * columns, ['C'] * columns]
           ]
         end
 
@@ -647,6 +611,65 @@ describe Hexdump::Format do
 
         expect(yielded_numeric_lengths).to all(eq(columns))
         expect(yielded_chars_lengths).to   all(eq(columns))
+      end
+    end
+
+    context "when #encoding is set" do
+      let(:encoding) { Encoding::UTF_8 }
+
+      subject { described_class.new(encoding: encoding) }
+
+      it "must encode the characters to the given Encoding" do
+        yielded_char_encodings = []
+
+        subject.each_formatted_row(data) do |index,numeric,chars|
+          yielded_char_encodings << chars.encoding
+        end
+
+        expect(yielded_char_encodings).to all(eq(encoding))
+      end
+
+      context "and the data contains unprintable characters" do
+        let(:codepoint) { 888 }
+        let(:char) { codepoint.chr(encoding) }
+        let(:data) { "A#{char}B" }
+
+        let(:formatted_rows) do
+          [
+            [subject.index % 0, ["41", "cd", "b8", "42"], "A.B"]
+          ]
+        end
+
+        it "must replace any unprintable characters with a '.'" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
+      end
+
+      context "and the data contains invalid byte sequences" do
+        let(:invalid_bytes) { "\x80\x81" }
+        let(:data) { "A#{invalid_bytes}B" }
+
+        let(:formatted_rows) do
+          [
+            [subject.index % 0, ["41", "80", "81", "42"], "A..B"]
+          ]
+        end
+
+        it "must replace any invalid byte sequences with a '.'" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
       end
     end
 

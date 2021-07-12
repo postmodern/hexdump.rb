@@ -3,7 +3,6 @@
 require 'hexdump/types'
 require 'hexdump/reader'
 require 'hexdump/numeric'
-require 'hexdump/char_map'
 
 module Hexdump
   #
@@ -69,10 +68,10 @@ module Hexdump
     #          Numeric::Binary]
     attr_reader :numeric
 
-    # Mapping of numeric values to their character strings.
+    # Controls whether the characters column is displayed.
     #
-    # @return [CharMap::ASCII, CharMap::UTF8]
-    attr_reader :char_map
+    # @return [Boolean]
+    attr_reader :chars
 
     #
     # Initializes a hexdump format.
@@ -95,7 +94,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, columns: nil, group_columns: false, repeating: false, base: nil, encoding: nil)
+    def initialize(type: :byte, columns: nil, group_columns: false, repeating: false, base: nil, chars: true, encoding: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
@@ -117,11 +116,6 @@ module Hexdump
                  }.new(@type)
       @index = @numeric.class.new(TYPES[:uint32])
 
-      case @type
-      when Type::Char, Type::UChar
-        @numeric = Numeric::CharOrInt.new(@numeric)
-      end
-
       @encoding = case encoding
                   when :ascii   then nil
                   when :utf8    then Encoding::UTF_8
@@ -131,18 +125,16 @@ module Hexdump
                     raise(ArgumentError,"encoding must be :ascii, :utf8 or an Encoding object")
                   end
 
-      @char_map = case @type
-                  when Type::Char, Type::UChar
-                    nil # disable the printable characters for chars
-                  when Type::UInt8
-                    CharMap::ASCII
-                  when Type::UInt
-                    CharMap::UTF8
-                  when Type::Int
-                    nil # disable the printable characters for signed ints
-                  when Type::Float
-                    nil # disable the printable characters for floats
-                  end
+      @chars = chars
+
+      case @type
+      when Type::Char, Type::UChar
+        @numeric = Numeric::CharOrInt.new(@numeric,@encoding)
+      end
+    end
+
+    def each_slice(data,&block)
+      @reader.each(data).each_slice(@columns,&block)
     end
 
     #
@@ -177,27 +169,21 @@ module Hexdump
       return enum_for(__method__,data, offset: offset) unless block_given?
 
       index = offset
-      capacity = @type.size * @columns
 
-      @reader.each(data).each_slice(@columns) do |slice|
+      each_slice(data) do |slice|
         numeric = []
-        chars   = if @char_map
-                    String.new("", capacity: capacity,
-                                   encoding: Encoding::BINARY)
-                  end
+        chars   = []
 
         next_index = index
 
         slice.each do |(raw,value)|
           numeric << value
-          chars   << raw if @char_map
+          chars   << raw if @chars
 
           next_index += raw.length
         end
 
-        if @char_map
-          chars = chars.force_encoding(@encoding) if @encoding
-
+        if @chars
           yield index, numeric, chars
         else
           yield index, numeric
@@ -299,41 +285,42 @@ module Hexdump
       return enum_for(__method__,data,**kwargs) unless block_given?
 
       format_numeric = lambda { |value| @numeric % value if value }
-      format_char    = lambda { |value| @char_map[value] }
 
-      # cache the formatted values for 8bit and 16bit values
-      if @type.size <= 2
-        numeric_cache = Hash.new do |hash,value|
+      # cache the formatted numbers for 8bit and 16bit values
+      numeric_cache = if @type.size <= 2
+                        Hash.new do |hash,value|
                           hash[value] = format_numeric.call(value)
                         end
-
-        char_cache = if @char_map
-                       Hash.new do |hash,value|
-                         hash[value] = format_char.call(value)
-                       end
-                     end
-      else
-        numeric_cache = format_numeric
-        char_cache    = format_char
-      end
+                      else
+                        format_numeric
+                      end
 
       enum = if @repeating then each_row(data,**kwargs)
              else               each_non_repeating_row(data,**kwargs)
              end
 
+      scrub_chars = if @encoding
+                      lambda { |chars|
+                        encoded_chars = chars.force_encoding(@encoding)
+                        encoded_chars.scrub!('.')
+                        encoded_chars.gsub!(/[^[:print:]]/,'.')
+                      }
+                    else
+                      lambda { |chars|
+                        chars.tr!("^\x20-\x7e",'.')
+                      }
+                    end
+
       index = enum.each do |index,numeric,chars|
         if index == '*'
           yield index
         else
-          formatted_index = @index % index
-
+          formatted_index   = @index % index
           formatted_numbers = numeric.map { |value| numeric_cache[value] }
 
-          if @char_map
-            formatted_chars = String.new(encoding: @encoding)
-            chars.codepoints.each do |b|
-              formatted_chars << char_cache[b]
-            end
+          if @chars
+            formatted_chars = chars.join
+            scrub_chars.call(formatted_chars)
 
             yield formatted_index, formatted_numbers, formatted_chars
           else
@@ -376,18 +363,22 @@ module Hexdump
       number_of_spaces += ((@columns / @group_columns) - 1) if @group_columns
       numeric_width    = ((chars_per_column * @columns) + number_of_spaces)
 
+      join_columns = if @group_columns
+                       lambda { |numeric|
+                         numeric.each_slice(@group_columns).map { |numbers|
+                           numbers.join(' ')
+                         }.join('  ')
+                       }
+                     else
+                       lambda { |numeric| numeric.join(' ') }
+                     end
+
       index = each_formatted_row(data,**kwargs) do |index,numeric,chars|
         if index == '*'
           yield "#{index}#{$/}"
         else
-          numeric = if @group_columns
-                      numeric.each_slice(@group_columns).map { |numbers|
-                        numbers.join(' ')
-                      }.join('  ').ljust(numeric_width)
-                    else
-                      numeric.join(' ').ljust(numeric_width)
-                    end
-          line    = if @char_map
+          numeric = join_columns.call(numeric).ljust(numeric_width)
+          line    = if @chars
                       "#{index}  #{numeric}  |#{chars}|#{$/}"
                     else
                       "#{index}  #{numeric}#{$/}"
