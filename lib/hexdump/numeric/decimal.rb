@@ -44,9 +44,9 @@ module Hexdump
           super("% #{@width}e"); @width += 1
         else
           if type.signed?
-            super("% #{@width}.d"); @width += 1
+            super("% #{@width}d"); @width += 1
           else
-            super("%#{@width}.d")
+            super("%#{@width}d")
           end
         end
       end
