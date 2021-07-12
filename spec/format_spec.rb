@@ -225,11 +225,11 @@ describe Hexdump::Format do
       end
     end
 
-    context "when given index: keyword" do
-      subject { described_class.new(index: index) }
+    context "when given index_base: keyword" do
+      subject { described_class.new(index_base: index_base) }
 
       context "when the index: is 16" do
-        let(:index) { 16 }
+        let(:index_base) { 16 }
 
         it "must initialize #index to Hexdump::Numeric::Hexdecimal" do
           expect(subject.index).to be_kind_of(Hexdump::Numeric::Hexadecimal)
@@ -237,7 +237,7 @@ describe Hexdump::Format do
       end
 
       context "when the index: is 10" do
-        let(:index) { 10 }
+        let(:index_base) { 10 }
 
         it "must initialize #index to Hexdump::Numeric::Decimal" do
           expect(subject.index).to be_kind_of(Hexdump::Numeric::Decimal)
@@ -245,7 +245,7 @@ describe Hexdump::Format do
       end
 
       context "when given index: 8" do
-        let(:index) { 8 }
+        let(:index_base) { 8 }
 
         it "must initialize #index to Hexdump::Numeric::Octal" do
           expect(subject.index).to be_kind_of(Hexdump::Numeric::Octal)
@@ -253,7 +253,7 @@ describe Hexdump::Format do
       end
 
       context "when given index: 2" do
-        let(:index) { 2 }
+        let(:index_base) { 2 }
 
         it "must initialize #index to Hexdump::Numeric::Binary" do
           expect(subject.index).to be_kind_of(Hexdump::Numeric::Binary)
