@@ -1,5 +1,4 @@
 require 'hexdump/format_string'
-require 'hexdump/char_map/ascii'
 
 module Hexdump
   module Numeric
@@ -27,6 +26,9 @@ module Hexdump
       # @return [Base::Hexadecimal, Base::Decimal, Base::Octal, Base::Binary]
       attr_reader :base
 
+      # @return [Encoding, nil]
+      attr_reader :encoding
+
       #
       # Initializes the character format.
       #
@@ -34,8 +36,12 @@ module Hexdump
       #   The numeric base format to fallback to if a value does not map to a
       #   character.
       #
-      def initialize(base)
-        @base = base
+      # @param [Encoding, nil] encoding
+      #   The optional encoding to convert bytes to.
+      #
+      def initialize(base,encoding=nil)
+        @base     = base
+        @encoding = encoding
         
         super("%#{@base.width}s")
       end
@@ -54,12 +60,28 @@ module Hexdump
       #   The character or numeric formatted value.
       #
       def %(value)
-        if (char = CharMap::ASCII::PRINTABLE[value])
-          super(char)
-        elsif (char = ESCAPE_CHARS[value])
-          super(char)
+        if @encoding
+          if value >= 0x00
+            ESCAPE_CHARS.fetch(value) do
+              char = value.chr(@encoding) rescue nil
+
+              if char && char =~ /[[:print:]]/
+                super(char)
+              else
+                @base % value
+              end
+            end
+          else
+            @base % value
+          end
         else
-          @base % value
+          if (value >= 0x20 && value <= 0x7e)
+            super(value.chr)
+          elsif (char = ESCAPE_CHARS[value])
+            super(char)
+          else
+            @base % value
+          end
         end
       end
 
