@@ -72,77 +72,92 @@ Simple and Fast hexdumping for Ruby.
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
     # 00000006
 
+Hexdump a file:
+
     File.hexdump("/bin/ls")
     # ...
 
-    # write the hexdump to a file
+Write the hexdump to a file:
+
     File.open('dump.txt','w') do |file|
       data.hexdump(output: file)
     end
 
-    # configure the width of the hexdump
+Configure the width of the hexdump:
+
     Hexdump.hexdump('A' * 30, columns: 10)
     # 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     # *
     # 0000001e
 
-    # show repeated rows
+Show repeated rows (hidden by default):
+
     Hexdump.hexdump('A' * 30, columns: 10, repeating: true)
     00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
     0000001e
 
-    # group columns together
+Group columns together:
+
     Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
     00000000  41 42 43 44  41 42 43 44  41 42 43 44  41 42 43 44  |ABCDABCDABCDABCD|
     00000010  41 42 43 44  41 42 43 44  41 42 43 44  41 42 43 44  |ABCDABCDABCDABCD|
     00000020
 
+Hexdump chars:
 
     Hexdump.hexdump("hello\0", type: :char)
     # 00000000    h   e   l   l   o  \0                                          |hello.|
     # 00000006
 
-    # hexdump in hexadecimal (default)
+Hexdump in hexadecimal (default):
+
     Hexdump.hexdump("hello\0", base: 16)
     # 00000000  68 65 6c 6c 6f 00                                |hello.|
     # 00000006
 
-    # hexdump in decimal
+Hexdump in decimal:
+
     Hexdump.hexdump("hello\0", base: 10)
     # 00000000  104 101 108 108 111   0                                          |hello.|
     # 00000006
 
-    # hexdump in octal
+Hexdump in octal:
+
     Hexdump.hexdump("hello\0", base: 8)
     # 00000000  0150 0145 0154 0154 0157 0000                                                    |hello.|
     # 00000006
 
-    # hexdump in binary
+Hexdump in binary:
+
     Hexdump.hexdump("hello\0", base: 2)
     # 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
     # 00000006
 
-    # read multi-byte words
+Read multi-byte words:
+
     ("ABCD" * 7).hexdump(type: :uint16)
     00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
     00000010  44434241 44434241 44434241           |ABCDABCDABCD|
     0000001c
 
-    # read little-endian words
+Read little-endian words:
+
     ("ABCD" * 7).hexdump(type: :uint32_le)
     00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
     00000010  44434241 44434241 44434241           |ABCDABCDABCD|
     0000001c
 
-    # read big-endian words
+Read big-endian words:
+
     ("ABCD" * 7).hexdump(type: :uint32_be)
     00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
     00000010  41424344 41424344 41424344           |ABCDABCDABCD|
     0000001c
 
-    # zero-padding the data
+Zero-padding the data:
+
     (("ABCD" * 4) + "AB").hexdump(type: :uint32_be, zero_pad: true)
     00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
     00000010  41420000                             |AB..|
