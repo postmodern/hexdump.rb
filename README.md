@@ -54,6 +54,7 @@ Simple and Fast hexdumping for Ruby.
   * `double_ne` - single precision 64bit floating-point number (network endian)
 * Supports omitting repeating rows with a `*`.
 * Supports grouping columns together like GNU `hexdump -C`.
+* Supports optional zero-padding of the data.
 * Can hexdump any Object supporting the `each_byte` method.
 * Can send the hexdump output to any Object supporting the `<<` method.
 * Makes {String}, {StringIO}, {IO}, {File} objects hexdumpable.
@@ -128,6 +129,12 @@ Simple and Fast hexdumping for Ruby.
     00000000  4241 4341 4241 4341 4241 4341 4241 4341  |ABACABACABACABAC|
     00000010  4241 4341 4241 4341 4241 4341            |ABACABACABAC|
     0000001c
+
+    # zero-padding the data
+    (("ABCD" * 4) + "AB").hexdump(type: :uint32_be, zero_pad: true)
+    00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
+    00000010  41420000                             |AB..|
+    00000014
 
 ## Install
 
