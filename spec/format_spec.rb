@@ -2,14 +2,6 @@ require 'spec_helper'
 require 'hexdump/format'
 
 describe Hexdump::Format do
-  let(:bytes)         { [104, 101, 108, 108, 111] }
-  let(:hex_chars)     { %w[68 65 6c 6c 6f] }
-  let(:decimal_chars) { %w[104 101 108 108 111] }
-  let(:octal_chars)   { %w[150 145 154 154 157] }
-  let(:binary_chars)  { %w[01101000 01100101 01101100 01101100 01101111] }
-  let(:print_chars)   { %w[h e l l o] }
-  let(:data)          { print_chars.join }
-
   describe "#initialize" do
     it "must default type to :byte" do
       expect(subject.type).to be(Hexdump::TYPES[:byte])
