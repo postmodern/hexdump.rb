@@ -157,7 +157,7 @@ module Hexdump
     #
     # @yield [slice]
     #   The given block will be passed the hexdump break-down of each
-    #   segment.
+    #   row.
     #
     # @yieldparam [Array<(String, Integer)>, Array<(String, Float)>] slice
     #   The decoded values.
@@ -180,10 +180,10 @@ module Hexdump
     #
     # @yield [index, values, chars]
     #   The given block will be passed the hexdump break-down of each
-    #   segment.
+    #   row.
     #
     # @yieldparam [Integer, '*'] index
-    #   The index of the hexdumped segment.
+    #   The index of the hexdumped row.
     #   If the index is `'*'`, then it indicates the beginning of repeating
     #   rows of data.
     #
@@ -241,10 +241,10 @@ module Hexdump
     #
     # @yield [index, numeric, chars]
     #   The given block will be passed the hexdump break-down of each
-    #   segment.
+    #   row.
     #
     # @yieldparam [Integer, '*'] index
-    #   The index of the hexdumped segment.
+    #   The index of the hexdumped row.
     #   If the index is `'*'`, then it indicates the beginning of repeating
     #   rows of data.
     #
@@ -296,18 +296,18 @@ module Hexdump
     #
     # @yield [index, numeric, chars]
     #   The given block will be passed the hexdump break-down of each
-    #   segment.
+    #   row.
     #
     # @yieldparam [Integer, '*'] index
-    #   The index of the hexdumped segment.
+    #   The index of the hexdumped row.
     #   If the index is `'*'`, then it indicates the beginning of repeating
     #   rows of data.
     #
     # @yieldparam [Array<String>, nil] numeric
-    #   The numeric representation of the segment.
+    #   The numeric representation of the row.
     #
     # @yieldparam [Array<String>, nil] chars
-    #   The printable representation of the segment.
+    #   The printable representation of the row.
     #
     # @return [String, Enumerator]
     #   If a block is given, the final number of bytes read will be returned.
