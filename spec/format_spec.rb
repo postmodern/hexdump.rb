@@ -350,6 +350,14 @@ describe Hexdump::Format do
     ]
   end
 
+  let(:formatted_rows) do
+    [
+      ["%.8x" % (columns * 0), ["41"] * columns, "A" * columns],
+      ["%.8x" % (columns * 1), ["42"] * columns, "B" * columns],
+      ["%.8x" % (columns * 2), ["43"] * columns, "C" * columns],
+    ]
+  end
+
   describe "#each_row" do
     it "must yield each row of index, numeric values, and raw characters" do
       yielded_rows = []
@@ -517,20 +525,6 @@ describe Hexdump::Format do
   end
 
   describe "#each_formatted_row" do
-    let(:formatted_rows) do
-      rows.map do |row|
-        if row[0] == '*'
-          ['*']
-        else
-          [
-            subject.index % row[0],
-            row[1].map { |value| subject.numeric % value if value },
-            row[2].join.gsub(/[^[:print:]]/,'.')
-          ]
-        end
-      end
-    end
-
     it "should yield the formatted rows to the given block" do
       yielded_rows = []
 
@@ -552,15 +546,9 @@ describe Hexdump::Format do
       context "when the row contains an ASCII #{byte.chr.dump} characters" do
         let(:data) { "ABC#{byte.chr}" }
 
-        let(:rows) do
-          [
-            [0, [0x41, 0x42, 0x43, byte], ['A', 'B', 'C', '.']]
-          ]
-        end
-
         let(:formatted_rows) do
           [
-            [subject.index % 0, ["41", "42", "43", subject.numeric % byte], "ABC."]
+            ["00000000", ["41", "42", "43", "%.2x" % byte], "ABC."]
           ]
         end
 
@@ -583,11 +571,13 @@ describe Hexdump::Format do
         'C' * (columns / 2)
       end
 
-      let(:rows) do
+      let(:formatted_rows) do
         [
-          [columns * 0, [0x41] * columns,       ['A'] * columns      ],
-          [columns * 1, [0x42] * columns,       ['B'] * columns      ],
-          [columns * 2, [0x43] * (columns / 2), ['C'] * (columns / 2)]
+          ["%.8x" % (columns * 0), ["41"] * columns, "A" * columns],
+          ["%.8x" % (columns * 1), ["42"] * columns, "B" * columns],
+          [
+            "%.8x" % (columns * 2), ["43"] * (columns / 2), "C" * (columns / 2)
+          ]
         ]
       end
 
@@ -612,10 +602,19 @@ describe Hexdump::Format do
         "ABC"
       end
 
-      let(:rows) do
+      let(:formatted_rows) do
         [
-          [size * columns * 0, [0x41414141] * columns, ["AAAA"] * columns],
-          [size * columns * 1, [nil], ["ABC"]]
+          [
+            "%.8x" % (size * columns * 0),
+            ["41414141"] * columns,
+            "AAAA" * columns
+          ],
+
+          [
+            "%.8x" % (size * columns * 1),
+            [nil],
+            "ABC"
+          ]
         ]
       end
 
@@ -639,12 +638,12 @@ describe Hexdump::Format do
         'C' * columns
       end
 
-      let(:rows) do
+      let(:formatted_rows) do
         [
-          [columns * 0, [0x41] * columns, ['A'] * columns],
-          [columns * 1, [0x42] * columns, ['B'] * columns],
-          ['*'                                         ],
-          [columns * 4, [0x43] * columns, ['C'] * columns]
+          ["%.8x" % (columns * 0), ["41"] * columns, "A" * columns],
+          ["%.8x" % (columns * 1), ["42"] * columns, "B" * columns],
+          ["*"],
+          ["%.8x" % (columns * 4), ["43"] * columns, "C" * columns]
         ]
       end
 
@@ -661,13 +660,13 @@ describe Hexdump::Format do
       context "and #repeating is true" do
         subject { described_class.new(repeating: true) }
 
-        let(:rows) do
+        let(:formatted_rows) do
           [
-            [columns * 0, [0x41] * columns, ['A'] * columns],
-            [columns * 1, [0x42] * columns, ['B'] * columns],
-            [columns * 2, [0x42] * columns, ['B'] * columns],
-            [columns * 3, [0x42] * columns, ['B'] * columns],
-            [columns * 4, [0x43] * columns, ['C'] * columns]
+            ["%.8x" % (columns * 0), ["41"] * columns, 'A' * columns],
+            ["%.8x" % (columns * 1), ["42"] * columns, 'B' * columns],
+            ["%.8x" % (columns * 2), ["42"] * columns, 'B' * columns],
+            ["%.8x" % (columns * 3), ["42"] * columns, 'B' * columns],
+            ["%.8x" % (columns * 4), ["43"] * columns, 'C' * columns]
           ]
         end
 
@@ -721,10 +720,11 @@ describe Hexdump::Format do
         let(:codepoint) { 888 }
         let(:char) { codepoint.chr(encoding) }
         let(:data) { "A#{char}B" }
+        let(:bytes) { data.bytes }
 
         let(:formatted_rows) do
           [
-            [subject.index % 0, ["41", "cd", "b8", "42"], "A.B"]
+            [subject.index % 0, bytes.map { |b| subject.numeric % b }, "A.B"]
           ]
         end
 
@@ -742,10 +742,11 @@ describe Hexdump::Format do
       context "and the data contains invalid byte sequences" do
         let(:invalid_bytes) { "\x80\x81" }
         let(:data) { "A#{invalid_bytes}B" }
+        let(:bytes) { data.bytes }
 
         let(:formatted_rows) do
           [
-            [subject.index % 0, ["41", "80", "81", "42"], "A..B"]
+            [subject.index % 0, bytes.map { |b| subject.numeric % b }, "A..B"]
           ]
         end
 
