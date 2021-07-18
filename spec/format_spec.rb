@@ -920,23 +920,20 @@ describe Hexdump::Format do
 
   describe "#print" do
     let(:output) { StringIO.new }
-    let(:lines)  { output.string.lines }
 
-    let(:index_format) { "%.8x" }
-
-    it "must append each line of the hexdump to the output" do
-      expected_lines = subject.each_line(data).to_a
-
-      subject.print(data, output: output)
-
-      expect(lines.length).to eq((data.length / columns) + 1)
-      expect(lines).to eq(expected_lines)
+    let(:lines) do
+      [
+        "00000000  41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAAAAAAAA|#{$/}",
+        "00000010  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
+        "00000020  43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43  |CCCCCCCCCCCCCCCC|#{$/}",
+        "00000030#{$/}"
+      ]
     end
 
-    it "must always print the total number of bytes read on the last line" do
+    it "must print each line of the hexdump to the output" do
       subject.print(data, output: output)
 
-      expect(lines.last).to start_with(index_format % data.length)
+      expect(output.string).to eq(lines.join)
     end
 
     context "when given an output that does not support #print" do
