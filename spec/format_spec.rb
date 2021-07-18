@@ -548,11 +548,19 @@ describe Hexdump::Format do
       expect(index).to eq(subject.index % data.length)
     end
 
-    [*(0x00..0x20), *(0x7f..0xff)].each do |byte|
+    [*(0x00..0x1f), *(0x7f..0xff)].each do |byte|
       context "when the row contains an ASCII #{byte.chr.dump} characters" do
-        let(:row) do
+        let(:data) { "ABC#{byte.chr}" }
+
+        let(:rows) do
           [
-            [columns * 0, [0x41, 0x42, 0x43, byte], ['A', 'B', 'C', '.']]
+            [0, [0x41, 0x42, 0x43, byte], ['A', 'B', 'C', '.']]
+          ]
+        end
+
+        let(:formatted_rows) do
+          [
+            [subject.index % 0, ["41", "42", "43", subject.numeric % byte], "ABC."]
           ]
         end
 
