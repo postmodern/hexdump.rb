@@ -342,23 +342,15 @@ describe Hexdump::Format do
 
   let(:columns) { subject.columns }
 
-  let(:rows) do
-    [
-      [columns * 0, [0x41] * columns, ['A'] * columns],
-      [columns * 1, [0x42] * columns, ['B'] * columns],
-      [columns * 2, [0x43] * columns, ['C'] * columns],
-    ]
-  end
-
-  let(:formatted_rows) do
-    [
-      ["%.8x" % (columns * 0), ["41"] * columns, "A" * columns],
-      ["%.8x" % (columns * 1), ["42"] * columns, "B" * columns],
-      ["%.8x" % (columns * 2), ["43"] * columns, "C" * columns],
-    ]
-  end
-
   describe "#each_row" do
+    let(:rows) do
+      [
+        [columns * 0, [0x41] * columns, ['A'] * columns],
+        [columns * 1, [0x42] * columns, ['B'] * columns],
+        [columns * 2, [0x43] * columns, ['C'] * columns],
+      ]
+    end
+
     it "must yield each row of index, numeric values, and raw characters" do
       yielded_rows = []
 
@@ -525,6 +517,14 @@ describe Hexdump::Format do
   end
 
   describe "#each_formatted_row" do
+    let(:formatted_rows) do
+      [
+        ["%.8x" % (columns * 0), ["41"] * columns, "A" * columns],
+        ["%.8x" % (columns * 1), ["42"] * columns, "B" * columns],
+        ["%.8x" % (columns * 2), ["43"] * columns, "C" * columns],
+      ]
+    end
+
     it "should yield the formatted rows to the given block" do
       yielded_rows = []
 
@@ -780,7 +780,7 @@ describe Hexdump::Format do
 
       subject.print(data, output: output)
 
-      expect(lines.length).to eq(rows.length + 1)
+      expect(lines.length).to eq((data.length / columns) + 1)
       expect(lines).to eq(expected_lines)
     end
 
