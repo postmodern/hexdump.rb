@@ -442,7 +442,7 @@ describe Hexdump::Format do
       [
         [columns * 0, [0x41] * columns, ['A'] * columns],
         [columns * 1, [0x42] * columns, ['B'] * columns],
-        ['*'                                         ],
+        ['*'],
         [columns * 4, [0x43] * columns, ['C'] * columns]
       ]
     end
@@ -478,7 +478,7 @@ describe Hexdump::Format do
           [columns * 0, [0x41] * columns, ['A'] * columns],
           [columns * 1, [0x42] * columns, ['B'] * columns],
           [columns * 2, [0x43] * columns, ['C'] * columns],
-          ['*'                                           ]
+          ['*']
         ]
       end
 
