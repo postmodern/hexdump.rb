@@ -769,6 +769,163 @@ describe Hexdump::Format do
     end
   end
 
+  describe "#each_line" do
+    let(:lines) do
+      [
+        "00000000  41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAAAAAAAA|#{$/}",
+        "00000010  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
+        "00000020  43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43  |CCCCCCCCCCCCCCCC|#{$/}",
+        "00000030#{$/}"
+      ]
+    end
+
+    it "must yield each line" do
+      yielded_lines = []
+
+      subject.each_line(data) do |line|
+        yielded_lines << line
+      end
+
+      expect(yielded_lines).to eq(lines)
+    end
+
+    context "when the data's length is not evenly divisble by the columns" do
+      let(:data) do
+        'A' * columns + \
+        'B' * columns + \
+        'C' * (columns / 2)
+      end
+
+      let(:lines) do
+        [
+          "00000000  41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAAAAAAAA|#{$/}",
+          "00000010  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
+          "00000020  43 43 43 43 43 43 43 43                          |CCCCCCCC|#{$/}",
+          "00000028#{$/}"
+        ]
+      end
+
+      it "must yield the last left-adjusted partial row" do
+        yielded_lines = []
+
+        subject.each_line(data) do |line|
+          yielded_lines << line
+        end
+
+        expect(yielded_lines).to eq(lines)
+      end
+    end
+
+    context "when the data contains repeating rows" do
+      let(:data) do
+        'A' * columns + \
+        'B' * columns + \
+        'B' * columns + \
+        'B' * columns + \
+        'C' * columns
+      end
+
+      let(:lines) do
+        [
+          "00000000  41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAAAAAAAA|#{$/}",
+          "00000010  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
+          "*#{$/}",
+          "00000040  43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43  |CCCCCCCCCCCCCCCC|#{$/}",
+          "00000050#{$/}"
+        ]
+      end
+
+      it "must yield the formatted lines and a '*' row to denote the beginning of repeating lines" do
+        yielded_lines = []
+
+        subject.each_line(data) do |line|
+          yielded_lines << line
+        end
+
+        expect(yielded_lines).to eq(lines)
+      end
+    end
+
+    context "when initialized with repeating: true" do
+      subject { described_class.new(repeating: true) }
+
+      let(:data) do
+        'A' * columns + \
+        'B' * columns + \
+        'B' * columns + \
+        'B' * columns + \
+        'C' * columns
+      end
+
+      let(:lines) do
+        [
+          "00000000  41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAAAAAAAA|#{$/}",
+          "00000010  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
+          "00000020  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
+          "00000030  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
+          "00000040  43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43  |CCCCCCCCCCCCCCCC|#{$/}",
+          "00000050#{$/}"
+        ]
+      end
+
+      it "must yield repeating lines" do
+        yielded_lines = []
+
+        subject.each_line(data) do |line|
+          yielded_lines << line
+        end
+
+        expect(yielded_lines).to eq(lines)
+      end
+    end
+
+    context "when initialized with chars: false" do
+      subject { described_class.new(chars: false) }
+
+      let(:lines) do
+        [
+          "00000000  41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41#{$/}",
+          "00000010  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42#{$/}",
+          "00000020  43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43#{$/}",
+          "00000030#{$/}"
+        ]
+      end
+
+      it "must omit the characters column" do
+        yielded_lines = []
+
+        subject.each_line(data) do |line|
+          yielded_lines << line
+        end
+
+        expect(yielded_lines).to eq(lines)
+      end
+    end
+
+    context "when initialized wth group_columns: ..." do
+      subject { described_class.new(group_columns: 4) }
+
+      let(:lines) do
+        [
+          "00000000  41 41 41 41  41 41 41 41  41 41 41 41  41 41 41 41  |AAAAAAAAAAAAAAAA|#{$/}",
+          "00000010  42 42 42 42  42 42 42 42  42 42 42 42  42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
+          "00000020  43 43 43 43  43 43 43 43  43 43 43 43  43 43 43 43  |CCCCCCCCCCCCCCCC|#{$/}",
+          "00000030#{$/}"
+        ]
+      end
+
+      it "must group columns together with an extra space" do
+        yielded_lines = []
+
+        subject.each_line(data) do |line|
+          yielded_lines << line
+        end
+
+        expect(yielded_lines).to eq(lines)
+      end
+    end
+  end
+
   describe "#print" do
     let(:output) { StringIO.new }
     let(:lines)  { output.string.lines }
