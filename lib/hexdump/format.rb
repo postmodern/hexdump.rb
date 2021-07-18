@@ -386,7 +386,7 @@ module Hexdump
     # @return [nil]
     #
     def each_line(data,**kwargs)
-      return enum_for(__method__,data) unless block_given?
+      return enum_for(__method__,data,**kwargs) unless block_given?
 
       chars_per_column = @numeric.width
       number_of_spaces = (@columns - 1)
