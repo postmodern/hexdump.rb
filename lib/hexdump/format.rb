@@ -124,8 +124,8 @@ module Hexdump
                       end
 
       @index = BASES.fetch(index_base) {
-                   raise(ArgumentError,"unsupported base: #{@base.inspect}")
-                 }.new(TYPES[:uint32])
+                 raise(ArgumentError,"unsupported base: #{@base.inspect}")
+               }.new(TYPES[:uint32])
 
       @numeric = BASES.fetch(@base) {
                    raise(ArgumentError,"unsupported base: #{@base.inspect}")
