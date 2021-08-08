@@ -23,16 +23,76 @@ describe Hexdump::Format do
       expect(subject.index).to be_kind_of(Hexdump::Numeric::Hexadecimal)
     end
 
-    it "must default #encoding to nil" do
-      expect(subject.encoding).to be(nil)
-    end
-
     it "must initialize #numeric to a Hexdump::Numeric::Hexadecimal" do
       expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Hexadecimal)
     end
 
     it "must initialize the #reader with zero-padding disabled by default" do
       expect(subject.reader.zero_pad?).to be(false)
+    end
+
+    it "must initialize #chars by default" do
+      expect(subject.chars).to be_kind_of(Hexdump::Chars)
+    end
+
+    context "when given the chars: true" do
+      subject { described_class.new(chars: true) }
+
+      it "must default #chars.encoding to nil" do
+        expect(subject.chars.encoding).to be(nil)
+      end
+
+      context "and encoding: keyword" do
+        context "and it is :ascii" do
+          subject { described_class.new(chars: true, encoding: :ascii) }
+
+          it "must set #chars.encoding to nil" do
+            expect(subject.chars.encoding).to be(nil)
+          end
+        end
+
+        context "and it is :utf8" do
+          subject { described_class.new(chars: true, encoding: :utf8) }
+
+          it "must set #chars.encoding to Encoding::UTF_8" do
+            expect(subject.chars.encoding).to be(Encoding::UTF_8)
+          end
+        end
+
+        context "and is nil" do
+          subject { described_class.new(chars: true, encoding: nil) }
+
+          it "must set #encoding to nil" do
+            expect(subject.chars.encoding).to be(nil)
+          end
+        end
+
+        context "and is an Encoding object" do
+          let(:encoding) { Encoding::UTF_7 }
+
+          subject { described_class.new(chars: true, encoding: nil) }
+
+          it "must set #encoding" do
+            expect(subject.chars.encoding).to be(nil)
+          end
+        end
+
+        context "otherwise" do
+          it "must raise an ArgumentError" do
+            expect {
+              described_class.new(chars: true, encoding: Object.new)
+            }.to raise_error(ArgumentError,"encoding must be nil, :ascii, :utf8, or an Encoding object")
+          end
+        end
+      end
+    end
+
+    context "when given chars: false" do
+      subject { described_class.new(chars: false) }
+
+      it "must set #chars to nil" do
+        expect(subject.chars).to be(nil)
+      end
     end
 
     context "when given zero_pad: true" do
@@ -68,7 +128,7 @@ describe Hexdump::Format do
         end
 
         it "must disable #chars" do
-          expect(subject.chars).to be(false)
+          expect(subject.chars).to be(nil)
         end
       end
 
@@ -270,50 +330,6 @@ describe Hexdump::Format do
 
       it "must set #group_columns" do
         expect(subject.group_columns).to eq(group_columns)
-      end
-    end
-
-    context "when given the encoding: keyword" do
-      context "and it is :ascii" do
-        subject { described_class.new(encoding: :ascii) }
-
-        it "must set #encoding to nil" do
-          expect(subject.encoding).to be(nil)
-        end
-      end
-
-      context "and it is :utf8" do
-        subject { described_class.new(encoding: :utf8) }
-
-        it "must set #encoding to Encoding::UTF_8" do
-          expect(subject.encoding).to be(Encoding::UTF_8)
-        end
-      end
-
-      context "and is nil" do
-        subject { described_class.new(encoding: nil) }
-
-        it "must set #encoding to nil" do
-          expect(subject.encoding).to be(nil)
-        end
-      end
-
-      context "and is an Encoding object" do
-        let(:encoding) { Encoding::UTF_7 }
-
-        subject { described_class.new(encoding: nil) }
-
-        it "must set #encoding" do
-          expect(subject.encoding).to be(nil)
-        end
-      end
-
-      context "otherwise" do
-        it "must raise an ArgumentError" do
-          expect {
-            described_class.new(encoding: Object.new)
-          }.to raise_error(ArgumentError,"encoding must be :ascii, :utf8 or an Encoding object")
-        end
       end
     end
 

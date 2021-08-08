@@ -3,6 +3,7 @@
 require 'hexdump/types'
 require 'hexdump/reader'
 require 'hexdump/numeric'
+require 'hexdump/chars'
 
 module Hexdump
   #
@@ -52,11 +53,6 @@ module Hexdump
     # @return [Integer, false]
     attr_reader :group_columns
 
-    # The encoding to display the characters in.
-    #
-    # @return [Encoding, nil]
-    attr_reader :encoding
-
     # The format of the index number.
     #
     # @return [Numeric::Hexadecimal,
@@ -73,9 +69,9 @@ module Hexdump
     #          Numeric::Binary]
     attr_reader :numeric
 
-    # Controls whether the characters column is displayed.
+    # The characters formatter.
     #
-    # @return [Boolean]
+    # @return [Chars, nil]
     attr_reader :chars
 
     #
@@ -131,21 +127,14 @@ module Hexdump
                    raise(ArgumentError,"unsupported base: #{@base.inspect}")
                  }.new(@type)
 
-      @encoding = case encoding
-                  when :ascii   then nil
-                  when :utf8    then Encoding::UTF_8
-                  when Encoding then encoding
-                  when nil      then nil
-                  else
-                    raise(ArgumentError,"encoding must be :ascii, :utf8 or an Encoding object")
-                  end
-
-      @chars = chars
-
       case @type
       when Type::Char, Type::UChar
         @numeric = Numeric::CharOrInt.new(@numeric,@encoding)
-        @chars   = false
+        @chars   = nil
+      else
+        @chars = if chars
+                   Chars.new(encoding)
+                 end
       end
     end
 
@@ -331,16 +320,6 @@ module Hexdump
              else               each_non_repeating_row(data,**kwargs)
              end
 
-      scrub_chars = if @encoding
-                      lambda { |chars|
-                        encoded_chars = chars.force_encoding(@encoding)
-                        encoded_chars.scrub!('.')
-                        encoded_chars.gsub!(/[^[:print:]]/,'.')
-                      }
-                    else
-                      lambda { |chars| chars.tr!("^\x20-\x7e",'.') }
-                    end
-
       index = enum.each do |index,numeric,chars|
         if index == '*'
           yield index
@@ -349,8 +328,7 @@ module Hexdump
           formatted_numbers = numeric.map { |value| numeric_cache[value] }
 
           if @chars
-            formatted_chars = chars.join
-            scrub_chars.call(formatted_chars)
+            formatted_chars = @chars % chars.join
 
             yield formatted_index, formatted_numbers, formatted_chars
           else
