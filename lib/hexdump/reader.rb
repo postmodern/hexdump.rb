@@ -91,7 +91,7 @@ module Hexdump
     #
     # @yieldparam [String] raw
     #
-    # @yieldparam [Integer] uint
+    # @yieldparam [Integer, nil] uint
     #
     # @return [Enumerator]
     #
@@ -150,7 +150,7 @@ module Hexdump
     #
     # @yieldparam [String] raw
     #
-    # @yieldparam [Integer] int
+    # @yieldparam [Integer, nil] int
     #
     # @return [Enumerator]
     #
@@ -197,7 +197,7 @@ module Hexdump
     #
     # @yieldparam [String] raw
     #
-    # @yieldparam [Float] float
+    # @yieldparam [Float, nil] float
     #
     # @return [Enumerator]
     #
@@ -235,7 +235,7 @@ module Hexdump
     #
     # @yieldparam [String] raw
     #
-    # @yieldparam [Integer, Float] value
+    # @yieldparam [Integer, Float, nil] value
     #
     # @return [Enumerator]
     #
