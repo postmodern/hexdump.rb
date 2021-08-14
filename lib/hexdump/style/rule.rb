@@ -13,9 +13,13 @@ module Hexdump
     #
     class Rule
 
+      # The default style to apply to strings.
+      #
       # @return [ANSI, nil]
       attr_reader :style
 
+      # Highlighting rules to apply to matching substrings.
+      #
       # @return [Hash{String,Regexp => ANSI}]
       attr_reader :highlights
 
@@ -26,6 +30,7 @@ module Hexdump
       #   The defualt style name(s). See {ANSI::STYLES}.
       #
       # @param [Hash{String,Regexp => Symbol,Array<Symbol>}, nil] highlights
+      #   Optional highlighting rules.
       #
       def initialize(style=nil, highlights: nil)
         @reset = ANSI::RESET
@@ -44,6 +49,7 @@ module Hexdump
       end
 
       #
+      # Adds a highlighting rule.
       # 
       # @param [String, Regexp] pattern
       #   The exact String to highlight or regular expression to highlight.
