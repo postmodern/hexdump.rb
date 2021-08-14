@@ -22,7 +22,7 @@ describe Hexdump::Style do
 
       subject do
         described_class.new(
-          {
+          style: {
             index:   index_style,
             numeric: numeric_style,
             chars:   chars_style

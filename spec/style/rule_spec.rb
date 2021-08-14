@@ -14,7 +14,7 @@ describe Hexdump::Style::Rule do
     context "when given a style" do
       let(:style) { :bold }
 
-      subject { described_class.new(style) }
+      subject { described_class.new(style: style) }
 
       it "must initialize #style based on the given style" do
         expect(subject.style).to       be_kind_of(Hexdump::Style::ANSI)
@@ -70,7 +70,7 @@ describe Hexdump::Style::Rule do
     context "when there is a default style" do
       let(:style) { :bold }
 
-      subject { described_class.new(style) }
+      subject { described_class.new(style: style) }
 
       let(:ansi)  { subject.style.ansi }
 
@@ -79,7 +79,9 @@ describe Hexdump::Style::Rule do
       end
 
       context "and there is additional highlighting rules" do
-        subject { described_class.new(style, highlights: highlights) }
+        subject do
+          described_class.new(style: style, highlights: highlights)
+        end
 
         it "must still wrap the given string with the style's ANSI string and reset" do
           expect(subject.apply(string)).to start_with("#{ansi}")

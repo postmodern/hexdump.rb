@@ -40,10 +40,21 @@ module Hexdump
     # @param [Hash{:index,:numeric,:chars => Hash{String,Regexp => Symbol,Array<Symbol>},nil}] highlights
     #   The highlighting rules for the index, numeric, and/or chars columns.
     #
-    def initialize(style={}, highlights: {})
-      @index   = Rule.new(style[:index],   highlights: highlights[:index])
-      @numeric = Rule.new(style[:numeric], highlights: highlights[:numeric])
-      @chars   = Rule.new(style[:chars],   highlights: highlights[:chars])
+    def initialize(style: {}, highlights: {})
+      @index   = Rule.new(
+                   style:      style[:index],
+                   highlights: highlights[:index]
+                 )
+
+      @numeric = Rule.new(
+                   style:      style[:numeric],
+                   highlights: highlights[:numeric]
+                 )
+
+      @chars   = Rule.new(
+                   style:      style[:chars],
+                   highlights: highlights[:chars]
+                )
     end
 
   end

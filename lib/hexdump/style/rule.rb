@@ -32,7 +32,7 @@ module Hexdump
       # @param [Hash{String,Regexp => Symbol,Array<Symbol>}, nil] highlights
       #   Optional highlighting rules.
       #
-      def initialize(style=nil, highlights: nil)
+      def initialize(style: nil, highlights: nil)
         @reset = ANSI::RESET
         
         @style = if style
