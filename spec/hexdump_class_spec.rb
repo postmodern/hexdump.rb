@@ -354,6 +354,126 @@ describe Hexdump::Hexdump do
         }.to raise_error(ArgumentError,"unsupported base: 3")
       end
     end
+
+    it "must default #style to nil" do
+      expect(subject.style).to be(nil)
+    end
+
+    context "when given the style: keyword" do
+      context "and is true" do
+        subject { described_class.new(style: true) }
+
+        it "must initialize #style" do
+          expect(subject.style).to be_kind_of(Hexdump::Style)
+        end
+      end
+
+      context "and is a Hash" do
+        let(:index_style)   { :white }
+        let(:numeric_style) { :cyan  }
+        let(:chars_style)   { :blue  }
+
+        subject do
+          described_class.new(
+            style: {
+              index:   index_style,
+              numeric: numeric_style,
+              chars:   chars_style
+            }
+          )
+        end
+
+        it "must initialize #style" do
+          expect(subject.style).to be_kind_of(Hexdump::Style)
+        end
+
+        it "must initialize #style.index" do
+          expect(subject.style.index).to be_kind_of(Hexdump::Style::Rule)
+        end
+
+        it "must populate #style.index.style" do
+          expect(subject.style.index.style.style).to eq(index_style)
+        end
+
+        it "must initialize #style.numeric" do
+          expect(subject.style.numeric).to be_kind_of(Hexdump::Style::Rule)
+        end
+
+        it "must populate #style.numeric.style" do
+          expect(subject.style.numeric.style.style).to eq(numeric_style)
+        end
+
+        it "must initialize #style.chars" do
+          expect(subject.style.chars).to be_kind_of(Hexdump::Style::Rule)
+        end
+
+        it "must populate #style.chars.style" do
+          expect(subject.style.chars.style.style).to eq(chars_style)
+        end
+      end
+    end
+
+    context "when given the highlights: keyword" do
+      context "and is true" do
+        subject { described_class.new(highlights: true) }
+
+        it "must initialize #style" do
+          expect(subject.style).to be_kind_of(Hexdump::Style)
+        end
+      end
+
+      context "and is a Hash" do
+        let(:index_pattern)      { /00$/ }
+        let(:index_highlight)    { :white }
+        let(:index_highlights)   { {index_pattern => index_highlight} }
+
+        let(:numeric_pattern)    { '00'    }
+        let(:numeric_highlight)  { :faint  }
+        let(:numeric_highlights) { {numeric_pattern => numeric_highlight}  }
+
+        let(:chars_pattern)    { /A-Z/  }
+        let(:chars_highlight)  { :bold  }
+        let(:chars_highlights) { {chars_pattern => chars_highlight}  }
+
+        subject do
+          described_class.new(
+            highlights: {
+              index: index_highlights,
+              numeric: numeric_highlights,
+              chars:   chars_highlights
+            }
+          )
+        end
+
+        it "must initialize #style" do
+          expect(subject.style).to be_kind_of(Hexdump::Style)
+        end
+
+        it "must initialize #style.index" do
+          expect(subject.style.index).to be_kind_of(Hexdump::Style::Rule)
+        end
+
+        it "must populate #style.index.highlights" do
+          expect(subject.style.index.highlights[index_pattern].style).to eq(index_highlight)
+        end
+
+        it "must initialize #style.numeric" do
+          expect(subject.style.numeric).to be_kind_of(Hexdump::Style::Rule)
+        end
+
+        it "must populate #style.numeric.highlights" do
+          expect(subject.style.numeric.highlights[numeric_pattern].style).to eq(numeric_highlight)
+        end
+
+        it "must initialize #style.chars" do
+          expect(subject.style.chars).to be_kind_of(Hexdump::Style::Rule)
+        end
+
+        it "must populate #style.chars.highlights" do
+          expect(subject.style.chars.highlights[chars_pattern].style).to eq(chars_highlight)
+        end
+      end
+    end
   end
 
   let(:data) do
@@ -800,6 +920,216 @@ describe Hexdump::Hexdump do
           yielded_rows = []
 
           subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
+      end
+    end
+
+    context "when #style is initialized" do
+      let(:ansi_reset) { Hexdump::Style::ANSI::RESET }
+      let(:ansi_green) { Hexdump::Style::ANSI::STYLES[:green] }
+      let(:ansi_blue)  { Hexdump::Style::ANSI::STYLES[:blue]  }
+
+      let(:ansi_reset) { Hexdump::Style::ANSI::RESET }
+
+      context "and #style.index.style is set" do
+        subject { described_class.new(style: {index: :cyan}) }
+
+        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:cyan] }
+
+        let(:index_format) { "#{ansi_style}%.8x#{ansi_reset}" }
+        let(:formatted_rows) do
+          [
+            [index_format % (columns * 0), ["41"] * columns, "A" * columns],
+            [index_format % (columns * 1), ["42"] * columns, "B" * columns],
+            [index_format % (columns * 2), ["43"] * columns, "C" * columns],
+          ]
+        end
+
+        it "must apply ANSI control sequences around the index column" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
+
+        let(:formatted_index)  do
+          "#{ansi_style}%.8x#{ansi_reset}" % data.length
+        end
+
+        it "must apply ANSI control sequences around the returned index" do
+          index = subject.each_formatted_row(data) do |*row|
+          end
+
+          expect(index).to eq(formatted_index)
+        end
+      end
+
+      context "and #style.index.highlights is populated" do
+        subject do
+          described_class.new(
+            highlights: {
+              index: {/00$/ => :bold}
+            }
+          )
+        end
+
+        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:bold] }
+
+        let(:highlighted_index) { "000000#{ansi_style}00#{ansi_reset}" }
+        let(:formatted_rows) do
+          [
+            [highlighted_index,      ["41"] * columns, "A" * columns],
+            ["%.8x" % (columns * 1), ["42"] * columns, "B" * columns],
+            ["%.8x" % (columns * 2), ["43"] * columns, "C" * columns],
+          ]
+        end
+
+        it "must selectively insert ANSI control sequences to the index column" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
+      end
+
+      context "and #style.numeric.style is set" do
+        subject { described_class.new(style: {numeric: :blue}) }
+
+        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:blue] }
+
+        let(:formatted_rows) do
+          [
+            ["%.8x" % (columns * 0), ["#{ansi_style}41#{ansi_reset}"] * columns, "A" * columns],
+            ["%.8x" % (columns * 1), ["#{ansi_style}42#{ansi_reset}"] * columns, "B" * columns],
+            ["%.8x" % (columns * 2), ["#{ansi_style}43#{ansi_reset}"] * columns, "C" * columns],
+          ]
+        end
+
+        it "must apply ANSI control sequences around each numeric column" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
+      end
+
+      context "and #style.numeric.highlights is populated" do
+        subject do
+          described_class.new(
+            highlights: {
+              numeric: {/^4/ => :green}
+            }
+          )
+        end
+
+        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:green] }
+
+        let(:formatted_rows) do
+          [
+            ["%.8x" % (columns * 0), ["#{ansi_style}4#{ansi_reset}1"] * columns, "A" * columns],
+            ["%.8x" % (columns * 1), ["#{ansi_style}4#{ansi_reset}2"] * columns, "B" * columns],
+            ["%.8x" % (columns * 2), ["#{ansi_style}4#{ansi_reset}3"] * columns, "C" * columns],
+          ]
+        end
+
+        it "must selectively insert ANSI control sequences to the numeric columns" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
+      end
+
+      context "and #style.chars.style is set" do
+        subject { described_class.new(style: {chars: :green}) }
+
+        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:green] }
+
+        let(:formatted_rows) do
+          [
+            ["%.8x" % (columns * 0), ["41"] * columns, "#{ansi_style}#{"A" * columns}#{ansi_reset}"],
+            ["%.8x" % (columns * 1), ["42"] * columns, "#{ansi_style}#{"B" * columns}#{ansi_reset}"],
+            ["%.8x" % (columns * 2), ["43"] * columns, "#{ansi_style}#{"C" * columns}#{ansi_reset}"],
+          ]
+        end
+
+        it "must apply ANSI control sequences around the chars column" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
+      end
+
+      context "and #style.chars.highlights is populated" do
+        subject do
+          described_class.new(
+            highlights: {
+              chars: {/[AC]/ => :red}
+            }
+          )
+        end
+
+        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:red] }
+
+        let(:formatted_rows) do
+          [
+            ["%.8x" % (columns * 0), ["41"] * columns, "#{ansi_style}A#{ansi_reset}" * columns],
+            ["%.8x" % (columns * 1), ["42"] * columns, "B" * columns],
+            ["%.8x" % (columns * 2), ["43"] * columns, "#{ansi_style}C#{ansi_reset}" * columns],
+          ]
+        end
+
+        it "must selectively insert ANSI control sequences to the chars column" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data) do |*row|
+            yielded_rows << row
+          end
+
+          expect(yielded_rows).to eq(formatted_rows)
+        end
+      end
+
+      context "but the ansi: keyword is false" do
+        subject do
+          described_class.new(
+            style: {
+              index:   :cyan,
+              numeric: :blue,
+              chars:   :green
+            },
+            highlights: {
+              index:   {/00$/ => :bold},
+              numeric: {/^4/ => :green},
+              chars:   {/[AC]/ => :red}
+            }
+          )
+        end
+
+        it "must not apply any ANSI control sequences" do
+          yielded_rows = []
+
+          subject.each_formatted_row(data, ansi: false) do |*row|
             yielded_rows << row
           end
 
