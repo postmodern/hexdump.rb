@@ -355,19 +355,19 @@ describe Hexdump::Hexdump do
       end
     end
 
-    it "must default #style to nil" do
-      expect(subject.style).to be(nil)
+    it "must default #theme to nil" do
+      expect(subject.theme).to be(nil)
+    end
+
+    context "when given theme: true" do
+      subject { described_class.new(theme: true) }
+
+      it "must initialize #theme" do
+        expect(subject.theme).to be_kind_of(Hexdump::Theme)
+      end
     end
 
     context "when given the style: keyword" do
-      context "and is true" do
-        subject { described_class.new(style: true) }
-
-        it "must initialize #style" do
-          expect(subject.style).to be_kind_of(Hexdump::Style)
-        end
-      end
-
       context "and is a Hash" do
         let(:index_style)   { :white }
         let(:numeric_style) { :cyan  }
@@ -384,44 +384,36 @@ describe Hexdump::Hexdump do
         end
 
         it "must initialize #style" do
-          expect(subject.style).to be_kind_of(Hexdump::Style)
+          expect(subject.theme).to be_kind_of(Hexdump::Theme)
         end
 
         it "must initialize #style.index" do
-          expect(subject.style.index).to be_kind_of(Hexdump::Style::Rule)
+          expect(subject.theme.index).to be_kind_of(Hexdump::Theme::Rule)
         end
 
-        it "must populate #style.index.style" do
-          expect(subject.style.index.style.parameters).to eq(index_style)
+        it "must populate #style.index.theme" do
+          expect(subject.theme.index.style.parameters).to eq(index_style)
         end
 
         it "must initialize #style.numeric" do
-          expect(subject.style.numeric).to be_kind_of(Hexdump::Style::Rule)
+          expect(subject.theme.numeric).to be_kind_of(Hexdump::Theme::Rule)
         end
 
-        it "must populate #style.numeric.style" do
-          expect(subject.style.numeric.style.parameters).to eq(numeric_style)
+        it "must populate #style.numeric.theme" do
+          expect(subject.theme.numeric.style.parameters).to eq(numeric_style)
         end
 
         it "must initialize #style.chars" do
-          expect(subject.style.chars).to be_kind_of(Hexdump::Style::Rule)
+          expect(subject.theme.chars).to be_kind_of(Hexdump::Theme::Rule)
         end
 
-        it "must populate #style.chars.style" do
-          expect(subject.style.chars.style.parameters).to eq(chars_style)
+        it "must populate #style.chars.theme" do
+          expect(subject.theme.chars.style.parameters).to eq(chars_style)
         end
       end
     end
 
     context "when given the highlights: keyword" do
-      context "and is true" do
-        subject { described_class.new(highlights: true) }
-
-        it "must initialize #style" do
-          expect(subject.style).to be_kind_of(Hexdump::Style)
-        end
-      end
-
       context "and is a Hash" do
         let(:index_pattern)      { /00$/ }
         let(:index_highlight)    { :white }
@@ -446,31 +438,31 @@ describe Hexdump::Hexdump do
         end
 
         it "must initialize #style" do
-          expect(subject.style).to be_kind_of(Hexdump::Style)
+          expect(subject.theme).to be_kind_of(Hexdump::Theme)
         end
 
         it "must initialize #style.index" do
-          expect(subject.style.index).to be_kind_of(Hexdump::Style::Rule)
+          expect(subject.theme.index).to be_kind_of(Hexdump::Theme::Rule)
         end
 
         it "must populate #style.index.highlights" do
-          expect(subject.style.index.highlights[index_pattern].parameters).to eq(index_highlight)
+          expect(subject.theme.index.highlights[index_pattern].parameters).to eq(index_highlight)
         end
 
         it "must initialize #style.numeric" do
-          expect(subject.style.numeric).to be_kind_of(Hexdump::Style::Rule)
+          expect(subject.theme.numeric).to be_kind_of(Hexdump::Theme::Rule)
         end
 
         it "must populate #style.numeric.highlights" do
-          expect(subject.style.numeric.highlights[numeric_pattern].parameters).to eq(numeric_highlight)
+          expect(subject.theme.numeric.highlights[numeric_pattern].parameters).to eq(numeric_highlight)
         end
 
         it "must initialize #style.chars" do
-          expect(subject.style.chars).to be_kind_of(Hexdump::Style::Rule)
+          expect(subject.theme.chars).to be_kind_of(Hexdump::Theme::Rule)
         end
 
         it "must populate #style.chars.highlights" do
-          expect(subject.style.chars.highlights[chars_pattern].parameters).to eq(chars_highlight)
+          expect(subject.theme.chars.highlights[chars_pattern].parameters).to eq(chars_highlight)
         end
       end
     end
@@ -928,17 +920,17 @@ describe Hexdump::Hexdump do
       end
     end
 
-    context "when #style is initialized" do
-      let(:ansi_reset) { Hexdump::Style::ANSI::RESET }
-      let(:ansi_green) { Hexdump::Style::ANSI::PARAMETERS[:green] }
-      let(:ansi_blue)  { Hexdump::Style::ANSI::PARAMETERS[:blue]  }
+    context "when #theme is initialized" do
+      let(:ansi_reset) { Hexdump::Theme::ANSI::RESET }
+      let(:ansi_green) { Hexdump::Theme::ANSI::PARAMETERS[:green] }
+      let(:ansi_blue)  { Hexdump::Theme::ANSI::PARAMETERS[:blue]  }
 
-      let(:ansi_reset) { Hexdump::Style::ANSI::RESET }
+      let(:ansi_reset) { Hexdump::Theme::ANSI::RESET }
 
-      context "and #style.index.style is set" do
+      context "and #style.index.theme is set" do
         subject { described_class.new(style: {index: :cyan}) }
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:cyan] }
+        let(:ansi_style)  { Hexdump::Theme::ANSI::PARAMETERS[:cyan] }
 
         let(:index_format) { "#{ansi_style}%.8x#{ansi_reset}" }
         let(:formatted_rows) do
@@ -980,7 +972,7 @@ describe Hexdump::Hexdump do
           )
         end
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:bold] }
+        let(:ansi_style)  { Hexdump::Theme::ANSI::PARAMETERS[:bold] }
 
         let(:highlighted_index) { "000000#{ansi_style}00#{ansi_reset}" }
         let(:formatted_rows) do
@@ -1002,10 +994,10 @@ describe Hexdump::Hexdump do
         end
       end
 
-      context "and #style.numeric.style is set" do
+      context "and #style.numeric.theme is set" do
         subject { described_class.new(style: {numeric: :blue}) }
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:blue] }
+        let(:ansi_style)  { Hexdump::Theme::ANSI::PARAMETERS[:blue] }
 
         let(:formatted_rows) do
           [
@@ -1035,7 +1027,7 @@ describe Hexdump::Hexdump do
           )
         end
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:green] }
+        let(:ansi_style)  { Hexdump::Theme::ANSI::PARAMETERS[:green] }
 
         let(:formatted_rows) do
           [
@@ -1056,10 +1048,10 @@ describe Hexdump::Hexdump do
         end
       end
 
-      context "and #style.chars.style is set" do
+      context "and #style.chars.theme is set" do
         subject { described_class.new(style: {chars: :green}) }
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:green] }
+        let(:ansi_style)  { Hexdump::Theme::ANSI::PARAMETERS[:green] }
 
         let(:formatted_rows) do
           [
@@ -1089,7 +1081,7 @@ describe Hexdump::Hexdump do
           )
         end
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:red] }
+        let(:ansi_style)  { Hexdump::Theme::ANSI::PARAMETERS[:red] }
 
         let(:formatted_rows) do
           [

@@ -4,7 +4,7 @@ require 'hexdump/types'
 require 'hexdump/reader'
 require 'hexdump/numeric'
 require 'hexdump/chars'
-require 'hexdump/style'
+require 'hexdump/theme'
 
 module Hexdump
   #
@@ -80,10 +80,10 @@ module Hexdump
     # @return [Chars, nil]
     attr_reader :chars
 
-    # Styling for the hexdump.
+    # Theme for the hexdump.
     #
-    # @return [Style, nil]
-    attr_reader :style
+    # @return [Theme, nil]
+    attr_reader :theme
 
     #
     # Initializes a hexdump format.
@@ -116,8 +116,8 @@ module Hexdump
     #   Enables or disables zero padding of data, so that the remaining bytes
     #   can be decoded as a uint, int, or float.
     #
-    # @param [Boolean, Hash{:index,:numeric,:chars => Symbol,Array<Symbol>}] style
-    #   Enables styling of index, numeric, or chars columns.
+    # @param [Boolean, Hash{:index,:numeric,:chars => Symbol,Array<Symbol>}] theme
+    #   Enables theming of index, numeric, or chars columns.
     #
     # @param [Boolean, Hash{:index,:numeric,:chars => Hash{String,Regexp => Symbol,Array<Symbol>}}] highlights
     #   Enables selective highlighting of index, numeric, or chars columns.
@@ -125,7 +125,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, skip: nil, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, offset: 0, chars: true, encoding: nil, zero_pad: false, style: nil, highlights: nil)
+    def initialize(type: :byte, skip: nil, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, offset: 0, chars: true, encoding: nil, zero_pad: false, theme: nil, style: nil, highlights: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
@@ -162,13 +162,13 @@ module Hexdump
                  end
       end
 
-      @style = if (style == true || highlights == true)
-                 Style.new
-               elsif (style.kind_of?(Hash) || highlights.kind_of?(Hash))
-                 Style.new(
+      @theme = if (style.kind_of?(Hash) || highlights.kind_of?(Hash))
+                 Theme.new(
                    style:      style || {},
                    highlights: highlights || {}
                  )
+               elsif theme
+                 Theme.new
                end
     end
 
@@ -177,8 +177,8 @@ module Hexdump
     #
     # @return [Boolean]
     #
-    def style?
-      !@style.nil?
+    def theme?
+      !@theme.nil?
     end
 
     #
@@ -333,19 +333,19 @@ module Hexdump
     #   If a block is given, the final number of bytes read will be returned.
     #   If no block is given, an Enumerator will be returned.
     #
-    def each_formatted_row(data, ansi: style?)
+    def each_formatted_row(data, ansi: theme?, **kwargs)
       return enum_for(__method__,data, ansi: ansi) unless block_given?
 
       format_index = lambda { |index|
         formatted_index = @index % index
-        formatted_index = @style.index.apply(formatted_index) if ansi
+        formatted_index = @theme.index.apply(formatted_index) if ansi
         formatted_index
       }
 
       format_numeric = lambda { |value|
         if value
           formatted_value = @numeric % value
-          formatted_value = @style.numeric.apply(formatted_value) if ansi
+          formatted_value = @theme.numeric.apply(formatted_value) if ansi
           formatted_value
         end
       }
@@ -372,7 +372,7 @@ module Hexdump
 
           if @chars
             formatted_chars = @chars % chars.join
-            formatted_chars = @style.chars.apply(formatted_chars) if ansi
+            formatted_chars = @theme.chars.apply(formatted_chars) if ansi
 
             yield formatted_index, formatted_numbers, formatted_chars
           else
@@ -466,7 +466,7 @@ module Hexdump
         raise(ArgumentError,"output must support the #<< method")
       end
 
-      ansi = style? && $stdout.tty?
+      ansi = theme? && $stdout.tty?
 
       each_line(data, ansi: ansi) do |line|
         output << line

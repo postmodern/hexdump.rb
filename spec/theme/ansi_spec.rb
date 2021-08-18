@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'hexdump/style/ansi'
+require 'hexdump/theme/ansi'
 
-describe Hexdump::Style::ANSI do
+describe Hexdump::Theme::ANSI do
   describe "RESET" do
     subject { described_class::RESET }
 

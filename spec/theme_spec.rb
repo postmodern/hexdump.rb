@@ -1,18 +1,18 @@
 require 'spec_helper'
-require 'hexdump/style'
+require 'hexdump/theme'
 
-describe Hexdump::Style do
+describe Hexdump::Theme do
   describe "#initialize" do
     it "must initialize #index" do
-      expect(subject.index).to be_kind_of(Hexdump::Style::Rule)
+      expect(subject.index).to be_kind_of(Hexdump::Theme::Rule)
     end
 
     it "must initialize #numeric" do
-      expect(subject.numeric).to be_kind_of(Hexdump::Style::Rule)
+      expect(subject.numeric).to be_kind_of(Hexdump::Theme::Rule)
     end
 
     it "must initialize #chars" do
-      expect(subject.chars).to be_kind_of(Hexdump::Style::Rule)
+      expect(subject.chars).to be_kind_of(Hexdump::Theme::Rule)
     end
 
     context "when given a style Hash" do
@@ -31,7 +31,7 @@ describe Hexdump::Style do
       end
 
       it "must initialize #index" do
-        expect(subject.index).to be_kind_of(Hexdump::Style::Rule)
+        expect(subject.index).to be_kind_of(Hexdump::Theme::Rule)
       end
 
       it "must initialize #index.style" do
@@ -39,7 +39,7 @@ describe Hexdump::Style do
       end
 
       it "must initialize #numeric" do
-        expect(subject.numeric).to be_kind_of(Hexdump::Style::Rule)
+        expect(subject.numeric).to be_kind_of(Hexdump::Theme::Rule)
       end
 
       it "must initialize #numeric.style" do
@@ -47,7 +47,7 @@ describe Hexdump::Style do
       end
 
       it "must initialize #chars" do
-        expect(subject.chars).to be_kind_of(Hexdump::Style::Rule)
+        expect(subject.chars).to be_kind_of(Hexdump::Theme::Rule)
       end
 
       it "must initialize #chars.style" do

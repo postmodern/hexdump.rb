@@ -1,9 +1,9 @@
-require 'hexdump/style/ansi'
+require 'hexdump/theme/ansi'
 
 require 'strscan'
 
 module Hexdump
-  class Style
+  class Theme
     #
     # Represents a color highlighting rule.
     #

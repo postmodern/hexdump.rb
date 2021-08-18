@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'hexdump/style/rule'
+require 'hexdump/theme/rule'
 
-describe Hexdump::Style::Rule do
+describe Hexdump::Theme::Rule do
   describe "#initialize" do
     context "when no style is given" do
       subject { described_class.new }
@@ -17,7 +17,7 @@ describe Hexdump::Style::Rule do
       subject { described_class.new(style: style) }
 
       it "must initialize #style based on the given style" do
-        expect(subject.style).to            be_kind_of(Hexdump::Style::ANSI)
+        expect(subject.style).to            be_kind_of(Hexdump::Theme::ANSI)
         expect(subject.style.parameters).to eq(style)
       end
     end
@@ -35,7 +35,7 @@ describe Hexdump::Style::Rule do
 
       it "must populate #highlights based on the given highlights" do
         expect(subject.highlights.keys).to eq(highlights.keys)
-        expect(subject.highlights.values).to all(be_kind_of(Hexdump::Style::ANSI))
+        expect(subject.highlights.values).to all(be_kind_of(Hexdump::Theme::ANSI))
       end
     end
   end
@@ -53,7 +53,7 @@ describe Hexdump::Style::Rule do
     end
 
     it "must add the pattern and style to #highlights" do
-      expect(subject.highlights[pattern]).to be_kind_of(Hexdump::Style::ANSI)
+      expect(subject.highlights[pattern]).to be_kind_of(Hexdump::Theme::ANSI)
       expect(subject.highlights[pattern].parameters).to eq(style)
     end
   end
@@ -63,9 +63,9 @@ describe Hexdump::Style::Rule do
 
     let(:highlights) { {'00' => :faint, /[a-f]/ => :green} }
 
-    let(:reset)      { Hexdump::Style::ANSI::RESET }
-    let(:ansi_faint) { Hexdump::Style::ANSI::PARAMETERS[:faint] }
-    let(:ansi_green) { Hexdump::Style::ANSI::PARAMETERS[:green] }
+    let(:reset)      { Hexdump::Theme::ANSI::RESET }
+    let(:ansi_faint) { Hexdump::Theme::ANSI::PARAMETERS[:faint] }
+    let(:ansi_green) { Hexdump::Theme::ANSI::PARAMETERS[:green] }
 
     context "when there is a default style" do
       let(:style) { :bold }
@@ -105,8 +105,8 @@ describe Hexdump::Style::Rule do
       context "and there is additional highlighting rules" do
         let(:highlights) { {'00' => :faint, /[a-f]/ => :green} }
 
-        let(:ansi_faint) { Hexdump::Style::ANSI::PARAMETERS[:faint] }
-        let(:ansi_green) { Hexdump::Style::ANSI::PARAMETERS[:green] }
+        let(:ansi_faint) { Hexdump::Theme::ANSI::PARAMETERS[:faint] }
+        let(:ansi_green) { Hexdump::Theme::ANSI::PARAMETERS[:green] }
 
         subject { described_class.new(highlights: highlights) }
 

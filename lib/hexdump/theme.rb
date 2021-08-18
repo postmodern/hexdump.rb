@@ -1,30 +1,30 @@
-require 'hexdump/style/rule'
+require 'hexdump/theme/rule'
 
 module Hexdump
   #
-  # Represents hexdump styling (color + highlighting).
+  # Represents a hexdump theme (styling + highlighting).
   #
   # @api semipublic
   #
   # @since 1.0.0
   #
-  class Style
+  class Theme
 
-    # The index color/highlights.
+    # The index styling/highlights.
     #
     # @return [Rule, nil]
     #
     # @api public
     attr_reader :index
 
-    # The numeric color/highlights.
+    # The numeric styling/highlights.
     #
     # @return [Rule, nil]
     #
     # @api public
     attr_reader :numeric
 
-    # The chars color/highlights.
+    # The chars styling/highlights.
     #
     # @return [Rule, nil]
     #
@@ -32,7 +32,7 @@ module Hexdump
     attr_reader :chars
 
     #
-    # Initializes the style.
+    # Initializes the theme.
     #
     # @param [Hash{:index,:numeric,:chars => Symbol,Array<Symbol>,nil}] style
     #   The default style of the index, numeric, and/or chars columns.

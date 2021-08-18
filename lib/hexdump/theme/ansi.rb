@@ -1,5 +1,5 @@
 module Hexdump
-  class Style
+  class Theme
     #
     # Represents an ANSI control sequence.
     #
