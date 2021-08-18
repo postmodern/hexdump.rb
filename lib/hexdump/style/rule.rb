@@ -27,7 +27,7 @@ module Hexdump
       # Initializes the color.
       #
       # @param [Symbol, Array<Symbol>] style
-      #   The defualt style name(s). See {ANSI::STYLES}.
+      #   The defualt style name(s). See {ANSI::PARAMETERS}.
       #
       # @param [Hash{String,Regexp => Symbol,Array<Symbol>}, nil] highlights
       #   Optional highlighting rules.
@@ -55,7 +55,7 @@ module Hexdump
       #   The exact String to highlight or regular expression to highlight.
       #
       # @param [Symbol, Array<Symbol>] style
-      #   The style name(s). See {ANSI::STYLES}.
+      #   The style name(s). See {ANSI::PARAMETERS}.
       #
       # @example
       #   hexdump.style.numeric.highlight('00', :faint)

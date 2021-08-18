@@ -392,7 +392,7 @@ describe Hexdump::Hexdump do
         end
 
         it "must populate #style.index.style" do
-          expect(subject.style.index.style.style).to eq(index_style)
+          expect(subject.style.index.style.parameters).to eq(index_style)
         end
 
         it "must initialize #style.numeric" do
@@ -400,7 +400,7 @@ describe Hexdump::Hexdump do
         end
 
         it "must populate #style.numeric.style" do
-          expect(subject.style.numeric.style.style).to eq(numeric_style)
+          expect(subject.style.numeric.style.parameters).to eq(numeric_style)
         end
 
         it "must initialize #style.chars" do
@@ -408,7 +408,7 @@ describe Hexdump::Hexdump do
         end
 
         it "must populate #style.chars.style" do
-          expect(subject.style.chars.style.style).to eq(chars_style)
+          expect(subject.style.chars.style.parameters).to eq(chars_style)
         end
       end
     end
@@ -454,7 +454,7 @@ describe Hexdump::Hexdump do
         end
 
         it "must populate #style.index.highlights" do
-          expect(subject.style.index.highlights[index_pattern].style).to eq(index_highlight)
+          expect(subject.style.index.highlights[index_pattern].parameters).to eq(index_highlight)
         end
 
         it "must initialize #style.numeric" do
@@ -462,7 +462,7 @@ describe Hexdump::Hexdump do
         end
 
         it "must populate #style.numeric.highlights" do
-          expect(subject.style.numeric.highlights[numeric_pattern].style).to eq(numeric_highlight)
+          expect(subject.style.numeric.highlights[numeric_pattern].parameters).to eq(numeric_highlight)
         end
 
         it "must initialize #style.chars" do
@@ -470,7 +470,7 @@ describe Hexdump::Hexdump do
         end
 
         it "must populate #style.chars.highlights" do
-          expect(subject.style.chars.highlights[chars_pattern].style).to eq(chars_highlight)
+          expect(subject.style.chars.highlights[chars_pattern].parameters).to eq(chars_highlight)
         end
       end
     end
@@ -930,15 +930,15 @@ describe Hexdump::Hexdump do
 
     context "when #style is initialized" do
       let(:ansi_reset) { Hexdump::Style::ANSI::RESET }
-      let(:ansi_green) { Hexdump::Style::ANSI::STYLES[:green] }
-      let(:ansi_blue)  { Hexdump::Style::ANSI::STYLES[:blue]  }
+      let(:ansi_green) { Hexdump::Style::ANSI::PARAMETERS[:green] }
+      let(:ansi_blue)  { Hexdump::Style::ANSI::PARAMETERS[:blue]  }
 
       let(:ansi_reset) { Hexdump::Style::ANSI::RESET }
 
       context "and #style.index.style is set" do
         subject { described_class.new(style: {index: :cyan}) }
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:cyan] }
+        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:cyan] }
 
         let(:index_format) { "#{ansi_style}%.8x#{ansi_reset}" }
         let(:formatted_rows) do
@@ -980,7 +980,7 @@ describe Hexdump::Hexdump do
           )
         end
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:bold] }
+        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:bold] }
 
         let(:highlighted_index) { "000000#{ansi_style}00#{ansi_reset}" }
         let(:formatted_rows) do
@@ -1005,7 +1005,7 @@ describe Hexdump::Hexdump do
       context "and #style.numeric.style is set" do
         subject { described_class.new(style: {numeric: :blue}) }
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:blue] }
+        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:blue] }
 
         let(:formatted_rows) do
           [
@@ -1035,7 +1035,7 @@ describe Hexdump::Hexdump do
           )
         end
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:green] }
+        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:green] }
 
         let(:formatted_rows) do
           [
@@ -1059,7 +1059,7 @@ describe Hexdump::Hexdump do
       context "and #style.chars.style is set" do
         subject { described_class.new(style: {chars: :green}) }
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:green] }
+        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:green] }
 
         let(:formatted_rows) do
           [
@@ -1089,7 +1089,7 @@ describe Hexdump::Hexdump do
           )
         end
 
-        let(:ansi_style)  { Hexdump::Style::ANSI::STYLES[:red] }
+        let(:ansi_style)  { Hexdump::Style::ANSI::PARAMETERS[:red] }
 
         let(:formatted_rows) do
           [

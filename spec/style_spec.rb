@@ -35,7 +35,7 @@ describe Hexdump::Style do
       end
 
       it "must initialize #index.style" do
-        expect(subject.index.style.style).to eq(index_style)
+        expect(subject.index.style.parameters).to eq(index_style)
       end
 
       it "must initialize #numeric" do
@@ -43,7 +43,7 @@ describe Hexdump::Style do
       end
 
       it "must initialize #numeric.style" do
-        expect(subject.numeric.style.style).to eq(numeric_style)
+        expect(subject.numeric.style.parameters).to eq(numeric_style)
       end
 
       it "must initialize #chars" do
@@ -51,7 +51,7 @@ describe Hexdump::Style do
       end
 
       it "must initialize #chars.style" do
-        expect(subject.chars.style.style).to eq(chars_style)
+        expect(subject.chars.style.parameters).to eq(chars_style)
       end
     end
 
@@ -79,15 +79,15 @@ describe Hexdump::Style do
       end
 
       it "must initialize #index.highlights" do
-        expect(subject.index.highlights[index_pattern].style).to eq(index_highlight)
+        expect(subject.index.highlights[index_pattern].parameters).to eq(index_highlight)
       end
 
       it "must initialize #numeric.highlights" do
-        expect(subject.numeric.highlights[numeric_pattern].style).to eq(numeric_highlight)
+        expect(subject.numeric.highlights[numeric_pattern].parameters).to eq(numeric_highlight)
       end
 
       it "must initialize #chars.highlights" do
-        expect(subject.chars.highlights[chars_pattern].style).to eq(chars_highlight)
+        expect(subject.chars.highlights[chars_pattern].parameters).to eq(chars_highlight)
       end
     end
   end

@@ -11,7 +11,7 @@ module Hexdump
       # ANSI reset control sequence
       RESET = "\e[0m"
 
-      STYLES = {
+      PARAMETERS = {
         bold:      "\e[1m",
         faint:     "\e[2m",
         italic:    "\e[3m",
@@ -40,26 +40,26 @@ module Hexdump
       # The style name(s).
       #
       # @return [Symbol, Array<Symbol>] style
-      attr_reader :style
+      attr_reader :parameters
 
       # The ANSI string.
       #
       # @return [String]
-      attr_reader :ansi
+      attr_reader :string
 
       #
       # Initializes an ANSI control sequence.
       #
       # @param [Symbol, Array<Symbol>] style
       #
-      def initialize(style)
-        @style = style
+      def initialize(parameters)
+        @parameters = parameters
 
-        @ansi = String.new
+        @string = String.new
 
-        Array(style).each do |name|
-          @ansi << STYLES.fetch(name) do
-            raise(ArgumentError,"unknown style: #{name}")
+        Array(parameters).each do |name|
+          @string << PARAMETERS.fetch(name) do
+            raise(ArgumentError,"unknown ANSI parameter: #{name}")
           end
         end
       end
@@ -70,7 +70,7 @@ module Hexdump
       # @return [String]
       #
       def to_s
-        @ansi
+        @string
       end
 
       alias to_str to_s

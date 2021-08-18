@@ -17,8 +17,8 @@ describe Hexdump::Style::Rule do
       subject { described_class.new(style: style) }
 
       it "must initialize #style based on the given style" do
-        expect(subject.style).to       be_kind_of(Hexdump::Style::ANSI)
-        expect(subject.style.style).to eq(style)
+        expect(subject.style).to            be_kind_of(Hexdump::Style::ANSI)
+        expect(subject.style.parameters).to eq(style)
       end
     end
 
@@ -54,7 +54,7 @@ describe Hexdump::Style::Rule do
 
     it "must add the pattern and style to #highlights" do
       expect(subject.highlights[pattern]).to be_kind_of(Hexdump::Style::ANSI)
-      expect(subject.highlights[pattern].style).to eq(style)
+      expect(subject.highlights[pattern].parameters).to eq(style)
     end
   end
 
@@ -64,15 +64,15 @@ describe Hexdump::Style::Rule do
     let(:highlights) { {'00' => :faint, /[a-f]/ => :green} }
 
     let(:reset)      { Hexdump::Style::ANSI::RESET }
-    let(:ansi_faint) { Hexdump::Style::ANSI::STYLES[:faint] }
-    let(:ansi_green) { Hexdump::Style::ANSI::STYLES[:green] }
+    let(:ansi_faint) { Hexdump::Style::ANSI::PARAMETERS[:faint] }
+    let(:ansi_green) { Hexdump::Style::ANSI::PARAMETERS[:green] }
 
     context "when there is a default style" do
       let(:style) { :bold }
 
       subject { described_class.new(style: style) }
 
-      let(:ansi)  { subject.style.ansi }
+      let(:ansi)  { subject.style.string }
 
       it "must wrap the given string with the style's ANSI string and reset" do
         expect(subject.apply(string)).to eq("#{ansi}#{string}#{reset}")
@@ -105,8 +105,8 @@ describe Hexdump::Style::Rule do
       context "and there is additional highlighting rules" do
         let(:highlights) { {'00' => :faint, /[a-f]/ => :green} }
 
-        let(:ansi_faint) { Hexdump::Style::ANSI::STYLES[:faint] }
-        let(:ansi_green) { Hexdump::Style::ANSI::STYLES[:green] }
+        let(:ansi_faint) { Hexdump::Style::ANSI::PARAMETERS[:faint] }
+        let(:ansi_green) { Hexdump::Style::ANSI::PARAMETERS[:green] }
 
         subject { described_class.new(highlights: highlights) }
 

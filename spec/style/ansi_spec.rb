@@ -10,8 +10,8 @@ describe Hexdump::Style::ANSI do
     end
   end
 
-  describe "STYLES" do
-    subject { described_class::STYLES }
+  describe "PARAMETERS" do
+    subject { described_class::PARAMETERS }
 
     describe ":bold" do
       subject { super()[:bold] }
@@ -191,43 +191,43 @@ describe Hexdump::Style::ANSI do
   end
 
   describe "#initialize" do
-    context "when given one style name" do
-      let(:style) { :bold }
+    context "when given one parameters name" do
+      let(:parameters) { :bold }
 
-      subject { described_class.new(style) }
+      subject { described_class.new(parameters) }
 
-      it "must set #style to that style name" do
-        expect(subject.style).to eq(style)
+      it "must set #parameters to that parameters name" do
+        expect(subject.parameters).to eq(parameters)
       end
 
-      it "must set #ansi to that style's ANSI string" do
-        expect(subject.ansi).to eq(described_class::STYLES[:bold])
+      it "must set #ansi to that parameters's ANSI string" do
+        expect(subject.string).to eq(described_class::PARAMETERS[:bold])
       end
     end
 
-    context "when given multiple style names" do
-      let(:style) { [:bold, :green] }
+    context "when given multiple parameters names" do
+      let(:parameters) { [:bold, :green] }
 
-      subject { described_class.new(style) }
+      subject { described_class.new(parameters) }
 
-      it "must set #style to that style names" do
-        expect(subject.style).to eq(style)
+      it "must set #parameters to that parameters names" do
+        expect(subject.parameters).to eq(parameters)
       end
 
-      it "must set #ansi to the combined style's ANSI strings" do
-        expect(subject.ansi).to eq(
-          described_class::STYLES[:bold] + described_class::STYLES[:green]
+      it "must set #ansi to the combined parameters's ANSI strings" do
+        expect(subject.string).to eq(
+          described_class::PARAMETERS[:bold] + described_class::PARAMETERS[:green]
         )
       end
     end
 
-    context "when given an unknown style name" do
-      let(:style) { :foo }
+    context "when given an unknown parameters name" do
+      let(:parameter) { :foo }
 
       it do
         expect {
-          described_class.new(style)
-        }.to raise_error(ArgumentError,"unknown style: #{style}")
+          described_class.new(parameter)
+        }.to raise_error(ArgumentError,"unknown ANSI parameter: #{parameter}")
       end
     end
   end
