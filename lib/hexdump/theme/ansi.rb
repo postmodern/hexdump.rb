@@ -12,6 +12,8 @@ module Hexdump
       RESET = "\e[0m"
 
       PARAMETERS = {
+        reset:     RESET,
+
         bold:      "\e[1m",
         faint:     "\e[2m",
         italic:    "\e[3m",

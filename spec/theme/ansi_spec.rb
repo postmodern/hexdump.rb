@@ -13,6 +13,14 @@ describe Hexdump::Theme::ANSI do
   describe "PARAMETERS" do
     subject { described_class::PARAMETERS }
 
+    describe ":reset" do
+      subject { super()[:reset] }
+
+      it "must equal '\\e[0m'" do
+        expect(subject).to eq("\e[0m")
+      end
+    end
+
     describe ":bold" do
       subject { super()[:bold] }
 
