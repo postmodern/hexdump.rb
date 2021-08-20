@@ -200,6 +200,12 @@ Hexdump.hexdump("hello\0", base: 2)
 $ gem install hexdump
 ```
 
+### gemspec
+
+```ruby
+gem.add_dependency 'hexdump', '~> 1.0'
+```
+
 ### Gemfile
 
 ```ruby
