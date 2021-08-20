@@ -200,6 +200,12 @@ Hexdump.hexdump("hello\0", base: 2)
 $ gem install hexdump
 ```
 
+### Gemfile
+
+```ruby
+gem 'hexdump', '~> 1.0'
+```
+
 ## Benchmarks
 
 Benchmarks show {Hexdump.hexdump} processing 25M of data.
