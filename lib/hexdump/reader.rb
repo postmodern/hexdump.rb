@@ -52,6 +52,39 @@ module Hexdump
     end
 
     #
+    # Reads each byte from the given data.
+    #
+    # @yield [byte]
+    #
+    # @yieldparam [Integer] byte
+    #
+    # @return [Enumerator]
+    #
+    # @raise [ArgumentError]
+    #
+    def each_byte(data)
+      return enum_for(__method__,data) unless block_given?
+
+      unless data.respond_to?(:each_byte)
+        raise(ArgumentError,"the given data must respond to #each_byte")
+      end
+
+      count = 0
+
+      data.each_byte do |b|
+        count += 1
+
+        # skip the first @skip number of bytes
+        if @skip.nil? || count > @skip
+          yield b
+        end
+
+        # stop reading after @limit number of bytes
+        break if @limit && count >= @limit
+      end
+    end
+
+    #
     # Reads each string of the same number of bytes as the {#type}'s
     # {Type#size size}.
     #
@@ -73,16 +106,8 @@ module Hexdump
       count = 0
 
       if @type.size == 1
-        data.each_byte do |b|
-          count += 1
-
-          # skip the first @skip number of bytes
-          if @skip.nil? || count > @skip
-            yield b.chr
-          end
-
-          # stop reading after @limit number of bytes
-          break if @limit && count >= @limit
+        each_byte(data) do |b|
+          yield b.chr
         end
       else
         buffer = String.new("\0" * @type.size, capacity: @type.size,
@@ -144,7 +169,7 @@ module Hexdump
       end
 
       if @type.size == 1
-        data.each_byte do |b|
+        each_byte(data) do |b|
           yield b.chr, b
         end
       else
