@@ -136,6 +136,16 @@ Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
 # 00000020
 ```
 
+### Disable Chars
+
+```ruby
+Hexdump.hexdump('A' * 30, chars: false)
+# 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+# 0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+# 00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+# 0000001e
+```
+
 ### Hexadecimal
 
 ```ruby
