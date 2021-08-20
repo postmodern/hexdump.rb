@@ -41,10 +41,10 @@ module Hexdump
     #   the `:output` value does not support the `#<<` method or
     #   the `:base` value was unknown.
     #
-    def hexdump(data, offset: 0, output: $stdout, **kwargs)
+    def hexdump(data, output: $stdout, **kwargs)
       hexdump = Hexdump::Format.new(**kwargs)
 
-      hexdump.hexdump(data, offset: 0, output: output)
+      hexdump.hexdump(data, output: output)
     end
   end
 end
