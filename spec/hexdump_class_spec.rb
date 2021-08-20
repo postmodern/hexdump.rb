@@ -23,6 +23,10 @@ describe Hexdump::Hexdump do
       expect(subject.index).to be_kind_of(Hexdump::Numeric::Hexadecimal)
     end
 
+    it "must default #offset to 0" do
+      expect(subject.offset).to eq(0)
+    end
+
     it "must initialize #numeric to a Hexdump::Numeric::Hexadecimal" do
       expect(subject.numeric).to be_kind_of(Hexdump::Numeric::Hexadecimal)
     end
@@ -313,6 +317,16 @@ describe Hexdump::Hexdump do
       end
     end
 
+    context "when given the offset: keyword" do
+      let(:offset) { 1024 }
+
+      subject { described_class.new(offset: offset) }
+
+      it "must set #offset" do
+        expect(subject.offset).to eq(offset)
+      end
+    end
+
     context "when given the columns: keyword" do
       let(:columns) { 7 }
 
@@ -374,6 +388,30 @@ describe Hexdump::Hexdump do
       end
 
       expect(index).to eq(data.length)
+    end
+
+    context "when #offset is > 0" do
+      let(:offset) { 1024 }
+
+      subject { described_class.new(offset: offset) }
+
+      let(:indexes) do
+        [
+          offset + (columns * 0),
+          offset + (columns * 1),
+          offset + (columns * 2),
+        ]
+      end
+
+      it "must start the index counting at #offset" do
+        yielded_indexes = []
+
+        subject.each_row(data) do |index,*args|
+          yielded_indexes << index
+        end
+
+        expect(yielded_indexes).to eq(indexes)
+      end
     end
 
     context "when the data's length is not evenly divisble by the columns" do
