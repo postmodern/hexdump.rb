@@ -10,6 +10,11 @@ module Hexdump
   #
   class Reader
 
+    # Controls whether to skip N number of bytes before starting to read data.
+    #
+    # @return [Integer, nil]
+    attr_reader :skip
+
     # The type to decode the data as.
     #
     # @return [Type]
@@ -21,11 +26,15 @@ module Hexdump
     # @param [Type] type
     #   Thetype to decode the data as.
     #
+    # @param [Integer, nil] skip
+    #   Controls whether to skip N number of bytes before starting to read data.
+    #
     # @param [Boolean] zero_pad
     #   Controls whether the remaining data will be padded with zeros.
     #
-    def initialize(type, zero_pad: false)
+    def initialize(type, skip: nil, zero_pad: false)
       @type     = type
+      @skip     = skip
       @zero_pad = zero_pad
     end
 
@@ -52,9 +61,16 @@ module Hexdump
         raise(ArgumentError,"the given data must respond to #each_byte")
       end
 
+      count = 0
+
       if @type.size == 1
         data.each_byte do |b|
-          yield b.chr
+          count += 1
+
+          # skip the first @skip number of bytes
+          if @skip.nil? || count > @skip
+            yield b.chr
+          end
         end
       else
         buffer = String.new("\0" * @type.size, capacity: @type.size,
@@ -62,12 +78,17 @@ module Hexdump
         index  = 0
 
         data.each_byte do |b|
-          buffer[index] = b.chr(Encoding::BINARY)
-          index += 1
+          count += 1
 
-          if index >= @type.size
-            yield buffer.dup
-            index = 0
+          # skip the first @skip number of bytes
+          if @skip.nil? || count > @skip 
+            buffer[index] = b.chr(Encoding::BINARY)
+            index += 1
+
+            if index >= @type.size
+              yield buffer.dup
+              index = 0
+            end
           end
         end
 

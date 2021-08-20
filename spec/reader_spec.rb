@@ -12,8 +12,22 @@ describe Hexdump::Reader do
       expect(subject.type).to eq(type)
     end
 
+    it "must default #skip to nil" do
+      expect(subject.skip).to be(nil)
+    end
+
     it "must default #zero_pad? to false" do
       expect(subject.zero_pad?).to be(false)
+    end
+
+    context "when skip: is given" do
+      let(:skip) { 2 }
+
+      subject { described_class.new(type, skip: skip) }
+
+      it "must set #skip" do
+        expect(subject.skip).to eq(skip)
+      end
     end
 
     context "when zero_pad: is true" do
@@ -27,9 +41,9 @@ describe Hexdump::Reader do
 
   describe "#each_slice" do
     context "when type has size of 1" do
-      let(:chars) { %w[A B C D] }
-      let(:data)  { chars.join }
       let(:type)  { Hexdump::TYPES[:int8] }
+      let(:chars) { %w[A B C D]           }
+      let(:data)  { "ABCD"                }
 
       subject { described_class.new(type) }
 
@@ -38,19 +52,32 @@ describe Hexdump::Reader do
           subject.each_slice(data,&b)
         }.to yield_successive_args(*chars)
       end
+
+      context "and when #skip is > 0" do
+        let(:skip)  { 2       }
+        let(:chars) { %w[C D] }
+
+        subject { described_class.new(type, skip: skip) }
+
+        it "must skip the first N bytes before reading each character" do
+          expect { |b|
+            subject.each_slice(data,&b)
+          }.to yield_successive_args(*chars)
+        end
+      end
     end
 
     context "when type has size > 1" do
-      let(:type)    { Hexdump::TYPES[:int16] }
-      let(:strings) { %w[AA BB CC DD EE FF] }
-      let(:data)    { strings.join }
+      let(:type)   { Hexdump::TYPES[:int16] }
+      let(:slices) { %w[AA BB CC DD EE FF]  }
+      let(:data)   { "AABBCCDDEEFF"         }
 
       subject { described_class.new(type) }
 
       it "must yield each slice of the String" do
         expect { |b|
           subject.each_slice(data,&b)
-        }.to yield_successive_args(*strings)
+        }.to yield_successive_args(*slices)
       end
 
       it "must yield a new String instance for each slice" do
@@ -63,10 +90,23 @@ describe Hexdump::Reader do
         expect(yielded_object_ids.uniq).to eq(yielded_object_ids)
       end
 
+      context "and when #skip is > 0" do
+        let(:skip)   { 3 }
+        let(:slices) { %w[BC CD DE EF F] }
+
+        subject { described_class.new(type, skip: skip) }
+
+        it "must skip the first N bytes before reading each slice" do
+          expect { |b|
+            subject.each_slice(data,&b)
+          }.to yield_successive_args(*slices)
+        end
+      end
+
       context "when the given data is not evenly divisible by the type's size" do
-        let(:type)    { Hexdump::TYPES[:int32] }
-        let(:strings) { %w[AABB CCDD E] }
-        let(:data)    { strings.join }
+        let(:type)   { Hexdump::TYPES[:int32] }
+        let(:slices) { %w[AABB CCDD E]        }
+        let(:data)   { "AABBCCDDE"            }
 
         it "must yield the reamining data" do
           expect { |b|
