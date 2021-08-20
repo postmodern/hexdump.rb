@@ -62,110 +62,142 @@ Simple and Fast hexdumping for Ruby.
 
 ## Examples
 
-    require 'hexdump'
+```ruby
+require 'hexdump'
 
-    Hexdump.hexdump("hello\0")
-    # 00000000  68 65 6c 6c 6f 00                                |hello.|
-    # 00000006
+Hexdump.hexdump("hello\0")
+# 00000000  68 65 6c 6c 6f 00                                |hello.|
+# 00000006
     
-    "hello\0".hexdump
-    # 00000000  68 65 6c 6c 6f 00                                |hello.|
-    # 00000006
+"hello\0".hexdump
+# 00000000  68 65 6c 6c 6f 00                                |hello.|
+# 00000006
+```
 
 Hexdump a file:
 
-    File.hexdump("/bin/ls")
-    # ...
+```ruby
+File.hexdump("/bin/ls")
+# ...
+```
 
 Write the hexdump to a file:
 
-    File.open('dump.txt','w') do |file|
-      data.hexdump(output: file)
-    end
+```ruby
+File.open('dump.txt','w') do |file|
+  data.hexdump(output: file)
+end
+```
 
 Configure the width of the hexdump:
 
-    Hexdump.hexdump('A' * 30, columns: 10)
-    # 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
-    # *
-    # 0000001e
+```ruby
+Hexdump.hexdump('A' * 30, columns: 10)
+# 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+# *
+# 0000001e
+```
 
 Show repeated rows (hidden by default):
 
-    Hexdump.hexdump('A' * 30, columns: 10, repeating: true)
-    00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
-    0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
-    00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
-    0000001e
+```ruby
+Hexdump.hexdump('A' * 30, columns: 10, repeating: true)
+# 00000000  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+# 0000000a  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+# 00000014  41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAA|
+# 0000001e
+```
 
 Group columns together:
 
-    Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
-    00000000  41 42 43 44  41 42 43 44  41 42 43 44  41 42 43 44  |ABCDABCDABCDABCD|
-    00000010  41 42 43 44  41 42 43 44  41 42 43 44  41 42 43 44  |ABCDABCDABCDABCD|
-    00000020
+```ruby
+Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
+# 00000000  41 42 43 44  41 42 43 44  41 42 43 44  41 42 43 44  |ABCDABCDABCDABCD|
+# 00000010  41 42 43 44  41 42 43 44  41 42 43 44  41 42 43 44  |ABCDABCDABCDABCD|
+# 00000020
+```
 
 Hexdump chars:
 
-    Hexdump.hexdump("hello\0", type: :char)
-    # 00000000    h   e   l   l   o  \0                                          |hello.|
-    # 00000006
+```ruby
+Hexdump.hexdump("hello\0", type: :char)
+# 00000000    h   e   l   l   o  \0                                          |hello.|
+# 00000006
+```
 
 Hexdump in hexadecimal (default):
 
-    Hexdump.hexdump("hello\0", base: 16)
-    # 00000000  68 65 6c 6c 6f 00                                |hello.|
-    # 00000006
+```ruby
+Hexdump.hexdump("hello\0", base: 16)
+# 00000000  68 65 6c 6c 6f 00                                |hello.|
+# 00000006
+```
 
 Hexdump in decimal:
 
-    Hexdump.hexdump("hello\0", base: 10)
-    # 00000000  104 101 108 108 111   0                                          |hello.|
-    # 00000006
+```ruby
+Hexdump.hexdump("hello\0", base: 10)
+# 00000000  104 101 108 108 111   0                                          |hello.|
+# 00000006
+```
 
 Hexdump in octal:
 
-    Hexdump.hexdump("hello\0", base: 8)
-    # 00000000  0150 0145 0154 0154 0157 0000                                                    |hello.|
-    # 00000006
+```ruby
+Hexdump.hexdump("hello\0", base: 8)
+# 00000000  0150 0145 0154 0154 0157 0000                                                    |hello.|
+# 00000006
+```
 
 Hexdump in binary:
 
-    Hexdump.hexdump("hello\0", base: 2)
-    # 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
-    # 00000006
+```ruby
+Hexdump.hexdump("hello\0", base: 2)
+# 00000000  01101000 01100101 01101100 01101100 01101111 00000000                                                                                            |hello.|
+# 00000006
+```
 
 Read multi-byte words:
 
-    ("ABCD" * 7).hexdump(type: :uint16)
-    00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
-    00000010  44434241 44434241 44434241           |ABCDABCDABCD|
-    0000001c
+```ruby
+("ABCD" * 7).hexdump(type: :uint16)
+# 00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
+# 00000010  44434241 44434241 44434241           |ABCDABCDABCD|
+# 0000001c
+```
 
 Read little-endian words:
 
-    ("ABCD" * 7).hexdump(type: :uint32_le)
-    00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
-    00000010  44434241 44434241 44434241           |ABCDABCDABCD|
-    0000001c
+```ruby
+("ABCD" * 7).hexdump(type: :uint32_le)
+# 00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
+# 00000010  44434241 44434241 44434241           |ABCDABCDABCD|
+# 0000001c
+```
 
 Read big-endian words:
 
-    ("ABCD" * 7).hexdump(type: :uint32_be)
-    00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
-    00000010  41424344 41424344 41424344           |ABCDABCDABCD|
-    0000001c
+```ruby
+("ABCD" * 7).hexdump(type: :uint32_be)
+# 00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
+# 00000010  41424344 41424344 41424344           |ABCDABCDABCD|
+# 0000001c
+```
 
 Zero-padding the data:
 
-    (("ABCD" * 4) + "AB").hexdump(type: :uint32_be, zero_pad: true)
-    00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
-    00000010  41420000                             |AB..|
-    00000014
+```ruby
+(("ABCD" * 4) + "AB").hexdump(type: :uint32_be, zero_pad: true)
+# 00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
+# 00000010  41420000                             |AB..|
+# 00000014
+```
 
 ## Install
 
-    $ gem install hexdump
+```shell
+$ gem install hexdump
+```
 
 ## Benchmarks
 
