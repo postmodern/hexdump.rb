@@ -943,13 +943,23 @@ describe Hexdump::Hexdump do
       }.to output(lines.join).to_stdout
     end
 
-    context "when given an output that does not support #<<" do
-      let(:output) { Object.new }
+    context "when the output: keyword argument is given" do
+      let(:output) { StringIO.new }
 
-      it do
-        expect {
-          subject.hexdump(data, output: output)
-        }.to raise_error(ArgumentError,"output must support the #<< method")
+      it "must print each line of hte hexdump to the given output" do
+        subject.hexdump(data, output: output)
+
+        expect(output.string).to eq(lines.join)
+      end
+
+      context "but the output does not support #<<" do
+        let(:output) { Object.new }
+
+        it do
+          expect {
+            subject.hexdump(data, output: output)
+          }.to raise_error(ArgumentError,"output must support the #<< method")
+        end
       end
     end
   end
