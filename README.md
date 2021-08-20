@@ -181,7 +181,7 @@ Hexdump.hexdump("hello\0", base: 2)
 ### Types
 
 ```ruby
-("ABCD" * 7).hexdump(type: :uint16)
+("ABCD" * 7).hexdump(type: :uint32)
 # 00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
 # 00000010  44434241 44434241 44434241           |ABCDABCDABCD|
 # 0000001c
