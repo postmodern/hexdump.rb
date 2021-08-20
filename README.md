@@ -59,6 +59,24 @@ Simple and Fast hexdumping for Ruby.
 * Makes {String}, {StringIO}, {IO}, {File} objects hexdumpable.
 * Fast-ish.
 
+## Install
+
+```shell
+$ gem install hexdump
+```
+
+### gemspec
+
+```ruby
+gem.add_dependency 'hexdump', '~> 1.0'
+```
+
+### Gemfile
+
+```ruby
+gem 'hexdump', '~> 1.0'
+```
+
 ## Examples
 
 ```ruby
@@ -192,24 +210,6 @@ Hexdump.hexdump("hello\0", base: 2)
 # 00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
 # 00000010  41420000                             |AB..|
 # 00000014
-```
-
-## Install
-
-```shell
-$ gem install hexdump
-```
-
-### gemspec
-
-```ruby
-gem.add_dependency 'hexdump', '~> 1.0'
-```
-
-### Gemfile
-
-```ruby
-gem 'hexdump', '~> 1.0'
 ```
 
 ## Benchmarks
