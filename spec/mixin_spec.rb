@@ -2,35 +2,30 @@ require 'spec_helper'
 require 'hexdump/mixin'
 
 describe Hexdump::Mixin do
-  describe "#hexdump" do
-    let(:bytes)       { [104, 101, 108, 108, 111] }
-    let(:hex_chars)   { ['68', '65', '6c', '6c', '6f'] }
-    let(:print_chars) { %w[h e l l o] }
+  class TestMixin
 
-    subject do
-      obj = Object.new.extend(Hexdump::Mixin)
+    include Hexdump::Mixin
 
-      each_byte = expect(obj).to receive(:each_byte)
-      bytes.each do |b|
-        each_byte = each_byte.and_yield(b)
-      end
-
-      obj
+    def initialize(data)
+      @data = data
     end
 
-    let(:index_format) { "%.8x" }
+    def each_byte(&block)
+      @data.each_byte(&block)
+    end
 
-    let(:output) { StringIO.new }
-    let(:lines)  { output.string.lines }
+  end
 
-    it "should hexdump the object by calling #each_byte" do
-      subject.hexdump(output: output)
+  let(:data)    { ("A" * 32) + ("B" * 32) + ("C" * 32) }
+  let(:hexdump) { Hexdump::Hexdump.new.dump(data) }
 
-      expect(lines.length).to be(2)
-      expect(lines[0]).to start_with(index_format % 0)
-      expect(lines[0]).to include(hex_chars.join(' '))
-      expect(lines[0]).to end_with("|#{print_chars.join}|#{$/}")
-      expect(lines[1]).to start_with(index_format % bytes.length)
+  subject { TestMixin.new(data) }
+
+  describe "#hexdump" do
+    it "must write the hexdump lines of the object to $stdout" do
+      expect {
+        subject.hexdump
+      }.to output(hexdump).to_stdout
     end
   end
 end
