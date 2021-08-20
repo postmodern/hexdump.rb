@@ -247,6 +247,26 @@ Hexdump.hexdump("hello\0", type: :char)
 # 00000014
 ```
 
+### ANSI Styling
+
+```ruby
+"ABCD".hexdump(style: {index: :white, numeric: :green, chars: :cyan})
+```
+
+### ANSI Highlighting
+
+```ruby
+(0..255).map(&:chr).join.hexdump(highlights: {
+  index: {/00$/ => [:white, :bold]},
+  numeric: {
+    /^[8-f][0-9a-f]$/ => :faint,
+    /f/  => :cyan,
+    '00' => [:black, :on_red]
+  },
+  chars: {/[^\.]+/ => :green}
+})
+```
+
 ## Benchmarks
 
 Benchmarks show {Hexdump.hexdump} processing 25M of data.
