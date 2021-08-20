@@ -39,11 +39,36 @@ module Hexdump
     # @option kwargs [Integer, nil] :skip
     #   Controls whether to skip N number of bytes before starting to read data.
     #
+    # @option kwargs [Integer, nil] :limit
+    #   Controls control many bytes to read.
+    #
+    # @option kwargs [Boolean] :zero_pad (false)
+    #   Enables or disables zero padding of data, so that the remaining bytes
+    #   can be decoded as a uint, int, or float.
+    #
     # @option kwargs [Integer] :columns (16)
     #   The number of bytes to dump for each line.
     #
+    # @option kwargs [Integer, nil] :group_columns
+    #   Separate groups of columns with an additional space.
+    #
+    # @option kwargs [Boolean] :repeating
+    #   Controls whether to omit repeating duplicate rows data with a `*`.
+    #
     # @option kwargs [16, 10, 8, 2] :base (16)
     #   The base to print bytes in.
+    #
+    # @option kwargs [16, 10, 8, 2] :index_base (16)
+    #   Control the base that the index is displayed in.
+    #
+    # @option kwargs [Boolean] :chars (true)
+    #   Controls whether to display the characters column.
+    #
+    # @option kwargs [:ascii, :utf8, Encoding, nil] :encoding
+    #   The encoding to display the characters in.
+    #
+    # @option kwargs [Integer] :offset (0)
+    #   The offset to start the index at.
     #
     # @option kwargs [Boolean, Hash{:index,:numeric,:chars => Symbol,Array<Symbol>}] :style
     #   Enables theming of index, numeric, or chars columns.
@@ -80,11 +105,33 @@ module Hexdump
     # @option kwargs [Integer, nil] :limit
     #   Controls control many bytes to read.
     #
+    # @option kwargs [Boolean] :zero_pad (false)
+    #   Enables or disables zero padding of data, so that the remaining bytes
+    #   can be decoded as a uint, int, or float.
+    #
     # @option kwargs [Integer] :columns (16)
     #   The number of bytes to dump for each line.
     #
+    # @option kwargs [Integer, nil] :group_columns
+    #   Separate groups of columns with an additional space.
+    #
+    # @option kwargs [Boolean] :repeating
+    #   Controls whether to omit repeating duplicate rows data with a `*`.
+    #
     # @option kwargs [16, 10, 8, 2] :base (16)
     #   The base to print bytes in.
+    #
+    # @option kwargs [16, 10, 8, 2] :index_base (16)
+    #   Control the base that the index is displayed in.
+    #
+    # @option kwargs [Integer] :offset (0)
+    #   The offset to start the index at.
+    #
+    # @option kwargs [Boolean] :chars (true)
+    #   Controls whether to display the characters column.
+    #
+    # @option kwargs [:ascii, :utf8, Encoding, nil] :encoding
+    #   The encoding to display the characters in.
     #
     # @option kwargs [Boolean, Hash{:index,:numeric,:chars => Symbol,Array<Symbol>}] :style
     #   Enables theming of index, numeric, or chars columns.

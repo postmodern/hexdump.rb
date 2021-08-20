@@ -102,6 +102,9 @@ module Hexdump
     # @param [Integer, nil] group_columns
     #   Separate groups of columns with an additional space.
     #
+    # @param [Boolean] repeating
+    #   Controls whether to omit repeating duplicate rows data with a `*`.
+    #
     # @param [16, 10, 8, 2] base
     #   The base to print bytes in. Defaults to 16, or to 10 if printing floats.
     #
@@ -110,6 +113,9 @@ module Hexdump
     #
     # @param [Integer] offset
     #   The offset to start the index at.
+    #
+    # @param [Boolean] chars
+    #   Controls whether to display the characters column.
     #
     # @param [:ascii, :utf8, Encoding, nil] encoding
     #   The encoding to display the characters in.
