@@ -21,6 +21,9 @@ module Hexdump
     # @param [Type] type
     #   Thetype to decode the data as.
     #
+    # @param [Boolean] zero_pad
+    #   Controls whether the remaining data will be padded with zeros.
+    #
     def initialize(type, zero_pad: false)
       @type     = type
       @zero_pad = zero_pad
