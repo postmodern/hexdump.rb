@@ -456,11 +456,11 @@ module Hexdump
             numeric_column << ' ' * spaces
           end
 
-          line    = if @chars
-                      "#{index}  #{numeric_column}  |#{chars}|#{$/}"
-                    else
-                      "#{index}  #{numeric_column}#{$/}"
-                    end
+          line = if @chars
+                   "#{index}  #{numeric_column}  |#{chars}|#{$/}"
+                 else
+                   "#{index}  #{numeric_column}#{$/}"
+                 end
 
           yield line
         end
