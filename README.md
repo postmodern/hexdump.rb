@@ -67,20 +67,22 @@ require 'hexdump'
 Hexdump.hexdump("hello\0")
 # 00000000  68 65 6c 6c 6f 00                                |hello.|
 # 00000006
-    
+```
+
+### Core Extensions
+
+```ruby
 "hello\0".hexdump
 # 00000000  68 65 6c 6c 6f 00                                |hello.|
 # 00000006
 ```
-
-Hexdump a file:
 
 ```ruby
 File.hexdump("/bin/ls")
 # ...
 ```
 
-Write the hexdump to a file:
+### Output (file)
 
 ```ruby
 File.open('dump.txt','w') do |file|
@@ -88,7 +90,7 @@ File.open('dump.txt','w') do |file|
 end
 ```
 
-Configure the width of the hexdump:
+### Columns
 
 ```ruby
 Hexdump.hexdump('A' * 30, columns: 10)
@@ -97,7 +99,7 @@ Hexdump.hexdump('A' * 30, columns: 10)
 # 0000001e
 ```
 
-Show repeated rows (hidden by default):
+### Repeating columns
 
 ```ruby
 Hexdump.hexdump('A' * 30, columns: 10, repeating: true)
@@ -107,7 +109,7 @@ Hexdump.hexdump('A' * 30, columns: 10, repeating: true)
 # 0000001e
 ```
 
-Group columns together:
+### Group columns
 
 ```ruby
 Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
@@ -116,7 +118,7 @@ Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
 # 00000020
 ```
 
-Hexdump chars:
+### Chars
 
 ```ruby
 Hexdump.hexdump("hello\0", type: :char)
@@ -124,7 +126,7 @@ Hexdump.hexdump("hello\0", type: :char)
 # 00000006
 ```
 
-Hexdump in hexadecimal (default):
+### Hexadecimal
 
 ```ruby
 Hexdump.hexdump("hello\0", base: 16)
@@ -132,7 +134,7 @@ Hexdump.hexdump("hello\0", base: 16)
 # 00000006
 ```
 
-Hexdump in decimal:
+### Decimal:
 
 ```ruby
 Hexdump.hexdump("hello\0", base: 10)
@@ -140,7 +142,7 @@ Hexdump.hexdump("hello\0", base: 10)
 # 00000006
 ```
 
-Hexdump in octal:
+### Octal
 
 ```ruby
 Hexdump.hexdump("hello\0", base: 8)
@@ -148,7 +150,7 @@ Hexdump.hexdump("hello\0", base: 8)
 # 00000006
 ```
 
-Hexdump in binary:
+### Binary
 
 ```ruby
 Hexdump.hexdump("hello\0", base: 2)
@@ -156,7 +158,7 @@ Hexdump.hexdump("hello\0", base: 2)
 # 00000006
 ```
 
-Read multi-byte words:
+### Types
 
 ```ruby
 ("ABCD" * 7).hexdump(type: :uint16)
@@ -165,7 +167,7 @@ Read multi-byte words:
 # 0000001c
 ```
 
-Read little-endian words:
+### Little-endian
 
 ```ruby
 ("ABCD" * 7).hexdump(type: :uint32_le)
@@ -174,7 +176,7 @@ Read little-endian words:
 # 0000001c
 ```
 
-Read big-endian words:
+### Big-endian
 
 ```ruby
 ("ABCD" * 7).hexdump(type: :uint32_be)
@@ -183,7 +185,7 @@ Read big-endian words:
 # 0000001c
 ```
 
-Zero-padding the data:
+### Zero-padding
 
 ```ruby
 (("ABCD" * 4) + "AB").hexdump(type: :uint32_be, zero_pad: true)
