@@ -73,6 +73,9 @@ module Hexdump
       # @param [Symbol, Array<Symbol>] style
       #   The style name(s). See {ANSI::PARAMETERS}.
       #
+      # @raise [ArgumentError]
+      #   The given pattern was not a String or Regexp.
+      #
       # @example
       #   hexdump.style.numeric.highlight('00', :faint)
       #
@@ -90,7 +93,7 @@ module Hexdump
         when Regexp
           @highlight_regexps[pattern] = ansi
         else
-          raise(TypeError,"")
+          raise(ArgumentError,"pattern must be a String or Regexp: #{pattern.inspect}")
         end
       end
 

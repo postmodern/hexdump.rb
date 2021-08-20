@@ -83,6 +83,17 @@ describe Hexdump::Theme::Rule do
         expect(subject.highlight_regexps[pattern].parameters).to eq(style)
       end
     end
+
+    context "when not given a String or Regexp" do
+      let(:pattern) { Object.new }
+      let(:style)   { :red }
+
+      it do
+        expect {
+          subject.highlight(pattern,style)
+        }.to raise_error(ArgumentError,"pattern must be a String or Regexp: #{pattern.inspect}")
+      end
+    end
   end
 
   describe "#apply" do
