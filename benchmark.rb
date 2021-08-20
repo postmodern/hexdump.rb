@@ -6,7 +6,7 @@ require 'hexdump'
 require 'benchmark'
 
 class NullOutput
-  def print(data)
+  def <<(data)
   end
 end
 
