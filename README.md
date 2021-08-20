@@ -187,22 +187,6 @@ Hexdump.hexdump("hello\0", base: 2)
 # 0000001c
 ```
 
-### Int Type
-
-```ruby
-"\x00\x00\xff\xff\xff\xff\xff\xff".hexdump(type: :int32_be, base: 10)
-00000000       65535         -1                          |........|
-00000008
-```
-
-### Char Type
-
-```ruby
-Hexdump.hexdump("hello\0", type: :char)
-# 00000000    h   e   l   l   o  \0                                          |hello.|
-# 00000006
-```
-
 ### Little-endian
 
 ```ruby
@@ -219,6 +203,22 @@ Hexdump.hexdump("hello\0", type: :char)
 # 00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
 # 00000010  41424344 41424344 41424344           |ABCDABCDABCD|
 # 0000001c
+```
+
+### Int Type
+
+```ruby
+"\x00\x00\xff\xff\xff\xff\xff\xff".hexdump(type: :int32_be, base: 10)
+00000000       65535         -1                          |........|
+00000008
+```
+
+### Char Type
+
+```ruby
+Hexdump.hexdump("hello\0", type: :char)
+# 00000000    h   e   l   l   o  \0                                          |hello.|
+# 00000006
 ```
 
 ### UTF-8
