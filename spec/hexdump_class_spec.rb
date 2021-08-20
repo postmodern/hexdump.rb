@@ -934,22 +934,13 @@ describe Hexdump::Hexdump do
     end
   end
 
-  let(:lines) do
-    [
-      "00000000  41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAAAAAAAA|#{$/}",
-      "00000010  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
-      "00000020  43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43  |CCCCCCCCCCCCCCCC|#{$/}",
-      "00000030#{$/}"
-    ]
-  end
+  let(:lines) { subject.each_line(data).to_a }
 
   describe "#hexdump" do
-    let(:output) { StringIO.new }
-
-    it "must print each line of the hexdump to the output" do
-      subject.hexdump(data, output: output)
-
-      expect(output.string).to eq(lines.join)
+    it "must print each line of the hexdump to stdout" do
+      expect {
+        subject.hexdump(data)
+      }.to output(lines.join).to_stdout
     end
 
     context "when given an output that does not support #<<" do
