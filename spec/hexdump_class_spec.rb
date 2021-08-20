@@ -23,8 +23,8 @@ describe Hexdump::Hexdump do
       expect(subject.index).to be_kind_of(Hexdump::Numeric::Hexadecimal)
     end
 
-    it "must default #offset to 0" do
-      expect(subject.offset).to eq(0)
+    it "must default #index_offset to nil" do
+      expect(subject.index_offset).to be(nil)
     end
 
     it "must initialize #numeric to a Hexdump::Numeric::Hexadecimal" do
@@ -96,6 +96,30 @@ describe Hexdump::Hexdump do
 
       it "must set #chars to nil" do
         expect(subject.chars).to be(nil)
+      end
+    end
+
+    context "when given the offset: keyword" do
+      let(:offset) { 4 }
+
+      subject { described_class.new(offset: offset) }
+
+      it "must initialize the #reader with the offset: keyword" do
+        expect(subject.reader.offset).to eq(offset)
+      end
+
+      it "must also set #index_offset" do
+        expect(subject.index_offset).to eq(offset)
+      end
+    end
+
+    context "when given the limit: keyword" do
+      let(:limit) { 1024 }
+
+      subject { described_class.new(limit: limit) }
+
+      it "must initialize the #reader with the limit: keyword" do
+        expect(subject.reader.limit).to eq(limit)
       end
     end
 
@@ -317,13 +341,28 @@ describe Hexdump::Hexdump do
       end
     end
 
-    context "when given the offset: keyword" do
-      let(:offset) { 1024 }
+    context "when given the index_offset: keyword" do
+      let(:index_offset) { 1024 }
 
-      subject { described_class.new(offset: offset) }
+      subject { described_class.new(index_offset: index_offset) }
 
-      it "must set #offset" do
-        expect(subject.offset).to eq(offset)
+      it "must set #index_offset" do
+        expect(subject.index_offset).to eq(index_offset)
+      end
+
+      context "but the offset: keyword is also given" do
+        let(:offset) { 4 }
+
+        subject do
+          described_class.new(
+            offset:       offset,
+            index_offset: index_offset
+          )
+        end
+
+        it "must set #index_offset to the index_offset: value" do
+          expect(subject.index_offset).to eq(index_offset)
+        end
       end
     end
 
@@ -564,8 +603,8 @@ describe Hexdump::Hexdump do
       expect(index).to eq(data.length)
     end
 
-    context "when #offset is > 0" do
-      let(:offset) { 1024 }
+    context "when initialized with :offset > 0" do
+      let(:offset) { 8 }
 
       subject { described_class.new(offset: offset) }
 
@@ -577,7 +616,7 @@ describe Hexdump::Hexdump do
         ]
       end
 
-      it "must start the index counting at #offset" do
+      it "must start the index at #offset" do
         yielded_indexes = []
 
         subject.each_row(data) do |index,*args|
@@ -585,6 +624,35 @@ describe Hexdump::Hexdump do
         end
 
         expect(yielded_indexes).to eq(indexes)
+      end
+
+      context "and initialized with :index_offset > 0" do
+        let(:index_offset) { 0 }
+
+        subject do
+          described_class.new(
+            offset:       offset,
+            index_offset: index_offset
+          )
+        end
+
+        let(:indexes) do
+          [
+            index_offset + (columns * 0),
+            index_offset + (columns * 1),
+            index_offset + (columns * 2),
+          ]
+        end
+
+        it "must override :index and start the index at #index_offset" do
+          yielded_indexes = []
+
+          subject.each_row(data) do |index,*args|
+            yielded_indexes << index
+          end
+
+          expect(yielded_indexes).to eq(indexes)
+        end
       end
     end
 

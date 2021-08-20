@@ -15,10 +15,10 @@ module Hexdump
     # @return [Type]
     attr_reader :type
 
-    # Controls whether to skip N number of bytes before starting to read data.
+    # Controls whether to offset N number of bytes before starting to read data.
     #
     # @return [Integer, nil]
-    attr_reader :skip
+    attr_reader :offset
 
     # Controls control many bytes to read.
     #
@@ -31,8 +31,8 @@ module Hexdump
     # @param [Type] type
     #   Thetype to decode the data as.
     #
-    # @param [Integer, nil] skip
-    #   Controls whether to skip N number of bytes before starting to read data.
+    # @param [Integer, nil] offset
+    #   Controls whether to offset N number of bytes before starting to read data.
     #
     # @param [Integer, nil] limit
     #   Controls control many bytes to read.
@@ -40,9 +40,9 @@ module Hexdump
     # @param [Boolean] zero_pad
     #   Controls whether the remaining data will be padded with zeros.
     #
-    def initialize(type, skip: nil, limit: nil, zero_pad: false)
+    def initialize(type, offset: nil, limit: nil, zero_pad: false)
       @type     = type
-      @skip     = skip
+      @offset   = offset
       @limit    = limit
       @zero_pad = zero_pad
     end
@@ -74,8 +74,8 @@ module Hexdump
       data.each_byte do |b|
         count += 1
 
-        # skip the first @skip number of bytes
-        if @skip.nil? || count > @skip
+        # offset the first @offset number of bytes
+        if @offset.nil? || count > @offset
           yield b
         end
 

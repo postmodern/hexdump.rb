@@ -12,8 +12,8 @@ describe Hexdump::Reader do
       expect(subject.type).to eq(type)
     end
 
-    it "must default #skip to nil" do
-      expect(subject.skip).to be(nil)
+    it "must default #offset to nil" do
+      expect(subject.offset).to be(nil)
     end
 
     it "must default #limit to nil" do
@@ -24,13 +24,13 @@ describe Hexdump::Reader do
       expect(subject.zero_pad?).to be(false)
     end
 
-    context "when skip: is given" do
-      let(:skip) { 2 }
+    context "when offset: is given" do
+      let(:offset) { 2 }
 
-      subject { described_class.new(type, skip: skip) }
+      subject { described_class.new(type, offset: offset) }
 
-      it "must set #skip" do
-        expect(subject.skip).to eq(skip)
+      it "must set #offset" do
+        expect(subject.offset).to eq(offset)
       end
     end
 
@@ -68,13 +68,13 @@ describe Hexdump::Reader do
       }.to yield_successive_args(*bytes)
     end
 
-    context "when #skip is > 0" do
-      let(:skip)  { 2 }
-      let(:bytes) { data.bytes[skip..-1] }
+    context "when #offset is > 0" do
+      let(:offset)  { 2 }
+      let(:bytes) { data.bytes[offset..-1] }
 
-      subject { described_class.new(type, skip: skip) }
+      subject { described_class.new(type, offset: offset) }
 
-      it "must skip the first N bytes before yielding any bytes" do
+      it "must offset the first N bytes before yielding any bytes" do
         expect { |b|
           subject.each_byte(data,&b)
         }.to yield_successive_args(*bytes)
@@ -115,13 +115,13 @@ describe Hexdump::Reader do
         }.to yield_successive_args(*chars)
       end
 
-      context "and when #skip is > 0" do
-        let(:skip)  { 2       }
+      context "and when #offset is > 0" do
+        let(:offset)  { 2       }
         let(:chars) { %w[C D] }
 
-        subject { described_class.new(type, skip: skip) }
+        subject { described_class.new(type, offset: offset) }
 
-        it "must skip the first N bytes before reading each character" do
+        it "must offset the first N bytes before reading each character" do
           expect { |b|
             subject.each_slice(data,&b)
           }.to yield_successive_args(*chars)
@@ -165,13 +165,13 @@ describe Hexdump::Reader do
         expect(yielded_object_ids.uniq).to eq(yielded_object_ids)
       end
 
-      context "and when #skip is > 0" do
-        let(:skip)   { 3 }
+      context "and when #offset is > 0" do
+        let(:offset)   { 3 }
         let(:slices) { %w[BC CD DE EF F] }
 
-        subject { described_class.new(type, skip: skip) }
+        subject { described_class.new(type, offset: offset) }
 
-        it "must skip the first N bytes before reading each slice" do
+        it "must offset the first N bytes before reading each slice" do
           expect { |b|
             subject.each_slice(data,&b)
           }.to yield_successive_args(*slices)

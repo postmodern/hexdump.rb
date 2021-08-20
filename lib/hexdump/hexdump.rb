@@ -62,6 +62,11 @@ module Hexdump
     #          Numeric::Binary]
     attr_reader :index
 
+    # Starts the index at the given offset.
+    #
+    # @return [Integer, nil]
+    attr_reader :index_offset
+
     # The optional offset to start the index at.
     #
     # @return [Integer]
@@ -86,7 +91,7 @@ module Hexdump
     # @param [:int8, :uint8, :char, :uchar, :byte, :int16, :int16_le, :int16_be, :int16_ne, :uint16, :uint16_le, :uint16_be, :uint16_ne, :short, :short_le, :short_be, :short_ne, :ushort, :ushort_le, :ushort_be, :ushort_ne, :int32, :int32_le, :int32_be, :int32_ne, :uint32, :uint32_le, :uint32_be, :uint32_ne, :int, :long, :long_le, :long_be, :long_ne, :uint, :ulong, :ulong_le, :ulong_be, :ulong_ne, :int64, :int64_le, :int64_be, :int64_ne, :uint64, :uint64_le, :uint64_be, :uint64_ne, :longlong, :longlong_le, :longlong_be, :longlong_ne, :ulonglong, :ulonglong_le, :ulonglong_be, :ulonglong_ne, :float, :float_le, :float_be, :float_ne, :double, :double_le, :double_be, :double_ne] type (:byte)
     #   The type to decode the data as.
     #
-    # @param [Integer, nil] skip
+    # @param [Integer, nil] offset
     #   Controls whether to skip N number of bytes before starting to read data.
     #
     # @param [Integer, nil] limit
@@ -111,7 +116,7 @@ module Hexdump
     # @param [16, 10, 8, 2] index_base
     #   Control the base that the index is displayed in. Defaults to base 16.
     #
-    # @param [Integer] offset
+    # @param [Integer] index_offset
     #   The offset to start the index at.
     #
     # @param [Boolean] chars
@@ -129,12 +134,14 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, skip: nil, limit: nil, zero_pad: false, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, offset: 0, chars: true, encoding: nil, style: nil, highlights: nil)
+    def initialize(type: :byte, offset: nil, limit: nil, zero_pad: false, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, index_offset: nil, chars: true, encoding: nil, style: nil, highlights: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
 
-      @reader = Reader.new(@type, skip: skip, limit: limit, zero_pad: zero_pad)
+      @reader = Reader.new(@type, offset:   offset,
+                                  limit:    limit,
+                                  zero_pad: zero_pad)
 
       @columns = columns || (DEFAULT_COLUMNS / @type.size)
       @group_columns = group_columns
@@ -150,7 +157,7 @@ module Hexdump
                  raise(ArgumentError,"unsupported base: #{index_base.inspect}")
                }.new(TYPES[:uint32])
 
-      @offset = offset
+      @index_offset = index_offset || offset
 
       @numeric = BASES.fetch(@base) {
                    raise(ArgumentError,"unsupported base: #{@base.inspect}")
@@ -252,7 +259,7 @@ module Hexdump
     def each_row(data,&block)
       return enum_for(__method__,data) unless block_given?
 
-      index = @offset
+      index = @index_offset || 0
 
       each_slice(data) do |slice|
         numeric = []

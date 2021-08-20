@@ -241,9 +241,9 @@ Hexdump.hexdump("hello\0", type: :char)
 ### Skipping Data
 
 ```ruby
-"GARBAGEabc123".hexdump(skip: 7)
-00000000  61 62 63 31 32 33                                |abc123|
-00000006
+"GARBAGEabc123".hexdump(offset: 7)
+00000007  61 62 63 31 32 33                                |abc123|
+0000000d
 ```
 
 ### Zero-padding
