@@ -431,7 +431,7 @@ module Hexdump
     end
 
     #
-    # Hexdumps the given data to a String.
+    # Outputs the hexdump to a String.
     #
     # @param [#each_byte] data
     #   The data to be hexdumped.
@@ -441,6 +441,10 @@ module Hexdump
     #
     # @return [String]
     #   The output of the hexdump.
+    #
+    # @note
+    #   **Caution:** this method appends each line of the hexdump to a String,
+    #   that String can grow quite large and consume a lot of memory.
     #
     def dump(data,**kwargs)
       String.new.tap do |string|
