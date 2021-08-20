@@ -136,14 +136,6 @@ Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
 # 00000020
 ```
 
-### Chars
-
-```ruby
-Hexdump.hexdump("hello\0", type: :char)
-# 00000000    h   e   l   l   o  \0                                          |hello.|
-# 00000006
-```
-
 ### Hexadecimal
 
 ```ruby
@@ -183,6 +175,14 @@ Hexdump.hexdump("hello\0", base: 2)
 # 00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
 # 00000010  44434241 44434241 44434241           |ABCDABCDABCD|
 # 0000001c
+```
+
+### Char Type
+
+```ruby
+Hexdump.hexdump("hello\0", type: :char)
+# 00000000    h   e   l   l   o  \0                                          |hello.|
+# 00000006
 ```
 
 ### Little-endian
