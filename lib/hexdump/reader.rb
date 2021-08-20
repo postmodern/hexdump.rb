@@ -114,22 +114,14 @@ module Hexdump
                                                encoding: Encoding::BINARY)
         index  = 0
 
-        data.each_byte do |b|
-          count += 1
+        each_byte(data) do |b|
+          buffer[index] = b.chr(Encoding::BINARY)
+          index += 1
 
-          # skip the first @skip number of bytes
-          if @skip.nil? || count > @skip 
-            buffer[index] = b.chr(Encoding::BINARY)
-            index += 1
-
-            if index >= @type.size
-              yield buffer.dup
-              index = 0
-            end
+          if index >= @type.size
+            yield buffer.dup
+            index = 0
           end
-
-          # stop reading after @limit number of bytes
-          break if @limit && count >= @limit
         end
 
         if index > 0
