@@ -178,7 +178,7 @@ Hexdump.hexdump("hello\0", base: 2)
 # 00000006
 ```
 
-### Types
+### UInt Type
 
 ```ruby
 ("ABCD" * 7).hexdump(type: :uint32)
