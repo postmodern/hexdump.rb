@@ -61,6 +61,11 @@ module Hexdump
     #          Numeric::Binary]
     attr_reader :index
 
+    # The optional offset to start the index at.
+    #
+    # @return [Integer]
+    attr_reader :offset
+
     # Mapping of values to their numeric strings.
     #
     # @return [Numeric::Hexadecimal,
@@ -92,6 +97,9 @@ module Hexdump
     # @param [16, 10, 8, 2] index_base
     #   Control the base that the index is displayed in. Defaults to base 16.
     #
+    # @param [Integer] offset
+    #   The offset to start the index at.
+    #
     # @param [:ascii, :utf8, Encoding, nil] encoding
     #   The encoding to display the characters in.
     #
@@ -102,7 +110,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, chars: true, encoding: nil, zero_pad: false)
+    def initialize(type: :byte, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, offset: 0, chars: true, encoding: nil, zero_pad: false)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
@@ -122,6 +130,8 @@ module Hexdump
       @index = BASES.fetch(index_base) {
                  raise(ArgumentError,"unsupported base: #{index_base.inspect}")
                }.new(TYPES[:uint32])
+
+      @offset = offset
 
       @numeric = BASES.fetch(@base) {
                    raise(ArgumentError,"unsupported base: #{@base.inspect}")
@@ -164,9 +174,6 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
-    # @param [Integer] offset
-    #   The offset to start the index at.
-    #
     # @yield [index, values, chars]
     #   The given block will be passed the hexdump break-down of each
     #   row.
@@ -186,10 +193,10 @@ module Hexdump
     #   If a block is given, then the final number of bytes read is returned.
     #   If no block is given, an Enumerator will be returned.
     #
-    def each_row(data, offset: 0, &block)
-      return enum_for(__method__,data, offset: offset) unless block_given?
+    def each_row(data, &block)
+      return enum_for(__method__,data) unless block_given?
 
-      index = offset
+      index = @offset
 
       each_slice(data) do |slice|
         numeric = []
@@ -224,9 +231,6 @@ module Hexdump
     #
     # @param [Hash{Symbol => Object}] kwargs
     #   Additional keyword arguments.
-    #
-    # @option kwargs [Integer] offset
-    #   The offset to start the index at.
     #
     # @yield [index, numeric, chars]
     #   The given block will be passed the hexdump break-down of each
@@ -279,9 +283,6 @@ module Hexdump
     #
     # @param [Hash{Symbol => Object}] kwargs
     #   Additional keyword arguments.
-    #
-    # @option kwargs [Integer] offset
-    #   The offset to start the index at.
     #
     # @yield [index, numeric, chars]
     #   The given block will be passed the hexdump break-down of each
@@ -349,9 +350,6 @@ module Hexdump
     # @param [Hash{Symbol => Object}] kwargs
     #   Additional keyword arguments.
     #
-    # @option kwargs [Integer] offset
-    #   The offset to start the index at.
-    #
     # @yield [line]
     #   The given block will be passed each line from the hexdump.
     #
@@ -411,9 +409,6 @@ module Hexdump
     #
     # @param [Hash{Symbol => Object}] kwargs
     #   Additional keyword arguments.
-    #
-    # @option kwargs [Integer] offset
-    #   The offset to start the index at.
     #
     # @return [nil]
     #
