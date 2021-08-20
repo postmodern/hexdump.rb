@@ -45,6 +45,12 @@ module Hexdump
     # @option kwargs [16, 10, 8, 2] :base (16)
     #   The base to print bytes in.
     #
+    # @option kwargs [Boolean, Hash{:index,:numeric,:chars => Symbol,Array<Symbol>}] :style
+    #   Enables theming of index, numeric, or chars columns.
+    #
+    # @option kwargs [Boolean, Hash{:index,:numeric,:chars => Hash{String,Regexp => Symbol,Array<Symbol>}}] :highlights
+    #   Enables selective highlighting of index, numeric, or chars columns.
+    #
     # @raise [ArgumentError]
     #   The given data does not define the `#each_byte` method,
     #   the `:output` value does not support the `#<<` method or
@@ -79,6 +85,12 @@ module Hexdump
     #
     # @option kwargs [16, 10, 8, 2] :base (16)
     #   The base to print bytes in.
+    #
+    # @option kwargs [Boolean, Hash{:index,:numeric,:chars => Symbol,Array<Symbol>}] :style
+    #   Enables theming of index, numeric, or chars columns.
+    #
+    # @option kwargs [Boolean, Hash{:index,:numeric,:chars => Hash{String,Regexp => Symbol,Array<Symbol>}}] :highlights
+    #   Enables selective highlighting of index, numeric, or chars columns.
     #
     # @return [String]
     #   The output of the hexdump.

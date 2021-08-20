@@ -4,6 +4,7 @@ require 'hexdump/types'
 require 'hexdump/reader'
 require 'hexdump/numeric'
 require 'hexdump/chars'
+require 'hexdump/theme'
 
 module Hexdump
   #
@@ -113,10 +114,16 @@ module Hexdump
     #   Enables or disables zero padding of data, so that the remaining bytes
     #   can be decoded as a uint, int, or float.
     #
+    # @param [Boolean, Hash{:index,:numeric,:chars => Symbol,Array<Symbol>}] style
+    #   Enables theming of index, numeric, or chars columns.
+    #
+    # @param [Boolean, Hash{:index,:numeric,:chars => Hash{String,Regexp => Symbol,Array<Symbol>}}] highlights
+    #   Enables selective highlighting of index, numeric, or chars columns.
+    #
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, skip: nil, limit: nil, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, offset: 0, chars: true, encoding: nil, zero_pad: false)
+    def initialize(type: :byte, skip: nil, limit: nil, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, offset: 0, chars: true, encoding: nil, zero_pad: false, style: nil, highlights: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
@@ -151,6 +158,43 @@ module Hexdump
         @chars = if chars
                    Chars.new(encoding)
                  end
+      end
+
+      @theme = if (style.kind_of?(Hash) || highlights.kind_of?(Hash))
+                 Theme.new(
+                   style:      style || {},
+                   highlights: highlights || {}
+                 )
+               end
+    end
+
+    #
+    # Determines if hexdump styling/highlighting has been enabled.
+    #
+    # @return [Boolean]
+    #
+    def theme?
+      !@theme.nil?
+    end
+
+    #
+    # The hexdump theme.
+    #
+    # @yield [theme]
+    #   If a block is given, the theme will be auto-initialized and yielded.
+    #
+    # @yieldparam [Theme] theme
+    #   The hexdump theme.
+    #
+    # @return [Theme, nil]
+    #   The initialized hexdump theme.
+    #
+    def theme(&block)
+      if block
+        @theme ||= Theme.new
+        @theme.tap(&block)
+      else
+        @theme
       end
     end
 
@@ -284,6 +328,9 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
+    # @param [Boolean] ansi
+    #   Whether to enable styling/highlighting.
+    #
     # @yield [index, numeric, chars]
     #   The given block will be passed the hexdump break-down of each
     #   row.
@@ -303,10 +350,22 @@ module Hexdump
     #   If a block is given, the final number of bytes read will be returned.
     #   If no block is given, an Enumerator will be returned.
     #
-    def each_formatted_row(data)
-      return enum_for(__method__,data) unless block_given?
+    def each_formatted_row(data, ansi: theme?, **kwargs)
+      return enum_for(__method__,data, ansi: ansi) unless block_given?
 
-      format_numeric = lambda { |value| @numeric % value if value }
+      format_index = lambda { |index|
+        formatted_index = @index % index
+        formatted_index = @theme.index.apply(formatted_index) if ansi
+        formatted_index
+      }
+
+      format_numeric = lambda { |value|
+        if value
+          formatted_value = @numeric % value
+          formatted_value = @theme.numeric.apply(formatted_value) if ansi
+          formatted_value
+        end
+      }
 
       # cache the formatted numbers for 8bit and 16bit values
       numeric_cache = if @type.size <= 2
@@ -325,11 +384,12 @@ module Hexdump
         if index == '*'
           yield index
         else
-          formatted_index   = @index % index
+          formatted_index   = format_index[index]
           formatted_numbers = numeric.map { |value| numeric_cache[value] }
 
           if @chars
             formatted_chars = @chars % chars.join
+            formatted_chars = @theme.chars.apply(formatted_chars) if ansi
 
             yield formatted_index, formatted_numbers, formatted_chars
           else
@@ -338,7 +398,7 @@ module Hexdump
         end
       end
 
-      return @index % index
+      return format_index[index]
     end
 
     #
@@ -346,6 +406,9 @@ module Hexdump
     #
     # @param [#each_byte] data
     #   The data to be hexdumped.
+    #
+    # @param [Hash{Symbol => Object}] kwargs
+    #   Additional keyword arguments for {#each_formatted_row}.
     #
     # @yield [line]
     #   The given block will be passed each line from the hexdump.
@@ -358,13 +421,8 @@ module Hexdump
     #
     # @return [nil]
     #
-    def each_line(data)
-      return enum_for(__method__,data) unless block_given?
-
-      chars_per_column = @numeric.width
-      number_of_spaces = (@columns - 1)
-      number_of_spaces += ((@columns / @group_columns) - 1) if @group_columns
-      numeric_width    = ((chars_per_column * @columns) + number_of_spaces)
+    def each_line(data,**kwargs)
+      return enum_for(__method__,data,**kwargs) unless block_given?
 
       join_columns = if @group_columns
                        lambda { |numeric|
@@ -376,15 +434,26 @@ module Hexdump
                        lambda { |numeric| numeric.join(' ') }
                      end
 
-      index = each_formatted_row(data) do |index,numeric,chars|
+      index = each_formatted_row(data,**kwargs) do |index,numeric,chars|
         if index == '*'
           yield "#{index}#{$/}"
         else
-          numeric = join_columns.call(numeric).ljust(numeric_width)
+          numeric_column = join_columns.call(numeric)
+
+          if numeric.length < @columns
+            missing_columns = (@columns - numeric.length)
+            column_width    = @numeric.width + 1
+
+            spaces = (missing_columns * column_width)
+            spaces += ((missing_columns / @group_columns) - 1) if @group_columns
+
+            numeric_column << ' ' * spaces
+          end
+
           line    = if @chars
-                      "#{index}  #{numeric}  |#{chars}|#{$/}"
+                      "#{index}  #{numeric_column}  |#{chars}|#{$/}"
                     else
-                      "#{index}  #{numeric}#{$/}"
+                      "#{index}  #{numeric_column}#{$/}"
                     end
 
           yield line
@@ -414,7 +483,9 @@ module Hexdump
         raise(ArgumentError,"output must support the #<< method")
       end
 
-      each_line(data) do |line|
+      ansi = theme? && $stdout.tty?
+
+      each_line(data, ansi: ansi) do |line|
         output << line
       end
     end
