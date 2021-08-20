@@ -934,17 +934,17 @@ describe Hexdump::Format do
     end
   end
 
+  let(:lines) do
+    [
+      "00000000  41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAAAAAAAA|#{$/}",
+      "00000010  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
+      "00000020  43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43  |CCCCCCCCCCCCCCCC|#{$/}",
+      "00000030#{$/}"
+    ]
+  end
+
   describe "#hexdump" do
     let(:output) { StringIO.new }
-
-    let(:lines) do
-      [
-        "00000000  41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41  |AAAAAAAAAAAAAAAA|#{$/}",
-        "00000010  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBBBBBBBBBBBBBB|#{$/}",
-        "00000020  43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43  |CCCCCCCCCCCCCCCC|#{$/}",
-        "00000030#{$/}"
-      ]
-    end
 
     it "must print each line of the hexdump to the output" do
       subject.hexdump(data, output: output)
@@ -960,6 +960,12 @@ describe Hexdump::Format do
           subject.hexdump(data, output: output)
         }.to raise_error(ArgumentError,"output must support the #<< method")
       end
+    end
+  end
+
+  describe "#dump" do
+    it "must append each line of the hexdump to the given String" do
+      expect(subject.dump(data)).to eq(lines.join)
     end
   end
 end

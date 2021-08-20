@@ -430,5 +430,23 @@ module Hexdump
       end
     end
 
+    #
+    # Hexdumps the given data to a String.
+    #
+    # @param [#each_byte] data
+    #   The data to be hexdumped.
+    #
+    # @param [Hash{Symbol => Object}] kwargs
+    #   Additional keyword arguments.
+    #
+    # @return [String]
+    #   The output of the hexdump.
+    #
+    def dump(data,**kwargs)
+      String.new.tap do |string|
+        hexdump(data, output: string, **kwargs)
+      end
+    end
+
   end
 end
