@@ -213,6 +213,14 @@ Hexdump.hexdump("hello\0", type: :char)
 # 0000001c
 ```
 
+### UTF-8
+
+```ruby
+"\u8900\u8902".hexdump(encoding: :utf8)
+# 00000000  e8 a4 80 e8 a4 82                                |褀褂|
+# 00000006
+```
+
 ### Zero-padding
 
 ```ruby
