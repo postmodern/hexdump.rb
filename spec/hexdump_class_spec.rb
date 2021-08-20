@@ -462,28 +462,51 @@ describe Hexdump::Hexdump do
 
   describe "#theme" do
     context "when a block is given" do
-      it "must yield a new Theme object" do
-        yielded_theme = nil
+      context "when not initialized with style: or highlights: keywords" do
+        it "must yield a new Theme object" do
+          yielded_theme = nil
 
-        subject.theme { |theme| yielded_theme = theme }
+          subject.theme { |theme| yielded_theme = theme }
 
-        expect(yielded_theme).to be_kind_of(Hexdump::Theme)
+          initialized_theme = subject.instance_variable_get("@theme")
+
+          expect(yielded_theme).to be(initialized_theme)
+        end
+
+        context "when called multiple times" do
+          it "must yield the same Theme object" do
+            theme_id1 = nil
+            theme_id2 = nil
+
+            subject.theme { |theme| theme_id1 = theme.object_id }
+            subject.theme { |theme| theme_id2 = theme.object_id }
+
+            expect(theme_id1).to eq(theme_id2)
+          end
+        end
       end
 
-      context "when called multiple times" do
-        it "must yield the same Theme object" do
-          theme_id1 = nil
-          theme_id2 = nil
+      context "when initialized with style: or highlights: keywords" do
+        subject do
+          described_class.new(
+            style:      {},
+            highlights: {}
+          )
+        end
 
-          subject.theme { |theme| theme_id1 = theme.object_id }
-          subject.theme { |theme| theme_id2 = theme.object_id }
+        it "must yield the initialized theme object" do
+          initialized_theme = subject.instance_variable_get("@theme")
 
-          expect(theme_id1).to eq(theme_id2)
+          yielded_theme = nil
+
+          subject.theme { |theme| yielded_theme = theme }
+
+          expect(yielded_theme).to be(initialized_theme)
         end
       end
     end
 
-    context "when not given a block" do
+    context "when no block is given" do
       context "when not initialized with style: or highlights: keywords" do
         it "must return nil" do
           expect(subject.theme).to be(nil)
@@ -498,14 +521,10 @@ describe Hexdump::Hexdump do
           )
         end
 
-        it "must return the theme object" do
-          expect(subject.theme).to be_kind_of(Hexdump::Theme)
-        end
+        it "must return the initialized theme object" do
+          initialized_theme = subject.instance_variable_get("@theme")
 
-        context "when called multiple times" do
-          it "must return the same Theme object" do
-            expect(subject.theme.object_id).to eq(subject.theme.object_id)
-          end
+          expect(subject.theme).to be(initialized_theme)
         end
       end
     end
