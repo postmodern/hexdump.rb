@@ -71,6 +71,9 @@ module Hexdump
     # @option kwargs [Integer, nil] :skip
     #   Controls whether to skip N number of bytes before starting to read data.
     #
+    # @option kwargs [Integer, nil] :limit
+    #   Controls control many bytes to read.
+    #
     # @option kwargs [Integer] :columns (16)
     #   The number of bytes to dump for each line.
     #

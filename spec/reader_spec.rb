@@ -16,6 +16,10 @@ describe Hexdump::Reader do
       expect(subject.skip).to be(nil)
     end
 
+    it "must default #limit to nil" do
+      expect(subject.limit).to be(nil)
+    end
+
     it "must default #zero_pad? to false" do
       expect(subject.zero_pad?).to be(false)
     end
@@ -27,6 +31,16 @@ describe Hexdump::Reader do
 
       it "must set #skip" do
         expect(subject.skip).to eq(skip)
+      end
+    end
+
+    context "when limit: is given" do
+      let(:limit) { 256 }
+
+      subject { described_class.new(type, limit: limit) }
+
+      it "must set #limit" do
+        expect(subject.limit).to eq(limit)
       end
     end
 
@@ -65,6 +79,19 @@ describe Hexdump::Reader do
           }.to yield_successive_args(*chars)
         end
       end
+
+      context "and when #limit is > 0" do
+        let(:limit) { 3         }
+        let(:chars) { %w[A B C] }
+
+        subject { described_class.new(type, limit: limit) }
+
+        it "must read at most N bytes" do
+          expect { |b|
+            subject.each_slice(data,&b)
+          }.to yield_successive_args(*chars)
+        end
+      end
     end
 
     context "when type has size > 1" do
@@ -97,6 +124,19 @@ describe Hexdump::Reader do
         subject { described_class.new(type, skip: skip) }
 
         it "must skip the first N bytes before reading each slice" do
+          expect { |b|
+            subject.each_slice(data,&b)
+          }.to yield_successive_args(*slices)
+        end
+      end
+
+      context "and when #limit is > 0" do
+        let(:limit)  { 7 }
+        let(:slices) { %w[AA BB CC D] }
+
+        subject { described_class.new(type, limit: limit) }
+
+        it "must read at most N bytes" do
           expect { |b|
             subject.each_slice(data,&b)
           }.to yield_successive_args(*slices)

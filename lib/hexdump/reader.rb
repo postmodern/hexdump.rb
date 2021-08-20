@@ -10,15 +10,20 @@ module Hexdump
   #
   class Reader
 
+    # The type to decode the data as.
+    #
+    # @return [Type]
+    attr_reader :type
+
     # Controls whether to skip N number of bytes before starting to read data.
     #
     # @return [Integer, nil]
     attr_reader :skip
 
-    # The type to decode the data as.
+    # Controls control many bytes to read.
     #
-    # @return [Type]
-    attr_reader :type
+    # @return [Integer, nil]
+    attr_reader :limit
 
     #
     # Initializes the reader.
@@ -29,12 +34,16 @@ module Hexdump
     # @param [Integer, nil] skip
     #   Controls whether to skip N number of bytes before starting to read data.
     #
+    # @param [Integer, nil] limit
+    #   Controls control many bytes to read.
+    #
     # @param [Boolean] zero_pad
     #   Controls whether the remaining data will be padded with zeros.
     #
-    def initialize(type, skip: nil, zero_pad: false)
+    def initialize(type, skip: nil, limit: nil, zero_pad: false)
       @type     = type
       @skip     = skip
+      @limit    = limit
       @zero_pad = zero_pad
     end
 
@@ -71,6 +80,9 @@ module Hexdump
           if @skip.nil? || count > @skip
             yield b.chr
           end
+
+          # stop reading after @limit number of bytes
+          break if @limit && count >= @limit
         end
       else
         buffer = String.new("\0" * @type.size, capacity: @type.size,
@@ -90,6 +102,9 @@ module Hexdump
               index = 0
             end
           end
+
+          # stop reading after @limit number of bytes
+          break if @limit && count >= @limit
         end
 
         if index > 0
