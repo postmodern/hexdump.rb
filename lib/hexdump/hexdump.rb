@@ -13,7 +13,7 @@ module Hexdump
   #
   # @api semipublic
   #
-  class Format
+  class Hexdump
 
     # Default number of columns
     #

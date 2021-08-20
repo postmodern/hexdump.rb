@@ -1,7 +1,7 @@
 require 'spec_helper'
-require 'hexdump/format'
+require 'hexdump/hexdump'
 
-describe Hexdump::Format do
+describe Hexdump::Hexdump do
   describe "#initialize" do
     it "must default type to :byte" do
       expect(subject.type).to be(Hexdump::TYPES[:byte])
