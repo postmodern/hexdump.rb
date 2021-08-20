@@ -5,7 +5,6 @@
 * [Source](https://github.com/postmodern/hexdump.rb)
 * [Issues](https://github.com/postmodern/hexdump.rb/issues)
 * [Documentation](http://rubydoc.info/gems/hexdump/frames)
-* [Email](mailto:postmodern.mod3 at gmail.com)
 
 ## Description
 
