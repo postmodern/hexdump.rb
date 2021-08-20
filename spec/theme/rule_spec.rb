@@ -23,38 +23,65 @@ describe Hexdump::Theme::Rule do
     end
 
     context "when given no highlights: keyword argument" do
-      it "must initialize #highlights to {}" do
-        expect(subject.highlights).to eq({})
+      it "must initialize #highlight_strings to {}" do
+        expect(subject.highlight_strings).to eq({})
+      end
+
+      it "must initialize #highlight_regexps to {}" do
+        expect(subject.highlight_regexps).to eq({})
       end
     end
 
     context "when given the highlights: keyword argument" do
-      let(:highlights) { {/[a-f]/ => :red, /[0-9]/ => :red} }
+      let(:highlights) { {/[a-f]/ => :green, '00' => :red} }
 
       subject { described_class.new(highlights: highlights) }
 
-      it "must populate #highlights based on the given highlights" do
-        expect(subject.highlights.keys).to eq(highlights.keys)
-        expect(subject.highlights.values).to all(be_kind_of(Hexdump::Theme::ANSI))
+      it "must populate #highlight_strings with the String keys" do
+        expect(subject.highlight_strings['00']).to be_kind_of(Hexdump::Theme::ANSI)
+        expect(subject.highlight_strings['00'].parameters).to eq(:red)
+      end
+
+      it "must populate #highlight_regexps with the Regexp keys" do
+        expect(subject.highlight_regexps[/[a-f]/]).to be_kind_of(Hexdump::Theme::ANSI)
+        expect(subject.highlight_regexps[/[a-f]/].parameters).to eq(:green)
       end
     end
   end
 
-  describe "#highlight" do
-    let(:highlights) { {'00' => :faint} }
+  describe "#highlights" do
+    let(:highlights) { {/[a-f]/ => :green, '00' => :red} }
 
     subject { described_class.new(highlights: highlights) }
 
-    let(:pattern) { /[a-f]/ }
-    let(:style)   { [:green, :bold] }
+    it "must combine #highlight_strings and #highlight_regexps" do
+      expect(subject.highlights).to eq(subject.highlight_strings.merge(subject.highlight_regexps))
+    end
+  end
 
-    before do
-      subject.highlight(pattern,style)
+  describe "#highlight" do
+    context "when given a String pattern" do
+      let(:pattern) { '00' }
+      let(:style)   { :red }
+
+      before { subject.highlight(pattern,style) }
+
+      it "must populate #highlight_strings with the given String" do
+        expect(subject.highlight_strings[pattern]).to be_kind_of(Hexdump::Theme::ANSI)
+        expect(subject.highlight_strings[pattern].parameters).to eq(style)
+      end
     end
 
-    it "must add the pattern and style to #highlights" do
-      expect(subject.highlights[pattern]).to be_kind_of(Hexdump::Theme::ANSI)
-      expect(subject.highlights[pattern].parameters).to eq(style)
+    context "when given a Regexp pattern" do
+      let(:pattern) { /[a-f]/ }
+      let(:style)   { :green }
+
+      before { subject.highlight(pattern,style) }
+
+      it "must populate #highlight_regexps with the given Regexp" do
+        expect(subject.highlight_regexps[pattern]).to be_kind_of(Hexdump::Theme::ANSI)
+        expect(subject.highlight_regexps[pattern].parameters).to eq(style)
+      end
     end
   end
 
@@ -63,57 +90,98 @@ describe Hexdump::Theme::Rule do
 
     let(:highlights) { {'00' => :faint, /[a-f]/ => :green} }
 
-    let(:reset)      { Hexdump::Theme::ANSI::RESET }
-    let(:ansi_faint) { Hexdump::Theme::ANSI::PARAMETERS[:faint] }
-    let(:ansi_green) { Hexdump::Theme::ANSI::PARAMETERS[:green] }
+    let(:reset) { Hexdump::Theme::ANSI::RESET              }
+    let(:red)   { Hexdump::Theme::ANSI::PARAMETERS[:red]   }
+    let(:green) { Hexdump::Theme::ANSI::PARAMETERS[:green] }
 
-    context "when there is a default style" do
-      let(:style) { :bold }
+    context "when there are #highlight_strings rules" do
+      let(:highlights) { {"00" => :red} }
 
-      subject { described_class.new(style: style) }
+      subject { described_class.new(highlights: highlights) }
 
-      let(:ansi)  { subject.style.string }
+      context "and the whole string matches a #highlight_strings rule" do
+        let(:string) { '00' }
 
-      it "must wrap the given string with the style's ANSI string and reset" do
-        expect(subject.apply(string)).to eq("#{ansi}#{string}#{reset}")
+        it "must highlight the whole string" do
+          expect(subject.apply(string)).to eq("#{red}#{string}#{reset}")
+        end
       end
 
-      context "and there is additional highlighting rules" do
-        subject do
-          described_class.new(style: style, highlights: highlights)
-        end
+      context "but the string does not match any of the rules" do
+        let(:string) { 'ff' }
 
-        it "must still wrap the given string with the style's ANSI string and reset" do
-          expect(subject.apply(string)).to start_with("#{ansi}")
-          expect(subject.apply(string)).to end_with("#{reset}")
-        end
-
-        it "must wrap the matched substrings with the ANSI string and reset" do
-          expect(subject.apply(string)).to include("#{ansi_faint}00#{reset}")
-          expect(subject.apply(string)).to include("#{ansi_green}f#{reset}")
+        it "must return the given String" do
+          expect(subject.apply(string)).to eq(string)
         end
       end
     end
 
-    context "when there is no default style" do
-      context "and there is no highlighting rules" do
-        it "must return the given string with no modifications" do
-          expect(subject.apply(string)).to eq(string)
+    context "when there are #highlight_regexps rules" do
+      let(:highlights) { {/f/ => :green} }
+
+      subject { described_class.new(highlights: highlights) }
+
+      context "and the whole string matches a #highlight_strings rule" do
+        let(:string) { '00f0' }
+
+        it "must highlight the matching substrings within the string" do
+          expect(subject.apply(string)).to eq("00#{green}f#{reset}0")
+        end
+
+        context "and #style is initialized" do
+          subject do
+            described_class.new(
+              style:      :cyan,
+              highlights: highlights
+            )
+          end
+
+          it "must re-enable the default style after resetting the highlighting" do
+            expect(subject.apply(string)).to include("#{green}f#{reset}#{subject.style}")
+          end
+
+          context "when the beginning of the string is not highlighted" do
+            let(:string) { "0f" }
+
+            it "must prepend the string with the default style" do
+              expect(subject.apply(string)).to eq("#{subject.style}0#{green}f#{reset}")
+            end
+          end
+
+          context "when the end of the string is not highlighted" do
+            let(:string) { "f0" }
+
+            it "must append ANSI reset to the end of the string" do
+              expect(subject.apply(string)).to eq("#{green}f#{reset}#{subject.style}0#{reset}")
+            end
+          end
         end
       end
 
-      context "and there is additional highlighting rules" do
-        let(:highlights) { {'00' => :faint, /[a-f]/ => :green} }
+      context "but the string does not match any of the rules" do
+        let(:string) { '0000' }
 
-        let(:ansi_faint) { Hexdump::Theme::ANSI::PARAMETERS[:faint] }
-        let(:ansi_green) { Hexdump::Theme::ANSI::PARAMETERS[:green] }
-
-        subject { described_class.new(highlights: highlights) }
-
-        it "must wrap the matched substrings with the ANSI string and reset" do
-          expect(subject.apply(string)).to include("#{ansi_faint}00#{reset}")
-          expect(subject.apply(string)).to include("#{ansi_green}f#{reset}")
+        it "must return the given String" do
+          expect(subject.apply(string)).to eq(string)
         end
+      end
+    end
+
+    context "when #style is initialized" do
+      let(:style) { :cyan }
+
+      subject { described_class.new(style: style) }
+
+      it "must wrap the given string with the style's ANSI string and reset" do
+        expect(subject.apply(string)).to eq("#{subject.style}#{string}#{reset}")
+      end
+    end
+
+    context "when #style is not initialized" do
+      let(:string) { 'ff' }
+
+      it "must return the given String" do
+        expect(subject.apply(string)).to eq(string)
       end
     end
   end

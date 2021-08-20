@@ -18,10 +18,15 @@ module Hexdump
       # @return [ANSI, nil]
       attr_reader :style
 
-      # Highlighting rules to apply to matching substrings.
+      # Highlighting rules for exact strings.
       #
-      # @return [Hash{String,Regexp => ANSI}]
-      attr_reader :highlights
+      # @return [Hash{String => ANSI}]
+      attr_reader :highlight_strings
+
+      # Highlighting rules for matching substrings.
+      #
+      # @return [Hash{String => ANSI}]
+      attr_reader :highlight_regexps
 
       #
       # Initializes the color.
@@ -39,13 +44,24 @@ module Hexdump
                    ANSI.new(style)
                  end
 
-        @highlights = {}
+        @highlight_strings = {}
+        @highlight_regexps = {}
 
         if highlights
           highlights.each do |pattern,style|
-            self.highlight(pattern,style)
+            highlight(pattern,style)
           end
         end
+      end
+
+      #
+      # The highlighting rules.
+      #
+      # @return [Hash{String,Regexp => ANSI}]
+      #   The combination of {#highlight_strings} and {#highlight_regexps}.
+      #
+      def highlights
+        @highlight_strings.merge(@highlight_regexps)
       end
 
       #
@@ -66,7 +82,16 @@ module Hexdump
       # @api public
       #
       def highlight(pattern,style)
-        @highlights[pattern] = ANSI.new(style)
+        ansi = ANSI.new(style)
+
+        case pattern
+        when String
+          @highlight_strings[pattern] = ansi
+        when Regexp
+          @highlight_regexps[pattern] = ansi
+        else
+          raise(TypeError,"")
+        end
       end
 
       #
@@ -79,36 +104,50 @@ module Hexdump
       #   The colored the string.
       #
       def apply(string)
-        if @style || !@highlights.empty?
-          new_string = String.new
-          new_string << @style if @style
-
-          if !@highlights.empty?
-            scanner = StringScanner.new(string)
-
-            until scanner.eos?
-              matched = false
-
-              @highlights.each do |pattern,ansi|
-                if (match = scanner.scan(pattern))
-                  new_string << "#{ansi}#{match}#{@reset}#{@style}"
-                  matched = true
-                  break
-                end
-              end
-
-              unless matched
-                new_string << scanner.getch
-              end
-            end
-          else
-            new_string << string
-          end
-
-          new_string << @reset if @style
-          new_string
+        if (!@highlight_strings.empty? || !@highlight_regexps.empty?)
+          apply_highlight(string)
+        elsif @style
+          "#{@style}#{string}#{@reset}"
         else
           string
+        end
+      end
+
+      private
+
+      def apply_highlight(string)
+        if (ansi = @highlight_strings[string])
+          # highlight the whole string
+          "#{ansi}#{string}#{@reset}"
+        else
+          scanner    = StringScanner.new(string)
+          new_string = String.new
+
+          until scanner.eos?
+            matched = false
+
+            @highlight_regexps.each do |regexp,ansi|
+              if (match = scanner.scan(regexp))
+                # highlight the match
+                new_string << "#{ansi}#{match}#{@reset}"
+                new_string << "#{@style}" unless scanner.eos?
+                matched = true
+                break
+              end
+            end
+
+            unless matched
+              # next char
+              new_string << scanner.getch
+            end
+          end
+
+          if @style
+            new_string.prepend(@style) unless new_string.start_with?("\e")
+            new_string << @reset       unless new_string.end_with?(@reset)
+          end
+
+          new_string
         end
       end
 
