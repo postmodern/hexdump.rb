@@ -80,11 +80,6 @@ module Hexdump
     # @return [Chars, nil]
     attr_reader :chars
 
-    # Theme for the hexdump.
-    #
-    # @return [Theme, nil]
-    attr_reader :theme
-
     #
     # Initializes a hexdump format.
     #
@@ -125,7 +120,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, skip: nil, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, offset: 0, chars: true, encoding: nil, zero_pad: false, theme: nil, style: nil, highlights: nil)
+    def initialize(type: :byte, skip: nil, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, offset: 0, chars: true, encoding: nil, zero_pad: false, style: nil, highlights: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
@@ -167,8 +162,6 @@ module Hexdump
                    style:      style || {},
                    highlights: highlights || {}
                  )
-               elsif theme
-                 Theme.new
                end
     end
 
@@ -179,6 +172,27 @@ module Hexdump
     #
     def theme?
       !@theme.nil?
+    end
+
+    #
+    # The hexdump theme.
+    #
+    # @yield [theme]
+    #   If a block is given, the theme will be auto-initialized and yielded.
+    #
+    # @yieldparam [Theme] theme
+    #   The hexdump theme.
+    #
+    # @return [Theme, nil]
+    #   The initialized hexdump theme.
+    #
+    def theme(&block)
+      if block
+        @theme ||= Theme.new
+        @theme.tap(&block)
+      else
+        @theme
+      end
     end
 
     #

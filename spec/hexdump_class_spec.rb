@@ -359,14 +359,6 @@ describe Hexdump::Hexdump do
       expect(subject.theme).to be(nil)
     end
 
-    context "when given theme: true" do
-      subject { described_class.new(theme: true) }
-
-      it "must initialize #theme" do
-        expect(subject.theme).to be_kind_of(Hexdump::Theme)
-      end
-    end
-
     context "when given the style: keyword" do
       context "and is a Hash" do
         let(:index_style)   { :white }
@@ -463,6 +455,57 @@ describe Hexdump::Hexdump do
 
         it "must populate #style.chars.highlights" do
           expect(subject.theme.chars.highlights[chars_pattern].parameters).to eq(chars_highlight)
+        end
+      end
+    end
+  end
+
+  describe "#theme" do
+    context "when a block is given" do
+      it "must yield a new Theme object" do
+        yielded_theme = nil
+
+        subject.theme { |theme| yielded_theme = theme }
+
+        expect(yielded_theme).to be_kind_of(Hexdump::Theme)
+      end
+
+      context "when called multiple times" do
+        it "must yield the same Theme object" do
+          theme_id1 = nil
+          theme_id2 = nil
+
+          subject.theme { |theme| theme_id1 = theme.object_id }
+          subject.theme { |theme| theme_id2 = theme.object_id }
+
+          expect(theme_id1).to eq(theme_id2)
+        end
+      end
+    end
+
+    context "when not given a block" do
+      context "when not initialized with style: or highlights: keywords" do
+        it "must return nil" do
+          expect(subject.theme).to be(nil)
+        end
+      end
+
+      context "when initialized with style: or highlights: keywords" do
+        subject do
+          described_class.new(
+            style:      {},
+            highlights: {}
+          )
+        end
+
+        it "must return the theme object" do
+          expect(subject.theme).to be_kind_of(Hexdump::Theme)
+        end
+
+        context "when called multiple times" do
+          it "must return the same Theme object" do
+            expect(subject.theme.object_id).to eq(subject.theme.object_id)
+          end
         end
       end
     end
