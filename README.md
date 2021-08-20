@@ -221,6 +221,15 @@ Hexdump.hexdump("hello\0", type: :char)
 # 00000006
 ```
 
+### Float Type
+
+```ruby
+[0.0, 1.0, -1.0, Float::NAN].pack('EEE').hexdump(type: :float64_le)
+00000000          0.000000e+00         1.000000e+00  |...............?|
+00000010         -1.000000e+00                  NaN  |................|
+00000020
+```
+
 ### UTF-8
 
 ```ruby
