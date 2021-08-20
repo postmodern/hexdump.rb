@@ -208,7 +208,7 @@ Hexdump.hexdump("hello\0", base: 2)
 ### Int Type
 
 ```ruby
-"\x00\x00\xff\xff\xff\xff\xff\xff".hexdump(type: :int32_be, base: 10)
+[65535, -1].pack("LL").hexdump(type: :int32_be, base: 10)
 00000000       65535         -1                          |........|
 00000008
 ```
