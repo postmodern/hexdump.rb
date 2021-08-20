@@ -22,7 +22,7 @@ module Hexdump
     #   Thetype to decode the data as.
     #
     def initialize(type, zero_pad: false)
-      @type = type
+      @type     = type
       @zero_pad = zero_pad
     end
 
