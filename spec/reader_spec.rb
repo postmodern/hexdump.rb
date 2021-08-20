@@ -53,6 +53,54 @@ describe Hexdump::Reader do
     end
   end
 
+  describe "#each_byte" do
+    let(:type)  { Hexdump::TYPES[:uint8] }
+
+    subject { described_class.new(type) }
+
+    let(:chars) { %w[A B C D] }
+    let(:data)  { chars.join  }
+    let(:bytes) { data.bytes  }
+
+    it "must yield each byte from the given data" do
+      expect { |b|
+        subject.each_byte(data,&b)
+      }.to yield_successive_args(*bytes)
+    end
+
+    context "when #skip is > 0" do
+      let(:skip)  { 2 }
+      let(:bytes) { data.bytes[skip..-1] }
+
+      subject { described_class.new(type, skip: skip) }
+
+      it "must skip the first N bytes before yielding any bytes" do
+        expect { |b|
+          subject.each_byte(data,&b)
+        }.to yield_successive_args(*bytes)
+      end
+    end
+
+    context "when #limit is set" do
+      let(:limit) { 3 }
+      let(:bytes) { data.bytes[0,limit] }
+
+      subject { described_class.new(type, limit: limit) }
+
+      it "must read at most N bytes" do
+        expect { |b|
+          subject.each_byte(data,&b)
+        }.to yield_successive_args(*bytes)
+      end
+    end
+
+    context "when no block is given" do
+      it "must return an Enumerator" do
+        expect(subject.each_byte(data)).to be_kind_of(Enumerator)
+      end
+    end
+  end
+
   describe "#each_slice" do
     context "when type has size of 1" do
       let(:type)  { Hexdump::TYPES[:int8] }
@@ -80,7 +128,7 @@ describe Hexdump::Reader do
         end
       end
 
-      context "and when #limit is > 0" do
+      context "and when #limit is set" do
         let(:limit) { 3         }
         let(:chars) { %w[A B C] }
 
@@ -130,7 +178,7 @@ describe Hexdump::Reader do
         end
       end
 
-      context "and when #limit is > 0" do
+      context "and when #limit is set" do
         let(:limit)  { 7 }
         let(:slices) { %w[AA BB CC D] }
 
