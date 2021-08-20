@@ -92,6 +92,10 @@ module Hexdump
     # @param [Integer, nil] limit
     #   Controls control many bytes to read.
     #
+    # @param [Boolean] zero_pad
+    #   Enables or disables zero padding of data, so that the remaining bytes
+    #   can be decoded as a uint, int, or float.
+    #
     # @param [Integer] columns
     #   The number of columns per hexdump line. Defaults to `16 / sizeof(type)`.
     #
@@ -110,10 +114,6 @@ module Hexdump
     # @param [:ascii, :utf8, Encoding, nil] encoding
     #   The encoding to display the characters in.
     #
-    # @param [Boolean] zero_pad
-    #   Enables or disables zero padding of data, so that the remaining bytes
-    #   can be decoded as a uint, int, or float.
-    #
     # @param [Boolean, Hash{:index,:numeric,:chars => Symbol,Array<Symbol>}] style
     #   Enables theming of index, numeric, or chars columns.
     #
@@ -123,7 +123,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, skip: nil, limit: nil, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, offset: 0, chars: true, encoding: nil, zero_pad: false, style: nil, highlights: nil)
+    def initialize(type: :byte, skip: nil, limit: nil, zero_pad: false, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, offset: 0, chars: true, encoding: nil, style: nil, highlights: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
