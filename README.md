@@ -152,7 +152,7 @@ Hexdump.hexdump("hello\0", base: 16)
 # 00000006
 ```
 
-### Decimal:
+### Decimal
 
 ```ruby
 Hexdump.hexdump("hello\0", base: 10)
