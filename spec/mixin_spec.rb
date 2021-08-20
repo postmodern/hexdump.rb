@@ -28,4 +28,10 @@ describe Hexdump::Mixin do
       }.to output(hexdump).to_stdout
     end
   end
+
+  describe "#to_hexdump" do
+    it "must return the hexdump lines of the object" do
+      expect(subject.to_hexdump).to eq(hexdump)
+    end
+  end
 end
