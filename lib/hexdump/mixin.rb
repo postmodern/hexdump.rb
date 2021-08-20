@@ -44,13 +44,13 @@ module Hexdump
     #
     # @raise [ArgumentError]
     #   The given data does not define the `#each_byte` method,
-    #   the `:output` value does not support the `#print` method or
+    #   the `:output` value does not support the `#<<` method or
     #   the `:base` value was unknown.
     #
     def hexdump(offset: 0, output: $stdout, **kwargs)
       hexdump = Hexdump::Format.new(**kwargs)
 
-      hexdump.print(self, offset: 0, output: output)
+      hexdump.hexdump(self, offset: 0, output: output)
     end
   end
 end

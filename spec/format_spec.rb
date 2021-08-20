@@ -934,7 +934,7 @@ describe Hexdump::Format do
     end
   end
 
-  describe "#print" do
+  describe "#hexdump" do
     let(:output) { StringIO.new }
 
     let(:lines) do
@@ -947,18 +947,18 @@ describe Hexdump::Format do
     end
 
     it "must print each line of the hexdump to the output" do
-      subject.print(data, output: output)
+      subject.hexdump(data, output: output)
 
       expect(output.string).to eq(lines.join)
     end
 
-    context "when given an output that does not support #print" do
+    context "when given an output that does not support #<<" do
       let(:output) { Object.new }
 
       it do
         expect {
-          subject.print(data, output: output)
-        }.to raise_error(ArgumentError,"output must support the #print method")
+          subject.hexdump(data, output: output)
+        }.to raise_error(ArgumentError,"output must support the #<< method")
       end
     end
   end
