@@ -94,7 +94,7 @@ module Hexdump
     # @param [Integer, nil] offset
     #   Controls whether to skip N number of bytes before starting to read data.
     #
-    # @param [Integer, nil] limit
+    # @param [Integer, nil] length
     #   Controls control many bytes to read.
     #
     # @param [Boolean] zero_pad
@@ -134,13 +134,13 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, offset: nil, limit: nil, zero_pad: false, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, index_offset: nil, chars: true, encoding: nil, style: nil, highlights: nil)
+    def initialize(type: :byte, offset: nil, length: nil, zero_pad: false, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, index_offset: nil, chars: true, encoding: nil, style: nil, highlights: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
 
       @reader = Reader.new(@type, offset:   offset,
-                                  limit:    limit,
+                                  length:   length,
                                   zero_pad: zero_pad)
 
       @columns = columns || (DEFAULT_COLUMNS / @type.size)

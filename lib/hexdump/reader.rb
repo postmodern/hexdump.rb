@@ -23,7 +23,7 @@ module Hexdump
     # Controls control many bytes to read.
     #
     # @return [Integer, nil]
-    attr_reader :limit
+    attr_reader :length
 
     #
     # Initializes the reader.
@@ -34,16 +34,16 @@ module Hexdump
     # @param [Integer, nil] offset
     #   Controls whether to offset N number of bytes before starting to read data.
     #
-    # @param [Integer, nil] limit
+    # @param [Integer, nil] length
     #   Controls control many bytes to read.
     #
     # @param [Boolean] zero_pad
     #   Controls whether the remaining data will be padded with zeros.
     #
-    def initialize(type, offset: nil, limit: nil, zero_pad: false)
+    def initialize(type, offset: nil, length: nil, zero_pad: false)
       @type     = type
       @offset   = offset
-      @limit    = limit
+      @length   = length
       @zero_pad = zero_pad
     end
 
@@ -79,8 +79,8 @@ module Hexdump
           yield b
         end
 
-        # stop reading after @limit number of bytes
-        break if @limit && count >= @limit
+        # stop reading after @length number of bytes
+        break if @length && count >= @length
       end
     end
 

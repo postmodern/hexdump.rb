@@ -16,8 +16,8 @@ describe Hexdump::Reader do
       expect(subject.offset).to be(nil)
     end
 
-    it "must default #limit to nil" do
-      expect(subject.limit).to be(nil)
+    it "must default #length to nil" do
+      expect(subject.length).to be(nil)
     end
 
     it "must default #zero_pad? to false" do
@@ -34,13 +34,13 @@ describe Hexdump::Reader do
       end
     end
 
-    context "when limit: is given" do
-      let(:limit) { 256 }
+    context "when length: is given" do
+      let(:length) { 256 }
 
-      subject { described_class.new(type, limit: limit) }
+      subject { described_class.new(type, length: length) }
 
-      it "must set #limit" do
-        expect(subject.limit).to eq(limit)
+      it "must set #length" do
+        expect(subject.length).to eq(length)
       end
     end
 
@@ -81,11 +81,11 @@ describe Hexdump::Reader do
       end
     end
 
-    context "when #limit is set" do
-      let(:limit) { 3 }
-      let(:bytes) { data.bytes[0,limit] }
+    context "when #length is set" do
+      let(:length) { 3 }
+      let(:bytes) { data.bytes[0,length] }
 
-      subject { described_class.new(type, limit: limit) }
+      subject { described_class.new(type, length: length) }
 
       it "must read at most N bytes" do
         expect { |b|
@@ -128,11 +128,11 @@ describe Hexdump::Reader do
         end
       end
 
-      context "and when #limit is set" do
-        let(:limit) { 3         }
+      context "and when #length is set" do
+        let(:length) { 3         }
         let(:chars) { %w[A B C] }
 
-        subject { described_class.new(type, limit: limit) }
+        subject { described_class.new(type, length: length) }
 
         it "must read at most N bytes" do
           expect { |b|
@@ -178,11 +178,11 @@ describe Hexdump::Reader do
         end
       end
 
-      context "and when #limit is set" do
-        let(:limit)  { 7 }
+      context "and when #length is set" do
+        let(:length)  { 7 }
         let(:slices) { %w[AA BB CC D] }
 
-        subject { described_class.new(type, limit: limit) }
+        subject { described_class.new(type, length: length) }
 
         it "must read at most N bytes" do
           expect { |b|

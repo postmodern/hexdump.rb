@@ -39,7 +39,7 @@ module Hexdump
     # @option kwargs [Integer, nil] :offset
     #   Controls whether to skip N number of bytes before starting to read data.
     #
-    # @option kwargs [Integer, nil] :limit
+    # @option kwargs [Integer, nil] :length
     #   Controls control many bytes to read.
     #
     # @option kwargs [Boolean] :zero_pad (false)
@@ -102,7 +102,7 @@ module Hexdump
     # @option kwargs [Integer, nil] :offset
     #   Controls whether to skip N number of bytes before starting to read data.
     #
-    # @option kwargs [Integer, nil] :limit
+    # @option kwargs [Integer, nil] :length
     #   Controls control many bytes to read.
     #
     # @option kwargs [Boolean] :zero_pad (false)

@@ -113,13 +113,13 @@ describe Hexdump::Hexdump do
       end
     end
 
-    context "when given the limit: keyword" do
-      let(:limit) { 1024 }
+    context "when given the length: keyword" do
+      let(:length) { 1024 }
 
-      subject { described_class.new(limit: limit) }
+      subject { described_class.new(length: length) }
 
-      it "must initialize the #reader with the limit: keyword" do
-        expect(subject.reader.limit).to eq(limit)
+      it "must initialize the #reader with the length: keyword" do
+        expect(subject.reader.length).to eq(length)
       end
     end
 
