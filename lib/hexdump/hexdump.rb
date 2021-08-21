@@ -367,16 +367,16 @@ module Hexdump
       return enum_for(__method__,data, ansi: ansi) unless block_given?
 
       format_index = lambda { |index|
-        formatted_index = @index % index
-        formatted_index = @theme.index.apply(formatted_index) if ansi
-        formatted_index
+        formatted = @index % index
+        formatted = @theme.index.apply(formatted) if ansi
+        formatted
       }
 
       format_numeric = lambda { |value|
         if value
-          formatted_value = @numeric % value
-          formatted_value = @theme.numeric.apply(formatted_value) if ansi
-          formatted_value
+          formatted = @numeric % value
+          formatted = @theme.numeric.apply(formatted) if ansi
+          formatted
         end
       }
 
