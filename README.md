@@ -126,7 +126,7 @@ Hexdump.hexdump('A' * 30, columns: 10)
 # 0000001e
 ```
 
-### Repeating columns
+### Repeating Columns
 
 ```ruby
 Hexdump.hexdump('A' * 30, columns: 10, repeating: true)
@@ -136,7 +136,7 @@ Hexdump.hexdump('A' * 30, columns: 10, repeating: true)
 # 0000001e
 ```
 
-### Group columns
+### Grouping Columns
 
 ```ruby
 Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
