@@ -204,14 +204,14 @@ describe Hexdump::Numeric::Decimal do
         let(:decimal) { '15' }
 
         context "and the value is positive" do
-          it "must return a left-padded decimal string prefixed with a ' '" do
-            expect(subject % value).to eq(" #{decimal}")
+          it "must return a decimal string of length 3 prefixed with a ' '" do
+            expect(subject % value).to eq(" #{decimal}".rjust(3))
           end
         end
 
         context "and the value is negative" do
-          it "must return a left-padded decimal string prefixed with a '-'" do
-            expect(subject % -value).to eq("-#{decimal}")
+          it "must return a decimal string of length 3 prefixed with a '-'" do
+            expect(subject % -value).to eq("-#{decimal}".rjust(3))
           end
         end
       end
@@ -223,14 +223,14 @@ describe Hexdump::Numeric::Decimal do
         let(:decimal) { '255' }
 
         context "and the value is positive" do
-          it "must return a left-padded decimal string prefixed with a ' '" do
-            expect(subject % value).to eq("  #{decimal}")
+          it "must return a decimal string of length 5 prefixed with a ' '" do
+            expect(subject % value).to eq("  #{decimal}".rjust(5))
           end
         end
 
         context "and the value is negative" do
-          it "must return a left-padded decimal string prefixed with a '-'" do
-            expect(subject % -value).to eq(" -#{decimal}")
+          it "must return a decimal string of length 5 prefixed with a '-'" do
+            expect(subject % -value).to eq(" -#{decimal}".rjust(5))
           end
         end
       end
@@ -242,14 +242,14 @@ describe Hexdump::Numeric::Decimal do
         let(:decimal) { '65535' }
 
         context "and the value is positive" do
-          it "must return a left-padded decimal string of prefixed with a ' '" do
-            expect(subject % value).to eq("     #{decimal}")
+          it "must return a decimal string of length 10 prefixed with a ' '" do
+            expect(subject % value).to eq(" #{decimal}".rjust(10))
           end
         end
 
         context "and the value is negative" do
-          it "must return a left-padded decimal string prefixed with a '-'" do
-            expect(subject % -value).to eq("    -#{decimal}")
+          it "must return a decimal string of length 10 prefixed with a '-'" do
+            expect(subject % -value).to eq(" -#{decimal}".rjust(10))
           end
         end
       end
@@ -261,14 +261,14 @@ describe Hexdump::Numeric::Decimal do
         let(:decimal) { '4294967295' }
 
         context "and the value is positive" do
-          it "must return a decimal string of length 64 prefixed with a ' '" do
-            expect(subject % value).to eq("          #{decimal}")
+          it "must return a decimal string of length 20 prefixed with a ' '" do
+            expect(subject % value).to eq(" #{decimal}".rjust(20))
           end
         end
 
         context "and the value is negative" do
-          it "must return a decimal string of length 64 prefixed with a '-'" do
-            expect(subject % -value).to eq("         -#{decimal}")
+          it "must return a decimal string of length 20 prefixed with a '-'" do
+            expect(subject % -value).to eq("-#{decimal}".rjust(20))
           end
         end
       end
