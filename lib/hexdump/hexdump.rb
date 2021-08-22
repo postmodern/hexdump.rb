@@ -54,6 +54,11 @@ module Hexdump
     # @return [Integer, false]
     attr_reader :group_columns
 
+    # Groups the characters together into groups.
+    #
+    # @return [Integer, nil]
+    attr_reader :group_chars
+
     # The format of the index number.
     #
     # @return [Numeric::Hexadecimal,
@@ -107,6 +112,10 @@ module Hexdump
     # @param [Integer, nil] group_columns
     #   Separate groups of columns with an additional space.
     #
+    # @param [Integer, :type, nil] group_chars
+    #   Group chars into columns.
+    #   If `:type`, then the chars will be grouped by the `type`'s size.
+    #
     # @param [Boolean] repeating
     #   Controls whether to omit repeating duplicate rows data with a `*`.
     #
@@ -134,7 +143,7 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, offset: nil, length: nil, zero_pad: false, columns: nil, group_columns: nil, repeating: false, base: nil, index_base: 16, index_offset: nil, chars: true, encoding: nil, style: nil, highlights: nil)
+    def initialize(type: :byte, offset: nil, length: nil, zero_pad: false, columns: nil, group_columns: nil, group_chars: nil, repeating: false, base: nil, index_base: 16, index_offset: nil, chars: true, encoding: nil, style: nil, highlights: nil)
       @type = TYPES.fetch(type) do
                 raise(ArgumentError,"unsupported type: #{type.inspect}")
               end
@@ -145,6 +154,10 @@ module Hexdump
 
       @columns = columns || (DEFAULT_COLUMNS / @type.size)
       @group_columns = group_columns
+      @group_chars   = case group_chars
+                       when Integer then group_chars
+                       when :type   then @type.size
+                       end
 
       @repeating = repeating
 
@@ -389,6 +402,14 @@ module Hexdump
                         format_numeric
                       end
 
+      if @chars
+        format_chars = lambda { |chars|
+          formatted = @chars % chars.join
+          formatted = @theme.chars.apply(formatted) if ansi
+          formatted
+        }
+      end
+
       enum = if @repeating then each_row(data)
              else               each_non_repeating_row(data)
              end
@@ -401,8 +422,11 @@ module Hexdump
           formatted_numbers = numeric.map { |value| numeric_cache[value] }
 
           if @chars
-            formatted_chars = @chars % chars.join
-            formatted_chars = @theme.chars.apply(formatted_chars) if ansi
+            formatted_chars = if @group_chars
+                                chars.join.chars.each_slice(@group_chars).map(&format_chars)
+                              else
+                                format_chars.call(chars)
+                              end
 
             yield formatted_index, formatted_numbers, formatted_chars
           else
@@ -437,7 +461,7 @@ module Hexdump
     def each_line(data,**kwargs)
       return enum_for(__method__,data,**kwargs) unless block_given?
 
-      join_columns = if @group_columns
+      join_numeric = if @group_columns
                        lambda { |numeric|
                          numeric.each_slice(@group_columns).map { |numbers|
                            numbers.join(' ')
@@ -451,7 +475,7 @@ module Hexdump
         if index == '*'
           yield "#{index}#{$/}"
         else
-          numeric_column = join_columns.call(numeric)
+          numeric_column = join_numeric.call(numeric)
 
           if numeric.length < @columns
             missing_columns = (@columns - numeric.length)
@@ -464,6 +488,10 @@ module Hexdump
           end
 
           line = if @chars
+                   if @group_chars
+                     chars = chars.join('|')
+                   end
+
                    "#{index}  #{numeric_column}  |#{chars}|#{$/}"
                  else
                    "#{index}  #{numeric_column}#{$/}"

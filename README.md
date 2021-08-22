@@ -136,6 +136,24 @@ Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
 # 00000020
 ```
 
+### Grouping Chars
+
+```ruby
+Hexdump.hexdump("ABCD" * 8, group_chars: 4)
+00000000  41 42 43 44 41 42 43 44 41 42 43 44 41 42 43 44  |ABCD|ABCD|ABCD|ABCD|
+*
+00000020
+```
+
+### Grouping UTF-8 Chars
+
+```ruby
+Hexdump.hexdump("\u8000" * 8, group_chars: 4, encoding: :utf8)
+00000000  e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8  |耀.|...|.耀|耀.|
+00000010  80 80 e8 80 80 e8 80 80                          |...|.耀|
+00000018
+```
+
 ### Disable Chars
 
 ```ruby
