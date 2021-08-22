@@ -114,16 +114,16 @@ describe Hexdump::Numeric::Decimal do
       context "and size is 4" do
         let(:type) { Hexdump::Type::Float32.new }
 
-        it "must set #width to 12 + 1" do
-          expect(subject.width).to eq(12 + 1)
+        it "must set #width to 15 + 1" do
+          expect(subject.width).to eq(15 + 1)
         end
       end
 
       context "and size is 8" do
         let(:type) { Hexdump::Type::Float64.new }
 
-        it "must set #width to 20 + 1" do
-          expect(subject.width).to eq(20 + 1)
+        it "must set #width to 24 + 1" do
+          expect(subject.width).to eq(24 + 1)
         end
       end
 
@@ -278,18 +278,18 @@ describe Hexdump::Numeric::Decimal do
       context "and the given type has size 4" do
         let(:type) { Hexdump::Type::Float32.new }
 
-        let(:value) { 1.123456789}
-        let(:float) { "1.123457e+00" }
+        let(:value) { 123456789.123456789 }
+        let(:float) { "1.23457e+08"       }
 
         context "and the value is positive" do
-          it "must return a float string of length 12 prefixed with a ' '" do
-            expect(subject % value).to eq(" #{float}")
+          it "must return a float string of length 16 prefixed with a ' '" do
+            expect(subject % value).to eq(" #{float}".rjust(15))
           end
         end
 
         context "and the value is negative" do
-          it "must return a float string of length 12 prefixed with a '-'" do
-            expect(subject % -value).to eq("-#{float}")
+          it "must return a float string of length 16 prefixed with a '-'" do
+            expect(subject % -value).to eq("-#{float}".rjust(15))
           end
         end
       end
@@ -297,18 +297,18 @@ describe Hexdump::Numeric::Decimal do
       context "and the given type has size 8" do
         let(:type) { Hexdump::Type::Float64.new }
 
-        let(:value) { 1.123456789 }
-        let(:float) { "1.123457e+00" }
+        let(:value) { 123456789.123456789 }
+        let(:float) { "1.23457e+08" }
 
         context "and the value is positive" do
-          it "must return a float string of length 20 prefixed with a ' '" do
-            expect(subject % value).to eq("        #{float}")
+          it "must return a float string of length 25 prefixed with a ' '" do
+            expect(subject % value).to eq(" #{float}".rjust(24))
           end
         end
 
         context "and the value is negative" do
-          it "must return a float string of length 20 prefixed with a '-'" do
-            expect(subject % -value).to eq("       -#{float}")
+          it "must return a float string of length 25 prefixed with a '-'" do
+            expect(subject % -value).to eq("-#{float}".rjust(24))
           end
         end
       end

@@ -17,8 +17,8 @@ module Hexdump
       }
 
       FLOAT_SIZE_TO_WIDTH = {
-        4 => 12,
-        8 => 20
+        4 => 15,
+        8 => 24
       }
 
       # @return [Integer]
@@ -41,7 +41,7 @@ module Hexdump
 
         case type
         when Type::Float
-          super("% #{@width}e"); @width += 1
+          super("% #{@width}g"); @width += 1
         else
           if type.signed?
             super("% #{@width}d"); @width += 1
