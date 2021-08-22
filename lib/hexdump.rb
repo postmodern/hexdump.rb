@@ -4,4 +4,11 @@ require 'hexdump/version'
 
 module Hexdump
   extend ModuleMethods
+
+  #
+  # @see hexdump
+  #
+  def self.dump(data,**kwargs)
+    hexdump(data,**kwargs)
+  end
 end

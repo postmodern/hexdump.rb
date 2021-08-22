@@ -12,4 +12,12 @@ describe Hexdump do
       }.to output(hexdump).to_stdout
     end
   end
+
+  describe ".dump" do
+    it "must write the hexdump lines of the given data to the output" do
+      expect {
+        subject.dump(data)
+      }.to output(hexdump).to_stdout
+    end
+  end
 end
