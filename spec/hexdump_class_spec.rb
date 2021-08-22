@@ -623,7 +623,7 @@ describe Hexdump::Hexdump do
       expect(index).to eq(data.length)
     end
 
-    context "when initialized with :offset > 0" do
+    context "when #reader.offset is > 0" do
       let(:offset) { 8 }
 
       subject { described_class.new(offset: offset) }
@@ -646,7 +646,7 @@ describe Hexdump::Hexdump do
         expect(yielded_indexes).to eq(indexes)
       end
 
-      context "and initialized with :index_offset > 0" do
+      context "and #index_offset is > 0" do
         let(:index_offset) { 0 }
 
         subject do
@@ -702,7 +702,7 @@ describe Hexdump::Hexdump do
       end
     end
 
-    context "when initialized with a custom columns: value" do
+    context "when #columns is not 16" do
       let(:columns) { 7 }
 
       subject { described_class.new(columns: columns) }
@@ -990,7 +990,7 @@ describe Hexdump::Hexdump do
       end
     end
 
-    context "when initialized with a custom columns:" do
+    context "when #columns is not 16" do
       let(:columns) { 7 }
 
       subject { described_class.new(columns: columns) }
@@ -1009,7 +1009,7 @@ describe Hexdump::Hexdump do
       end
     end
 
-    context "when #encoding is set" do
+    context "when #chars.encoding is set" do
       let(:encoding) { Encoding::UTF_8 }
 
       subject { described_class.new(encoding: encoding) }
@@ -1417,7 +1417,7 @@ describe Hexdump::Hexdump do
       end
     end
 
-    context "when initialized with repeating: true" do
+    context "when #repeating is true" do
       subject { described_class.new(repeating: true) }
 
       let(:data) do
@@ -1450,7 +1450,7 @@ describe Hexdump::Hexdump do
       end
     end
 
-    context "when initialized with chars: false" do
+    context "when #chars is nil" do
       subject { described_class.new(chars: false) }
 
       let(:lines) do
@@ -1473,7 +1473,7 @@ describe Hexdump::Hexdump do
       end
     end
 
-    context "when initialized wth group_columns: ..." do
+    context "when #group_columns is set" do
       subject { described_class.new(group_columns: 4) }
 
       let(:lines) do
