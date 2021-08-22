@@ -108,6 +108,15 @@ File.open('dump.txt','w') do |file|
 end
 ```
 
+### UTF-8
+
+```ruby
+Hexdump.hexdump("\u8000" * 8, encoding: :utf8)
+00000000  e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8  |耀耀耀耀耀.|
+00000010  80 80 e8 80 80 e8 80 80                          |..耀耀|
+00000018
+```
+
 ### Columns
 
 ```ruby
@@ -228,14 +237,6 @@ Hexdump.hexdump("hello\0", type: :char)
 00000000          0.000000e+00         1.000000e+00  |...............?|
 00000010         -1.000000e+00                  NaN  |................|
 00000020
-```
-
-### UTF-8
-
-```ruby
-"\u8900\u8902".hexdump(encoding: :utf8)
-# 00000000  e8 a4 80 e8 a4 82                                |褀褂|
-# 00000006
 ```
 
 ### Skipping Data
