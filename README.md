@@ -190,7 +190,7 @@ Hexdump.hexdump("hello\0", base: 2)
 ### UInt Type
 
 ```ruby
-("ABCD" * 7).hexdump(type: :uint32)
+Hexdump.hexdump("ABCD" * 7, type: :uint32)
 # 00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
 # 00000010  44434241 44434241 44434241           |ABCDABCDABCD|
 # 0000001c
@@ -199,7 +199,7 @@ Hexdump.hexdump("hello\0", base: 2)
 ### Little-endian
 
 ```ruby
-("ABCD" * 7).hexdump(type: :uint32_le)
+Hexdump.hexdump("ABCD" * 7, type: :uint32_le)
 # 00000000  44434241 44434241 44434241 44434241  |ABCDABCDABCDABCD|
 # 00000010  44434241 44434241 44434241           |ABCDABCDABCD|
 # 0000001c
@@ -208,7 +208,7 @@ Hexdump.hexdump("hello\0", base: 2)
 ### Big-endian
 
 ```ruby
-("ABCD" * 7).hexdump(type: :uint32_be)
+Hexdump.hexdump("ABCD" * 7, type: :uint32_be)
 # 00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
 # 00000010  41424344 41424344 41424344           |ABCDABCDABCD|
 # 0000001c
@@ -217,7 +217,7 @@ Hexdump.hexdump("hello\0", base: 2)
 ### Int Type
 
 ```ruby
-[65535, -1].pack("LL").hexdump(type: :int32_be, base: 10)
+Hexdump.hexdump([65535, -1].pack("LL"), type: :int32_be, base: 10)
 00000000       65535         -1                          |........|
 00000008
 ```
@@ -233,7 +233,7 @@ Hexdump.hexdump("hello\0", type: :char)
 ### Float Type
 
 ```ruby
-[0.0, 1.0, -1.0, Float::NAN].pack('EEEE').hexdump(type: :float64_le)
+Hexdump.hexdump([0.0, 1.0, -1.0, Float::NAN].pack('EEEE'), type: :float64_le)
 00000000          0.000000e+00         1.000000e+00  |...............?|
 00000010         -1.000000e+00                  NaN  |................|
 00000020
@@ -242,7 +242,7 @@ Hexdump.hexdump("hello\0", type: :char)
 ### Skipping Data
 
 ```ruby
-"GARBAGEabc123".hexdump(offset: 7)
+Hexdump.hexdump("GARBAGEabc123", offset: 7)
 00000007  61 62 63 31 32 33                                |abc123|
 0000000d
 ```
@@ -250,7 +250,7 @@ Hexdump.hexdump("hello\0", type: :char)
 ### Zero-padding
 
 ```ruby
-(("ABCD" * 4) + "AB").hexdump(type: :uint32_be, zero_pad: true)
+Hexdump.hexdump(("ABCD" * 4) + "AB", type: :uint32_be, zero_pad: true)
 # 00000000  41424344 41424344 41424344 41424344  |ABCDABCDABCDABCD|
 # 00000010  41420000                             |AB..|
 # 00000014
@@ -259,13 +259,13 @@ Hexdump.hexdump("hello\0", type: :char)
 ### ANSI Styling
 
 ```ruby
-"ABCD".hexdump(style: {index: :white, numeric: :green, chars: :cyan})
+Hexdump.hexdump("ABCD", style: {index: :white, numeric: :green, chars: :cyan})
 ```
 
 ### ANSI Highlighting
 
 ```ruby
-(0..255).map(&:chr).join.hexdump(highlights: {
+Hexdump.hexdump((0..255).map(&:chr).join, highlights: {
   index: {/00$/ => [:white, :bold]},
   numeric: {
     /^[8-f][0-9a-f]$/ => :faint,
