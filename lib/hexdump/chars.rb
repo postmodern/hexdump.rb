@@ -42,9 +42,9 @@ module Hexdump
     #
     def %(chars)
       if @encoding
-        chars = chars.force_encoding(@encoding)
+        chars.force_encoding(@encoding)
         chars.scrub!('.')
-        chars.gsub!(/[^[:print:]]/,'.')
+        chars.gsub!(/[^[:print:]]/u,'.')
       else
         chars.tr!("^\x20-\x7e",'.')
       end
