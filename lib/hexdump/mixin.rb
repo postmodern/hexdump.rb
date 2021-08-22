@@ -52,6 +52,10 @@ module Hexdump
     # @option kwargs [Integer, nil] :group_columns
     #   Separate groups of columns with an additional space.
     #
+    # @option kwargs [Integer, :type, nil] :group_chars
+    #   Group chars into columns.
+    #   If `:type`, then the chars will be grouped by the `type`'s size.
+    #
     # @option kwargs [Boolean] :repeating
     #   Controls whether to omit repeating duplicate rows data with a `*`.
     #
@@ -114,6 +118,10 @@ module Hexdump
     #
     # @option kwargs [Integer, nil] :group_columns
     #   Separate groups of columns with an additional space.
+    #
+    # @option kwargs [Integer, :type, nil] :group_chars
+    #   Group chars into columns.
+    #   If `:type`, then the chars will be grouped by the `type`'s size.
     #
     # @option kwargs [Boolean] :repeating
     #   Controls whether to omit repeating duplicate rows data with a `*`.

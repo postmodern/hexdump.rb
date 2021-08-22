@@ -386,6 +386,26 @@ describe Hexdump::Hexdump do
       end
     end
 
+    context "when given the group_chars: keyword" do
+      let(:group_chars) { 4 }
+
+      subject { described_class.new(group_chars: group_chars) }
+
+      it "must set #group_chars" do
+        expect(subject.group_chars).to eq(group_chars)
+      end
+
+      context "when group_chars: :type is given" do
+        let(:type) { :uint16 }
+
+        subject { described_class.new(type: type, group_chars: :type) }
+
+        it "must set #group_chars to #type.size" do
+          expect(subject.group_chars).to eq(subject.type.size)
+        end
+      end
+    end
+
     context "when given an unsupported base: value" do
       it do
         expect {
@@ -1258,6 +1278,59 @@ describe Hexdump::Hexdump do
           expect(yielded_rows).to eq(formatted_rows)
         end
       end
+
+      context "when #group_chars is set" do
+        let(:group_chars) { 4 }
+
+        subject { described_class.new(group_chars: group_chars) }
+
+        let(:formatted_chars) do
+          [
+            ["A" * group_chars] * (columns / group_chars),
+            ["B" * group_chars] * (columns / group_chars),
+            ["C" * group_chars] * (columns / group_chars)
+          ]
+        end
+
+        it "must group the characters into fixed length strings" do
+          yielded_chars= []
+
+          subject.each_formatted_row(data) do |*row,chars|
+            yielded_chars << chars
+          end
+
+          expect(yielded_chars).to eq(formatted_chars)
+        end
+
+        context "but #chars.encoding is Encoding::UTF_8" do
+          let(:encoding) { Encoding::UTF_8 }
+
+          subject do
+            described_class.new(group_chars: group_chars, encoding: encoding)
+          end
+
+          let(:char)      { "\u8000" }
+          let(:length)    { (columns * 2) / char.bytes.length }
+          let(:data)      { char * length }
+
+          let(:formatted_chars) do
+            [
+              ["耀.", "...", ".耀", "耀."],
+              ["...", ".耀", "耀.", ".."]
+            ]
+          end
+
+          it "must split the characters along byte boundaries" do
+            yielded_chars= []
+
+            subject.each_formatted_row(data) do |*row,chars|
+              yielded_chars << chars
+            end
+
+            expect(yielded_chars).to eq(formatted_chars)
+          end
+        end
+      end
     end
 
     context "when no block is given" do
@@ -1413,6 +1486,31 @@ describe Hexdump::Hexdump do
       end
 
       it "must group columns together with an extra space" do
+        yielded_lines = []
+
+        subject.each_line(data) do |line|
+          yielded_lines << line
+        end
+
+        expect(yielded_lines).to eq(lines)
+      end
+    end
+
+    context "when #group_chars is set" do
+      let(:group_chars) { 4 }
+
+      subject { described_class.new(group_chars: group_chars) }
+
+      let(:lines) do
+        [
+          "00000000  41 41 41 41 41 41 41 41 41 41 41 41 41 41 41 41  |AAAA|AAAA|AAAA|AAAA|#{$/}",
+          "00000010  42 42 42 42 42 42 42 42 42 42 42 42 42 42 42 42  |BBBB|BBBB|BBBB|BBBB|#{$/}",
+          "00000020  43 43 43 43 43 43 43 43 43 43 43 43 43 43 43 43  |CCCC|CCCC|CCCC|CCCC|#{$/}",
+          "00000030#{$/}"
+        ]
+      end
+
+      it "must group the characters into fixed length strings" do
         yielded_lines = []
 
         subject.each_line(data) do |line|
