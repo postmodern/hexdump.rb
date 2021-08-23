@@ -273,10 +273,11 @@ module Hexdump
       return enum_for(__method__,data) unless block_given?
 
       index = @index_offset || 0
+      chars = nil
 
       each_slice(data) do |slice|
         numeric = []
-        chars   = []
+        chars   = [] if @chars
 
         next_index = index
 
@@ -287,12 +288,7 @@ module Hexdump
           next_index += raw.length
         end
 
-        if @chars
-          yield index, numeric, chars
-        else
-          yield index, numeric
-        end
-
+        yield index, numeric, chars
         index = next_index
       end
 
@@ -414,24 +410,22 @@ module Hexdump
              else               each_non_repeating_row(data)
              end
 
-      index = enum.each do |index,numeric,chars|
+      index = enum.each do |index,numeric,chars=nil|
         if index == '*'
           yield index
         else
           formatted_index   = format_index[index]
           formatted_numbers = numeric.map { |value| numeric_cache[value] }
 
-          if @chars
-            formatted_chars = if @group_chars
+          formatted_chars = if @chars
+                              if @group_chars
                                 chars.join.chars.each_slice(@group_chars).map(&format_chars)
                               else
                                 format_chars.call(chars)
                               end
+                            end
 
-            yield formatted_index, formatted_numbers, formatted_chars
-          else
-            yield formatted_index, formatted_numbers
-          end
+          yield formatted_index, formatted_numbers, formatted_chars
         end
       end
 
@@ -471,7 +465,7 @@ module Hexdump
                        lambda { |numeric| numeric.join(' ') }
                      end
 
-      index = each_formatted_row(data,**kwargs) do |index,numeric,chars|
+      index = each_formatted_row(data,**kwargs) do |index,numeric,chars=nil|
         if index == '*'
           yield "#{index}#{$/}"
         else
