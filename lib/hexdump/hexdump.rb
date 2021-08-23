@@ -51,7 +51,7 @@ module Hexdump
 
     # The number of columns to group together.
     #
-    # @return [Integer, false]
+    # @return [Integer, nil]
     attr_reader :group_columns
 
     # Groups the characters together into groups.
@@ -77,7 +77,7 @@ module Hexdump
     # @return [Integer]
     attr_reader :offset
 
-    # Mapping of values to their numeric strings.
+    # The numeric base format.
     #
     # @return [Numeric::Hexadecimal,
     #          Numeric::Decimal,
