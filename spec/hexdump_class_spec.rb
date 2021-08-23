@@ -517,6 +517,18 @@ describe Hexdump::Hexdump do
         end
       end
     end
+
+    context "when a block is given" do
+      it "must yield the newly initialized hexdump object" do
+        yielded_hexdump = nil
+
+        described_class.new  do |hexdump|
+          yielded_hexdump = hexdump
+        end
+
+        expect(yielded_hexdump).to be_kind_of(described_class)
+      end
+    end
   end
 
   describe "#theme" do

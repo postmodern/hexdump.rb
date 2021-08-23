@@ -140,6 +140,10 @@ module Hexdump
     # @param [Boolean, Hash{:index,:numeric,:chars => Hash{String,Regexp => Symbol,Array<Symbol>}}] highlights
     #   Enables selective highlighting of index, numeric, or chars columns.
     #
+    # @yield [self]
+    #   If a block is given, it will be passed the newly initialized hexdump
+    #   instance.
+    #
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
@@ -192,6 +196,8 @@ module Hexdump
                    highlights: highlights || {}
                  )
                end
+
+      yield self if block_given?
     end
 
     #

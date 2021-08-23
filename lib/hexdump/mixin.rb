@@ -80,13 +80,20 @@ module Hexdump
     # @option kwargs [Boolean, Hash{:index,:numeric,:chars => Hash{String,Regexp => Symbol,Array<Symbol>}}] :highlights
     #   Enables selective highlighting of index, numeric, or chars columns.
     #
+    # @yield [hexdump]
+    #   If a block is given, it will be passed the newly initialized hexdump
+    #   instance.
+    #
+    # @yieldparam [Hexdump::Hexdump] hexdump
+    #   The newly initialized hexdump instance.
+    #
     # @raise [ArgumentError]
     #   The given data does not define the `#each_byte` method,
     #   the `:output` value does not support the `#<<` method or
     #   the `:base` value was unknown.
     #
-    def hexdump(output: $stdout, **kwargs)
-      hexdump = ::Hexdump::Hexdump.new(**kwargs)
+    def hexdump(output: $stdout, **kwargs,&block)
+      hexdump = ::Hexdump::Hexdump.new(**kwargs,&block)
 
       hexdump.hexdump(self, output: output)
     end
@@ -147,6 +154,13 @@ module Hexdump
     # @option kwargs [Boolean, Hash{:index,:numeric,:chars => Hash{String,Regexp => Symbol,Array<Symbol>}}] :highlights
     #   Enables selective highlighting of index, numeric, or chars columns.
     #
+    # @yield [hexdump]
+    #   If a block is given, it will be passed the newly initialized hexdump
+    #   instance.
+    #
+    # @yieldparam [Hexdump::Hexdump] hexdump
+    #   The newly initialized hexdump instance.
+    #
     # @return [String]
     #   The output of the hexdump.
     #
@@ -158,8 +172,8 @@ module Hexdump
     #   **Caution:** this method appends each line of the hexdump to a String,
     #   that String can grow quite large and consume a lot of memory.
     #
-    def to_hexdump(**kwargs)
-      hexdump = ::Hexdump::Hexdump.new(**kwargs)
+    def to_hexdump(**kwargs,&block)
+      hexdump = ::Hexdump::Hexdump.new(**kwargs,&block)
 
       hexdump.dump(self)
     end

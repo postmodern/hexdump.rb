@@ -71,13 +71,20 @@ module Hexdump
     # @option kwargs [Boolean, Hash{:index,:numeric,:chars => Hash{String,Regexp => Symbol,Array<Symbol>}}] :highlights
     #   Enables selective highlighting of index, numeric, or chars columns.
     #
+    # @yield [hexdump]
+    #   If a block is given, it will be passed the newly initialized hexdump
+    #   instance.
+    #
+    # @yieldparam [Hexdump::Hexdump] hexdump
+    #   The newly initialized hexdump instance.
+    #
     # @raise [ArgumentError]
     #   The given data does not define the `#each_byte` method,
     #   the `:output` value does not support the `#<<` method or
     #   the `:base` value was unknown.
     #
-    def hexdump(data, output: $stdout, **kwargs)
-      hexdump = ::Hexdump::Hexdump.new(**kwargs)
+    def hexdump(data, output: $stdout, **kwargs,&block)
+      hexdump = ::Hexdump::Hexdump.new(**kwargs,&block)
 
       hexdump.hexdump(data, output: output)
     end
