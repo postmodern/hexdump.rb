@@ -51,9 +51,14 @@ Simple and Fast hexdumping for Ruby.
   * `double_le` - single precision 64bit floating-point number (little endian)
   * `double_be` - single precision 64bit floating-point number (big endian)
   * `double_ne` - single precision 64bit floating-point number (network endian)
+* Supports optionally skipping N bytes or reading at most N bytes of data.
+* Supports optional zero-padding of the data.
 * Supports omitting repeating rows with a `*`.
 * Supports grouping columns together like GNU `hexdump -C`.
-* Supports optional zero-padding of the data.
+* Supports grouping characters together to align with the type's size.
+* Supports displaying characters inline like GNU `hexdump -c`.
+* Supports displaying UTF-8 characters or other character encodings.
+* Supports ANSI styling and highlighting.
 * Can hexdump any Object supporting the `each_byte` method.
 * Can send the hexdump output to any Object supporting the `<<` method.
 * Makes {String}, {StringIO}, {IO}, {File} objects hexdumpable.
