@@ -538,7 +538,7 @@ module Hexdump
             is_repeating = true
           end
         else
-          if repeating
+          if is_repeating
             previous_row = nil
             is_repeating = false
           end
