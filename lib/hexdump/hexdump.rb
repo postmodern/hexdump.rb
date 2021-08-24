@@ -205,6 +205,8 @@ module Hexdump
     # @api public
     attr_accessor :zero_pad
 
+    alias zero_pad? zero_pad
+
     # Controls whether repeating duplicate rows will be omitted with a `*`.
     #
     # @return [Boolean]
@@ -212,16 +214,7 @@ module Hexdump
     # @api public
     attr_accessor :repeating
 
-    #
-    # Specifies whether repeating duplicate rows will be omitted with a `*`.
-    #
-    # @return [Boolean]
-    #
-    # @api public
-    #
-    def repeating?
-      @repeating
-    end
+    alias repeating? repeating
 
     #
     # Sets the hexdump type.
@@ -360,6 +353,8 @@ module Hexdump
     #
     # @api public
     attr_accessor :chars_column
+
+    alias chars_column? chars_column
 
     # Groups the characters together into groups.
     #
