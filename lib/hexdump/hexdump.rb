@@ -134,7 +134,6 @@ module Hexdump
       self.chars_column = chars_column
       self.group_chars  = group_chars
 
-
       @theme = if (style.kind_of?(Hash) || highlights.kind_of?(Hash))
                  Theme.new(
                    style:      style || {},
