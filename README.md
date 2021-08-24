@@ -117,9 +117,9 @@ end
 
 ```ruby
 Hexdump.hexdump("\u8000" * 8, encoding: :utf8)
-00000000  e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8  |耀耀耀耀耀.|
-00000010  80 80 e8 80 80 e8 80 80                          |..耀耀|
-00000018
+# 00000000  e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8  |耀耀耀耀耀.|
+# 00000010  80 80 e8 80 80 e8 80 80                          |..耀耀|
+# 00000018
 ```
 
 ### Columns
@@ -154,18 +154,18 @@ Hexdump.hexdump("ABCD" * 8, columns: 16, group_columns: 4, repeating: true)
 
 ```ruby
 Hexdump.hexdump("ABCD" * 8, group_chars: 4)
-00000000  41 42 43 44 41 42 43 44 41 42 43 44 41 42 43 44  |ABCD|ABCD|ABCD|ABCD|
-*
-00000020
+# 00000000  41 42 43 44 41 42 43 44 41 42 43 44 41 42 43 44  |ABCD|ABCD|ABCD|ABCD|
+# *
+# 00000020
 ```
 
 ### Grouping UTF-8 Chars
 
 ```ruby
 Hexdump.hexdump("\u8000" * 8, group_chars: 4, encoding: :utf8)
-00000000  e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8  |耀.|...|.耀|耀.|
-00000010  80 80 e8 80 80 e8 80 80                          |...|.耀|
-00000018
+# 00000000  e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8 80 80 e8  |耀.|...|.耀|耀.|
+# 00000010  80 80 e8 80 80 e8 80 80                          |...|.耀|
+# 00000018
 ```
 
 ### Disable Chars
@@ -241,8 +241,8 @@ Hexdump.hexdump("ABCD" * 7, type: :uint32_be)
 
 ```ruby
 Hexdump.hexdump([65535, -1].pack("LL"), type: :int32_be, base: 10)
-00000000       65535         -1                          |........|
-00000008
+# 00000000       65535         -1                          |........|
+# 00000008
 ```
 
 ### Char Type
@@ -257,17 +257,17 @@ Hexdump.hexdump("hello\0", type: :char)
 
 ```ruby
 Hexdump.hexdump([0.0, 1.0, -1.0, Float::NAN].pack('EEEE'), type: :float64_le)
-00000000          0.000000e+00         1.000000e+00  |...............?|
-00000010         -1.000000e+00                  NaN  |................|
-00000020
+# 00000000          0.000000e+00         1.000000e+00  |...............?|
+# 00000010         -1.000000e+00                  NaN  |................|
+# 00000020
 ```
 
 ### Skipping Data
 
 ```ruby
 Hexdump.hexdump("GARBAGEabc123", offset: 7)
-00000007  61 62 63 31 32 33                                |abc123|
-0000000d
+# 00000007  61 62 63 31 32 33                                |abc123|
+# 0000000d
 ```
 
 ### Zero-padding
