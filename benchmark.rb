@@ -17,17 +17,17 @@ output = NullOutput.new
 
 types = Hexdump::TYPES.values.uniq.map(&Hexdump::TYPES.method(:key))
 
-Benchmark.bm(40) do |b|
+Benchmark.bm(42) do |b|
   b.report('Hexdump.hexdump(data)') do
     Hexdump.hexdump(data, output: output)
   end
 
-  b.report("Hexdump.hexdump(data, chars: false)") do
-    Hexdump.hexdump(data, chars: false, output: output)
+  b.report("Hexdump.hexdump(data, repeating: false)") do
+    Hexdump.hexdump(data, repeating: false, output: output)
   end
 
-  b.report('Hexdump.hexdump(data, encoding: :utf8)') do
-    Hexdump.hexdump(data, encoding: :utf8, output: output)
+  b.report("Hexdump.hexdump(data, chars_column: false)") do
+    Hexdump.hexdump(data, chars_column: false, output: output)
   end
 
   b.report('Hexdump.hexdump(data, columns: 256)') do
@@ -36,6 +36,14 @@ Benchmark.bm(40) do |b|
 
   b.report('Hexdump.hexdump(data, group_columns: 4)') do
     Hexdump.hexdump(data, group_columns: 4, output: output)
+  end
+
+  b.report('Hexdump.hexdump(data, encoding: :utf8)') do
+    Hexdump.hexdump(data, encoding: :utf8, output: output)
+  end
+
+  b.report('Hexdump.hexdump(data, group_chars: 4)') do
+    Hexdump.hexdump(data, group_chars: 4, output: output)
   end
 
   types.each do |type|
