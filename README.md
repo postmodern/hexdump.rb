@@ -299,6 +299,18 @@ Hexdump.hexdump((0..255).map(&:chr).join, highlights: {
 })
 ```
 
+### Block Configuration
+
+```ruby
+Hexdump.hexdump("hello\0") do |hex|
+  hex.type = :uint16_le
+  hex.group_chars = :type
+  # ...
+end
+# 00000000  6568 6c6c 006f                           |he|ll|o.|
+# 00000006
+```
+
 ## Benchmarks
 
 Benchmarks show {Hexdump.hexdump} processing 25M of data.
