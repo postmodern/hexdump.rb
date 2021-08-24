@@ -580,11 +580,15 @@ module Hexdump
         formatted
       }
 
+      blank = ' ' * @numeric.width
+
       format_numeric = lambda { |value|
         if value
           formatted = @numeric % value
           formatted = @theme.numeric.apply(formatted) if ansi
           formatted
+        else
+          blank
         end
       }
 

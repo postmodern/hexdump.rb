@@ -1068,13 +1068,13 @@ describe Hexdump::Hexdump do
 
           [
             "%.8x" % (size * columns * 1),
-            [nil],
+            ["        "],
             "ABC"
           ]
         ]
       end
 
-      it "must yield the read characters, but not the partially decoded value" do
+      it "must yield the read characters and a place-holder blank String" do
         yielded_rows = []
 
         subject.each_formatted_row(data) do |*row|
