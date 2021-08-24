@@ -14,21 +14,11 @@ module Hexdump
     #
     # Initializes the chars formatter.
     #
-    # @param [:ascii, :utf8, Encoding, nil] encoding
+    # @param [Encoding, nil] encoding
     #   The encoding to convert characters to.
     #
-    # @raise [ArgumentError]
-    #   An invalid encoding was given.
-    #
     def initialize(encoding=nil)
-      @encoding = case encoding
-                  when :ascii   then nil
-                  when :utf8    then Encoding::UTF_8
-                  when Encoding then encoding
-                  when nil      then nil
-                  else
-                    raise(ArgumentError,"encoding must be nil, :ascii, :utf8, or an Encoding object")
-                  end
+      @encoding = encoding
     end
 
     #

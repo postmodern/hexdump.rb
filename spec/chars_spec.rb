@@ -15,37 +15,13 @@ describe Hexdump::Chars do
       end
     end
 
-    context "when given :ascii" do
-      subject { described_class.new(:ascii) }
-
-      it "must set #encoding to nil" do
-        expect(subject.encoding).to be(nil)
-      end
-    end
-
-    context "when given :utf8" do
-      subject { described_class.new(:utf8) }
-
-      it "must set #encoding to Encoding::UTF_8" do
-        expect(subject.encoding).to be(Encoding::UTF_8)
-      end
-    end
-
     context "when given an Encoding object" do
-      let(:encoding) { Encoding::UTF_16BE }
+      let(:encoding) { Encoding::UTF_8 }
 
       subject { described_class.new(encoding) }
 
       it "must set #encoding to the Encoding object" do
         expect(subject.encoding).to be(encoding)
-      end
-    end
-
-    context "otherwise" do
-      it do
-        expect {
-          described_class.new(Object.new)
-        }.to raise_error(ArgumentError,"encoding must be nil, :ascii, :utf8, or an Encoding object")
       end
     end
   end

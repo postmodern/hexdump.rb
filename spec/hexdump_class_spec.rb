@@ -39,63 +39,45 @@ describe Hexdump::Hexdump do
       expect(subject.chars).to be_kind_of(Hexdump::Chars)
     end
 
-    context "when given the chars: true" do
-      subject { described_class.new(chars: true) }
+    context "when given the chars_column: true" do
+      subject { described_class.new(chars_column: true) }
 
-      it "must default #chars.encoding to nil" do
-        expect(subject.chars.encoding).to be(nil)
+      it "must set #chars_column to true" do
+        expect(subject.chars_column).to be(true)
+      end
+
+      it "must initialize #chars with #encoding" do
+        expect(subject.chars).to be_kind_of(Hexdump::Chars)
       end
 
       context "and encoding: keyword" do
-        context "and it is :ascii" do
-          subject { described_class.new(chars: true, encoding: :ascii) }
+        let(:encoding) { :utf8 }
 
-          it "must set #chars.encoding to nil" do
-            expect(subject.chars.encoding).to be(nil)
-          end
-        end
+        subject { described_class.new(chars_column: true, encoding: encoding) }
 
-        context "and it is :utf8" do
-          subject { described_class.new(chars: true, encoding: :utf8) }
-
-          it "must set #chars.encoding to Encoding::UTF_8" do
-            expect(subject.chars.encoding).to be(Encoding::UTF_8)
-          end
-        end
-
-        context "and is nil" do
-          subject { described_class.new(chars: true, encoding: nil) }
-
-          it "must set #encoding to nil" do
-            expect(subject.chars.encoding).to be(nil)
-          end
-        end
-
-        context "and is an Encoding object" do
-          let(:encoding) { Encoding::UTF_7 }
-
-          subject { described_class.new(chars: true, encoding: nil) }
-
-          it "must set #encoding" do
-            expect(subject.chars.encoding).to be(nil)
-          end
-        end
-
-        context "otherwise" do
-          it "must raise an ArgumentError" do
-            expect {
-              described_class.new(chars: true, encoding: Object.new)
-            }.to raise_error(ArgumentError,"encoding must be nil, :ascii, :utf8, or an Encoding object")
-          end
+        it "must set #chars.encoding to the given encoding: value" do
+          expect(subject.chars.encoding).to be(subject.encoding)
         end
       end
     end
 
-    context "when given chars: false" do
-      subject { described_class.new(chars: false) }
+    context "when given chars_column: false" do
+      subject { described_class.new(chars_column: false) }
+
+      it "must set #chars_column to false" do
+        expect(subject.chars_column).to be(false)
+      end
 
       it "must set #chars to nil" do
         expect(subject.chars).to be(nil)
+      end
+    end
+
+    context "when given the encoding: keyword" do
+      subject { described_class.new(encoding: :utf8) }
+
+      it "must set #encoding" do
+        expect(subject.encoding).to eq(Encoding::UTF_8)
       end
     end
 
@@ -527,6 +509,160 @@ describe Hexdump::Hexdump do
         end
 
         expect(yielded_hexdump).to be_kind_of(described_class)
+      end
+    end
+  end
+
+  describe "#type=" do
+    context "when given a type name" do
+      let(:type_name) { :uint32_le }
+
+      before { subject.type = type_name }
+
+      it "must set the #type to a Type object" do
+        expect(subject.type).to eq(Hexdump::TYPES.fetch(type_name))
+      end
+    end
+  end
+
+  describe "#base=" do
+    context "when given 16" do
+      let(:base) { 16 }
+
+      before { subject.base = base }
+
+      it "must set #base" do
+        expect(subject.base).to eq(base)
+      end
+    end
+
+    context "when given 10" do
+      let(:base) { 10 }
+
+      before { subject.base = base }
+
+      it "must set #base" do
+        expect(subject.base).to eq(base)
+      end
+    end
+
+    context "when given 8" do
+      let(:base) { 8 }
+
+      before { subject.base = base }
+
+      it "must set #base" do
+        expect(subject.base).to eq(base)
+      end
+    end
+
+    context "when given 2" do
+      let(:base) { 2 }
+
+      before { subject.base = base }
+
+      it "must set #base" do
+        expect(subject.base).to eq(base)
+      end
+    end
+  end
+
+  describe "#index_base=" do
+    context "when given 16" do
+      let(:value) { 16 }
+
+      before { subject.index_base = value }
+
+      it "must set #index_base" do
+        expect(subject.index_base).to eq(value)
+      end
+    end
+
+    context "when given 10" do
+      let(:value) { 10 }
+
+      before { subject.index_base = value }
+
+      it "must set #index_base" do
+        expect(subject.index_base).to eq(value)
+      end
+    end
+
+    context "when given 8" do
+      let(:value) { 8 }
+
+      before { subject.index_base = value }
+
+      it "must set #index_base" do
+        expect(subject.index_base).to eq(value)
+      end
+    end
+
+    context "when given 2" do
+      let(:value) { 2 }
+
+      before { subject.index_base = value }
+
+      it "must set #index_base" do
+        expect(subject.index_base).to eq(value)
+      end
+    end
+  end
+
+  describe "#group_chars=" do
+    context "when given an Integer" do
+      let(:value) { 4 }
+
+      before { subject.group_chars = value }
+
+      it "must set #group_chars" do
+        expect(subject.group_chars).to eq(value)
+      end
+    end
+
+    context "when given :type" do
+      subject { described_class.new(type: :uint16) }
+
+      before { subject.group_chars = :type }
+
+      it "must set #group_chars to #type.size" do
+        expect(subject.group_chars).to eq(subject.type.size)
+      end
+    end
+  end
+
+  describe "#encoding=" do
+    context "when given nil" do
+      before { subject.encoding = nil }
+
+      it "must set #encoding to nil" do
+        expect(subject.encoding).to be(nil)
+      end
+    end
+
+    context "when given :ascii" do
+      before { subject.encoding = :ascii }
+
+      it "must set #encoding to nil" do
+        expect(subject.encoding).to be(nil)
+      end
+    end
+
+    context "when given :utf8" do
+      before { subject.encoding = :utf8 }
+
+      it "must set #encoding to Encoding::UTF_8" do
+        expect(subject.encoding).to eq(Encoding::UTF_8)
+      end
+    end
+
+    context "when given an Encoding object" do
+      let(:encoding) { Encoding::UTF_7 }
+
+      before { subject.encoding = encoding }
+
+      it "must set #encoding" do
+        expect(subject.encoding).to eq(encoding)
       end
     end
   end
@@ -1462,8 +1598,8 @@ describe Hexdump::Hexdump do
       end
     end
 
-    context "when #chars is nil" do
-      subject { described_class.new(chars: false) }
+    context "when #chars_column is false" do
+      subject { described_class.new(chars_column: false) }
 
       let(:lines) do
         [

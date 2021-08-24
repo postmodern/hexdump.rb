@@ -29,35 +29,10 @@ module Hexdump
       2  => Numeric::Binary
     }
 
-    # The word type to decode the byte stream as.
-    #
-    # @return [Type]
-    attr_reader :type
-
     # The reader object.
     #
     # @return [Reader]
     attr_reader :reader
-
-    # The base to dump words as.
-    #
-    # @return [16, 10, 8, 2]
-    attr_reader :base
-
-    # The number of columns per hexdump line.
-    #
-    # @return [Integer]
-    attr_reader :columns
-
-    # The number of columns to group together.
-    #
-    # @return [Integer, nil]
-    attr_reader :group_columns
-
-    # Groups the characters together into groups.
-    #
-    # @return [Integer, nil]
-    attr_reader :group_chars
 
     # The format of the index number.
     #
@@ -66,16 +41,6 @@ module Hexdump
     #          Numeric::Octal,
     #          Numeric::Binary]
     attr_reader :index
-
-    # Starts the index at the given offset.
-    #
-    # @return [Integer, nil]
-    attr_reader :index_offset
-
-    # The optional offset to start the index at.
-    #
-    # @return [Integer]
-    attr_reader :offset
 
     # The numeric base format.
     #
@@ -106,6 +71,9 @@ module Hexdump
     #   Enables or disables zero padding of data, so that the remaining bytes
     #   can be decoded as a uint, int, or float.
     #
+    # @param [Boolean] repeating
+    #   Controls whether to omit repeating duplicate rows data with a `*`.
+    #
     # @param [Integer] columns
     #   The number of columns per hexdump line. Defaults to `16 / sizeof(type)`.
     #
@@ -115,9 +83,6 @@ module Hexdump
     # @param [Integer, :type, nil] group_chars
     #   Group chars into columns.
     #   If `:type`, then the chars will be grouped by the `type`'s size.
-    #
-    # @param [Boolean] repeating
-    #   Controls whether to omit repeating duplicate rows data with a `*`.
     #
     # @param [16, 10, 8, 2] base
     #   The base to print bytes in. Defaults to 16, or to 10 if printing floats.
@@ -147,48 +112,28 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
-    def initialize(type: :byte, offset: nil, length: nil, zero_pad: false, columns: nil, group_columns: nil, group_chars: nil, repeating: false, base: nil, index_base: 16, index_offset: nil, chars: true, encoding: nil, style: nil, highlights: nil)
-      @type = TYPES.fetch(type) do
-                raise(ArgumentError,"unsupported type: #{type.inspect}")
-              end
+    def initialize(type: :byte, offset: nil, length: nil, zero_pad: false, repeating: false, columns: nil, group_columns: nil, group_chars: nil, base: nil, index_base: 16, index_offset: nil, chars_column: true, encoding: nil, style: nil, highlights: nil)
+      # reader options
+      self.type      = type
+      self.offset    = offset
+      self.length    = length
+      self.zero_pad  = zero_pad
+      self.repeating = repeating
 
-      @reader = Reader.new(@type, offset:   offset,
-                                  length:   length,
-                                  zero_pad: zero_pad)
+      # numeric formatting options
+      self.base          = base if base
+      self.columns       = columns
+      self.group_columns = group_columns
 
-      @columns = columns || (DEFAULT_COLUMNS / @type.size)
-      @group_columns = group_columns
-      @group_chars   = case group_chars
-                       when Integer then group_chars
-                       when :type   then @type.size
-                       end
+      # index options
+      self.index_base   = index_base
+      self.index_offset = index_offset || offset
 
-      @repeating = repeating
+      # chars formatting options
+      self.encoding     = encoding
+      self.chars_column = chars_column
+      self.group_chars  = group_chars
 
-      @base = base || case @type
-                      when Type::Float, Type::Char, Type::UChar then 10
-                      else                                           16
-                      end
-
-      @index = BASES.fetch(index_base) {
-                 raise(ArgumentError,"unsupported base: #{index_base.inspect}")
-               }.new(TYPES[:uint32])
-
-      @index_offset = index_offset || offset
-
-      @numeric = BASES.fetch(@base) {
-                   raise(ArgumentError,"unsupported base: #{@base.inspect}")
-                 }.new(@type)
-
-      case @type
-      when Type::Char, Type::UChar
-        @numeric = Numeric::CharOrInt.new(@numeric,@encoding)
-        @chars   = nil
-      else
-        @chars = if chars
-                   Chars.new(encoding)
-                 end
-      end
 
       @theme = if (style.kind_of?(Hash) || highlights.kind_of?(Hash))
                  Theme.new(
@@ -198,12 +143,260 @@ module Hexdump
                end
 
       yield self if block_given?
+
+      @reader = Reader.new(@type, offset:   @offset,
+                                  length:   @length,
+                                  zero_pad: @zero_pad)
+
+      # default the numeric base
+      @base ||= case @type
+                when Type::Float, Type::Char, Type::UChar then 10
+                else                                           16
+                end
+
+      # default the number of columns based on the type's size
+      @columns ||= (DEFAULT_COLUMNS / @type.size)
+
+      @index   = BASES.fetch(@index_base).new(TYPES[:uint32])
+      @numeric = BASES.fetch(@base).new(@type)
+
+      case @type
+      when Type::Char, Type::UChar
+        # display characters inline for the :char and :uchar type, and disable
+        # the characters column
+        @numeric = Numeric::CharOrInt.new(@numeric,@encoding)
+
+        @chars        = nil
+        @chars_column = false
+      else
+        @chars = Chars.new(@encoding) if @chars_column
+      end
     end
+
+    #
+    # @group Reader Configuration
+    #
+
+    # The word type to decode the byte stream as.
+    #
+    # @return [Type]
+    #
+    # @api public
+    attr_reader :type
+
+    # The optional offset to start the index at.
+    #
+    # @return [Integer, nil]
+    #
+    # @api public
+    attr_accessor :offset
+
+    # The optional length of data to read.
+    #
+    # @return [Integer, nil]
+    #
+    # @api public
+    attr_accessor :length
+
+    # Controls whether to zero-pad the data so it aligns with the type's size.
+    #
+    # @return [Boolean]
+    #
+    # @api public
+    attr_accessor :zero_pad
+
+    # Controls whether repeating duplicate rows will be omitted with a `*`.
+    #
+    # @return [Boolean]
+    #
+    # @api public
+    attr_accessor :repeating
+
+    #
+    # Specifies whether repeating duplicate rows will be omitted with a `*`.
+    #
+    # @return [Boolean]
+    #
+    # @api public
+    #
+    def repeating?
+      @repeating
+    end
+
+    #
+    # Sets the hexdump type.
+    #
+    # @param [Symbol] value
+    #
+    # @return [Type]
+    #
+    # @raise [ArgumentError]
+    #
+    # @api public
+    #
+    def type=(value)
+      @type = TYPES.fetch(value) do
+                raise(ArgumentError,"unsupported type: #{value.inspect}")
+              end
+    end
+
+    #
+    # @group Numeric Configuration
+    #
+
+    # The base to dump words as.
+    #
+    # @return [16, 10, 8, 2]
+    #
+    # @api public
+    attr_accessor :base
+
+    #
+    # Sets the numeric column base.
+    #
+    # @param [16, 10, 8, 2] value
+    # 
+    # @return [16, 10, 8, 2]
+    #
+    # @raise [ArgumentError]
+    #
+    # @api public
+    #
+    def base=(value)
+      case value
+      when 16, 10, 8, 2
+        @base = value
+      else
+        raise(ArgumentError,"unsupported base: #{value.inspect}")
+      end
+    end
+
+    # The number of columns per hexdump line.
+    #
+    # @return [Integer]
+    #
+    # @api public
+    attr_accessor :columns
+
+    # The number of columns to group together.
+    #
+    # @return [Integer, nil]
+    #
+    # @api public
+    attr_accessor :group_columns
+
+    #
+    # @group Index Configuration
+    #
+
+    # The base to format the index column as.
+    #
+    # @return [16, 10, 8, 2]
+    #
+    # @api public
+    attr_reader :index_base
+
+    #
+    # Sets the index column base.
+    #
+    # @param [16, 10, 8, 2] value
+    # 
+    # @return [16, 10, 8, 2]
+    #
+    # @raise [ArgumentError]
+    #
+    # @api public
+    #
+    def index_base=(value)
+      case value
+      when 16, 10, 8, 2
+        @index_base = value
+      else
+        raise(ArgumentError,"unsupported index base: #{value.inspect}")
+      end
+    end
+
+    # Starts the index at the given offset.
+    #
+    # @return [Integer, nil]
+    #
+    # @api public
+    attr_accessor :index_offset
+
+    #
+    # @group Characters Configuration
+    #
+
+    # The encoding to use when decoding characters.
+    #
+    # @return [Encoding, nil]
+    #
+    # @api public
+    attr_reader :encoding
+
+    #
+    # Sets the encoding.
+    #
+    # @param [:ascii, :utf8, Encoding, nil] value
+    #
+    # @return [Encoding, nil]
+    #
+    # @api public
+    #
+    def encoding=(value)
+      @encoding = case value
+                  when :ascii   then nil
+                  when :utf8    then Encoding::UTF_8
+                  when Encoding then value
+                  when nil      then nil
+                  else
+                    raise(ArgumentError,"encoding must be nil, :ascii, :utf8, or an Encoding object")
+                  end
+    end
+
+    # Controls whether to display the characters column.
+    #
+    # @return [Boolean]
+    #
+    # @api public
+    attr_accessor :chars_column
+
+    # Groups the characters together into groups.
+    #
+    # @return [Integer, nil]
+    #
+    # @api public
+    attr_reader :group_chars
+
+    #
+    # Sets the character grouping.
+    #
+    # @param [Integer, :type] value
+    #
+    # @return [Integer, nil]
+    #
+    # @api public
+    #
+    def group_chars=(value)
+      @group_chars = case value
+                     when Integer then value
+                     when :type   then @type.size
+                     when nil     then nil
+                     else
+                       raise(ArgumentError,"invalid group_chars value: #{value.inspect}")
+                     end
+    end
+
+    #
+    # @group Theme Configuration
+    #
 
     #
     # Determines if hexdump styling/highlighting has been enabled.
     #
     # @return [Boolean]
+    #
+    # @api public
     #
     def theme?
       !@theme.nil?
@@ -221,6 +414,8 @@ module Hexdump
     # @return [Theme, nil]
     #   The initialized hexdump theme.
     #
+    # @api public
+    #
     def theme(&block)
       if block
         @theme ||= Theme.new
@@ -229,6 +424,10 @@ module Hexdump
         @theme
       end
     end
+
+    #
+    # @group Formatting Methods
+    #
 
     #
     # Enumerates over each slice of read values.
@@ -330,18 +529,18 @@ module Hexdump
       return enum_for(__method__,data) unless block_given?
 
       previous_row = nil
-      repeating = false
+      is_repeating = false
 
       each_row(data) do |index,*row|
         if row == previous_row
-          unless repeating
+          unless is_repeating
             yield '*'
-            repeating = true
+            is_repeating = true
           end
         else
           if repeating
             previous_row = nil
-            repeating    = false
+            is_repeating = false
           end
 
           yield index, *row
