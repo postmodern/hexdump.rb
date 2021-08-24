@@ -19,7 +19,7 @@ module Hexdump
     #
     # Formats the given value.
     #
-    # @param [Integer, Float]
+    # @param [Integer, Float] value
     #   The given value.
     #
     # @return [String]
