@@ -26,12 +26,12 @@ describe Hexdump::Chars do
     end
   end
 
-  describe "#%" do
+  describe "#scrub" do
     context "when the string only contains printable ASCII characters" do
       let(:string)   { "hello" }
 
       it "must return the string unchanged" do
-        expect(subject % string).to eq(string)
+        expect(subject.scrub(string)).to eq(string)
       end
     end
 
@@ -39,7 +39,7 @@ describe Hexdump::Chars do
       let(:ascii) { (0..255).map(&:chr).join }
 
       it "must replace non-printable ASCII characters with a '.'" do
-        expect(subject % ascii).to eq(ascii.gsub(/[^\x20-\x7e]/,'.'))
+        expect(subject.scrub(ascii)).to eq(ascii.gsub(/[^\x20-\x7e]/,'.'))
       end
     end
 
@@ -50,7 +50,7 @@ describe Hexdump::Chars do
       subject { described_class.new(encoding) }
 
       it "must convert the string to the #encoding" do
-        expect((subject % string).encoding).to eq(encoding)
+        expect((subject.scrub(string)).encoding).to eq(encoding)
       end
 
       context "when the string contains an invalid byte-sequence" do
@@ -58,7 +58,7 @@ describe Hexdump::Chars do
         let(:string)        { "A#{invalid_bytes}B" }
 
         it "must replace any invalid byte sequencnes with a '.'" do
-          expect(subject % string).to eq("A..B")
+          expect(subject.scrub(string)).to eq("A..B")
         end
       end
 
@@ -68,7 +68,7 @@ describe Hexdump::Chars do
         let(:string)    { "A#{char}B"             }
 
         it "must replace unprintable characters with a '.'" do
-          expect(subject % string).to eq("A.B")
+          expect(subject.scrub(string)).to eq("A.B")
         end
       end
     end

@@ -603,7 +603,7 @@ module Hexdump
 
       if @chars
         format_chars = lambda { |chars|
-          formatted = @chars % chars.join
+          formatted = @chars.scrub(chars.join)
           formatted = @theme.chars.apply(formatted) if ansi
           formatted
         }

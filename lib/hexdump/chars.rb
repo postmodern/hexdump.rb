@@ -30,7 +30,7 @@ module Hexdump
     # @return [String]
     #   The formatted string of raw characters.
     #
-    def %(chars)
+    def scrub(chars)
       if @encoding
         chars.force_encoding(@encoding)
         chars.scrub!('.')
