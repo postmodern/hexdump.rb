@@ -651,7 +651,7 @@ module Hexdump
     #   Each line from the hexdump output, terminated with a newline character.
     #
     # @return [Enumerator]
-    #   If no block is given, an Enumerator object will be returne.d
+    #   If no block is given, an Enumerator object will be returned
     #
     # @return [nil]
     #

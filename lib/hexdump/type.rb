@@ -184,13 +184,13 @@ module Hexdump
     end
 
     #
-    # Rpresents a aingle-byte character.
+    # Represents a single-byte character.
     #
     class Char < Int8
     end
 
     #
-    # Rpresents a aingle-byte unsigned character.
+    # Represents a single-byte unsigned character.
     #
     class UChar < UInt8
     end

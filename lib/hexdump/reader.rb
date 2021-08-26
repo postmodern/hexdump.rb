@@ -29,7 +29,7 @@ module Hexdump
     # Initializes the reader.
     #
     # @param [Type] type
-    #   Thetype to decode the data as.
+    #   The type to decode the data as.
     #
     # @param [Integer, nil] offset
     #   Controls whether to offset N number of bytes before starting to read data.

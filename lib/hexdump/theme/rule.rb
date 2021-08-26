@@ -32,7 +32,7 @@ module Hexdump
       # Initializes the color.
       #
       # @param [Symbol, Array<Symbol>] style
-      #   The defualt style name(s). See {ANSI::PARAMETERS}.
+      #   The default style name(s). See {ANSI::PARAMETERS}.
       #
       # @param [Hash{String,Regexp => Symbol,Array<Symbol>}, nil] highlights
       #   Optional highlighting rules.
