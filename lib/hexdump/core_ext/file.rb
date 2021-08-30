@@ -26,15 +26,22 @@ class File
   # @option kwargs [16, 10, 8, 2] :base (16)
   #   The base to print bytes in.
   #
+  # @yield [hexdump]
+  #   If a block is given, it will be passed the newly initialized hexdump
+  #   instance.
+  #
+  # @yieldparam [Hexdump::Hexdump] hexdump
+  #   The newly initialized hexdump instance.
+  #
   # @see IO#hexdump
   #
   # @example
   #   File.hexdump("/bin/ls")
   #   # ...
   #
-  def self.hexdump(path,**kwargs)
+  def self.hexdump(path,**kwargs,&block)
     self.open(path,'rb') do |file|
-      file.hexdump(**kwargs)
+      file.hexdump(**kwargs,&block)
     end
   end
 
