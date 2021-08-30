@@ -10,9 +10,9 @@ class NullOutput
   end
 end
 
-size_mb = 10
+size_mb = 1
 puts "Generating #{size_mb}Mb of random data ..."
-data = Array.new(size_mb * 1_000 * 1024) { rand(255).chr }.join
+data = Array.new(size_mb * 1024 * 1024) { rand(255).chr }.join
 output = NullOutput.new
 
 types = Hexdump::TYPES.values.uniq.map(&Hexdump::TYPES.method(:key))
