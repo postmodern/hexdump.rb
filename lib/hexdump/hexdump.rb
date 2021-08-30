@@ -112,6 +112,34 @@ module Hexdump
     # @raise [ArgumentError]
     #   The values for `:base` or `:endian` were unknown.
     #
+    # @example Initializing styling:
+    #   Hexdump::Hexdump.new(style: {index: :white, numeric: :green, chars: :cyan})
+    #
+    # @example Initializing highlighting:
+    #   Hexdump::Hexdump.new(
+    #     highlights: {
+    #       index: {/00$/ => [:white, :bold]},
+    #       numeric: {
+    #         /^[8-f][0-9a-f]$/ => :faint,
+    #         /f/  => :cyan,
+    #         '00' => [:black, :on_red]
+    #       },
+    #       chars: {/[^\.]+/ => :green}
+    #     }
+    #   )
+    #
+    # @example Initializing with a block:
+    #   Hexdump::Hexdump.new do |hexdump|
+    #     hexdump.type = :uint16
+    #     # ...
+    #   
+    #     hexdump.theme do |theme|
+    #       theme.index.highlight(/00$/, [:white, :bold])
+    #       theme.numeric.highlight(/^[8-f][0-9a-f]$/, :faint)
+    #       # ...
+    #     end
+    #   end
+    #
     def initialize(type: :byte, offset: nil, length: nil, zero_pad: false, repeating: false, columns: nil, group_columns: nil, group_chars: nil, base: nil, index_base: 16, index_offset: nil, chars_column: true, encoding: nil, style: nil, highlights: nil)
       # reader options
       self.type      = type

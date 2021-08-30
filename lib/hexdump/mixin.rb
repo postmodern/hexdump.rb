@@ -92,6 +92,19 @@ module Hexdump
     #   the `:output` value does not support the `#<<` method or
     #   the `:base` value was unknown.
     #
+    # @example
+    #   obj.hexdump
+    #   # ...
+    #
+    # @example Hexdumping to a custom output:
+    #   File.open('hexdump.txt') do |output|
+    #     obj.hexdump(output: output)
+    #   end
+    #
+    # @example Hexdumping to an Array:
+    #   lines = []
+    #   obj.hexdump(output: lines)
+    #
     def hexdump(output: $stdout, **kwargs,&block)
       hexdump = ::Hexdump::Hexdump.new(**kwargs,&block)
 
@@ -174,7 +187,7 @@ module Hexdump
     #
     # @example
     #   obj.hexdump
-    #   # ...
+    #   # => "..."
     #
     def to_hexdump(**kwargs,&block)
       hexdump = ::Hexdump::Hexdump.new(**kwargs,&block)

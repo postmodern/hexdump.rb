@@ -88,6 +88,41 @@ module Hexdump
     #   # 00000000  68 65 6c 6c 6f 00                                |hello.|
     #   # 00000006
     #
+    # @example Hexdumping to a custom output:
+    #   File.open('hexdump.txt') do |output|
+    #     hexdump("hello\0", output: output)
+    #   end
+    #
+    # @example Hexdumping to an Array:
+    #   lines = []
+    #   hexdump("hello\0", output: lines)
+    #
+    # @example Hexdumping with ANSI styling:
+    #   Hexdump.hexdump(style: {index: :white, numeric: :green, chars: :cyan})
+    #
+    # @example Hexdumping with ANSI highlighting:
+    #   Hexdump.hexdump("hello\0", highlights: {
+    #                                index: {/00$/ => [:white, :bold]},
+    #                                numeric: {
+    #                                  /^[8-f][0-9a-f]$/ => :faint,
+    #                                  /f/  => :cyan,
+    #                                  '00' => [:black, :on_red]
+    #                                },
+    #                                chars: {/[^\.]+/ => :green}
+    #                              })
+    #
+    # @example Configuring the hexdump with a block:
+    #   Hexdump.hexdump("hello\0") do |hexdump|
+    #     hexdump.type = :uint16
+    #     # ...
+    #   
+    #     hexdump.theme do |theme|
+    #       theme.index.highlight(/00$/, [:white, :bold])
+    #       theme.numeric.highlight(/^[8-f][0-9a-f]$/, :faint)
+    #       # ...
+    #     end
+    #   end
+    #
     def hexdump(data, output: $stdout, **kwargs,&block)
       hexdump = ::Hexdump::Hexdump.new(**kwargs,&block)
 
