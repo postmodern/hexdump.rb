@@ -28,6 +28,10 @@ class File
   #
   # @see IO#hexdump
   #
+  # @example
+  #   File.hexdump("/bin/ls")
+  #   # ...
+  #
   def self.hexdump(path,**kwargs)
     self.open(path,'rb') do |file|
       file.hexdump(**kwargs)

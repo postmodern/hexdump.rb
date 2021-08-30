@@ -83,6 +83,11 @@ module Hexdump
     #   the `:output` value does not support the `#<<` method or
     #   the `:base` value was unknown.
     #
+    # @example
+    #   hexdump("hello\0")
+    #   # 00000000  68 65 6c 6c 6f 00                                |hello.|
+    #   # 00000006
+    #
     def hexdump(data, output: $stdout, **kwargs,&block)
       hexdump = ::Hexdump::Hexdump.new(**kwargs,&block)
 

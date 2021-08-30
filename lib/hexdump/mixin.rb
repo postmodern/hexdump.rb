@@ -172,6 +172,10 @@ module Hexdump
     #   **Caution:** this method appends each line of the hexdump to a String,
     #   that String can grow quite large and consume a lot of memory.
     #
+    # @example
+    #   obj.hexdump
+    #   # ...
+    #
     def to_hexdump(**kwargs,&block)
       hexdump = ::Hexdump::Hexdump.new(**kwargs,&block)
 
