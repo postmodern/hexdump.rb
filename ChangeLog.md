@@ -22,7 +22,7 @@
 ### 0.2.2 / 2012-05-27
 
 * Added {Hexdump::VERSION}.
-* Rescue `RangeError`s in {Hexdump::Dumper#format_printable}.
+* Rescue `RangeError`s in `Hexdump::Dumper#format_printable`.
 * Fixed a typo in `benchmarks/hexdump.rb` (thanks ColMcp).
 * Fixed a typo in Source URL, in the README (thanks Lawrence Woodman).
 * Documented the `:endian` option for {Hexdump.dump}.
@@ -31,7 +31,7 @@
 
 ### 0.2.1 / 2011-06-11
 
-* Fixed a major bug in {Hexdump::Dumper#dump}, where the line buffers
+* Fixed a major bug in `Hexdump::Dumper#dump`, where the line buffers
   were not being cleared.
 
 ### 0.2.0 / 2011-06-11
