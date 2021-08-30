@@ -47,10 +47,10 @@ Simple and Fast hexdumping for Ruby.
   * `float_le` - single precision 32bit floating-point number (little endian)
   * `float_be` - single precision 32bit floating-point number (big endian)
   * `float_ne` - single precision 32bit floating-point number (network endian)
-  * `double` - single precision 64bit floating-point number
-  * `double_le` - single precision 64bit floating-point number (little endian)
-  * `double_be` - single precision 64bit floating-point number (big endian)
-  * `double_ne` - single precision 64bit floating-point number (network endian)
+  * `double` - double precision 64bit floating-point number
+  * `double_le` - double precision 64bit floating-point number (little endian)
+  * `double_be` - double precision 64bit floating-point number (big endian)
+  * `double_ne` - double precision 64bit floating-point number (network endian)
 * Supports optionally skipping N bytes or reading at most N bytes of data.
 * Supports optional zero-padding of the data.
 * Supports omitting repeating rows with a `*`.
