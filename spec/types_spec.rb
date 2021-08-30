@@ -662,51 +662,51 @@ describe "Hexdump::TYPES" do
     end
   end
 
-  describe "longlong" do
+  describe "long_long" do
     it "must be an alias to int64" do
-      expect(subject[:longlong]).to be(subject[:int64])
+      expect(subject[:long_long]).to be(subject[:int64])
     end
   end
 
-  describe "longlong_le" do
+  describe "long_long_le" do
     it "must be an alias to int64_le" do
-      expect(subject[:longlong_le]).to be(subject[:int64_le])
+      expect(subject[:long_long_le]).to be(subject[:int64_le])
     end
   end
 
-  describe "longlong_be" do
+  describe "long_long_be" do
     it "must be an alias to int64_be" do
-      expect(subject[:longlong_be]).to be(subject[:int64_be])
+      expect(subject[:long_long_be]).to be(subject[:int64_be])
     end
   end
 
-  describe "longlong_ne" do
+  describe "long_long_ne" do
     it "must be an alias to int64_ne" do
-      expect(subject[:longlong_ne]).to be(subject[:int64_ne])
+      expect(subject[:long_long_ne]).to be(subject[:int64_ne])
     end
   end
 
-  describe "ulonglong" do
+  describe "ulong_long" do
     it "must be an alias to uint64" do
-      expect(subject[:ulonglong]).to be(subject[:uint64])
+      expect(subject[:ulong_long]).to be(subject[:uint64])
     end
   end
 
-  describe "ulonglong_le" do
+  describe "ulong_long_le" do
     it "must be an alias to uint64_le" do
-      expect(subject[:ulonglong_le]).to be(subject[:uint64_le])
+      expect(subject[:ulong_long_le]).to be(subject[:uint64_le])
     end
   end
 
-  describe "ulonglong_be" do
+  describe "ulong_long_be" do
     it "must be an alias to uint64_be" do
-      expect(subject[:ulonglong_be]).to be(subject[:uint64_be])
+      expect(subject[:ulong_long_be]).to be(subject[:uint64_be])
     end
   end
 
-  describe "ulonglong_ne" do
+  describe "ulong_long_ne" do
     it "must be an alias to uint64_ne" do
-      expect(subject[:ulonglong_ne]).to be(subject[:uint64_ne])
+      expect(subject[:ulong_long_ne]).to be(subject[:uint64_ne])
     end
   end
 

@@ -37,14 +37,14 @@ Simple and Fast hexdumping for Ruby.
   * `uint32_be` / `uint_be` / `ulong_be` - unsigned 32bit integer (big endian)
   * `uint32_ne` / `uint_ne` / `ulong_ne` - unsigned 32bit integer
     (network endian)
-  * `int64` / `longlong` - signed 64bit integer
-  * `int64_le` / `longlong_le` - signed 64bit integer (little endian)
-  * `int64_be` / `longlong_be` - signed 64bit integer (big endian)
-  * `int64_ne` / `longlong_ne` - signed 64bit integer (network endian)
-  * `uint64` / `ulonglong` - unsigned 64bit integer
-  * `uint64_le` / `ulonglong_le` - unsigned 64bit integer (little endian)
-  * `uint64_be` / `ulonglong_be` - unsigned 64bit integer (big endian)
-  * `uint64_ne` / `ulonglong_ne` - unsigned 64bit integer (network endian)
+  * `int64` / `long_long` - signed 64bit integer
+  * `int64_le` / `long_long_le` - signed 64bit integer (little endian)
+  * `int64_be` / `long_long_be` - signed 64bit integer (big endian)
+  * `int64_ne` / `long_long_ne` - signed 64bit integer (network endian)
+  * `uint64` / `ulong_long` - unsigned 64bit integer
+  * `uint64_le` / `ulong_long_le` - unsigned 64bit integer (little endian)
+  * `uint64_be` / `ulong_long_be` - unsigned 64bit integer (big endian)
+  * `uint64_ne` / `ulong_long_ne` - unsigned 64bit integer (network endian)
   * `float` - single precision 32bit floating-point number
   * `float_le` - single precision 32bit floating-point number (little endian)
   * `float_be` - single precision 32bit floating-point number (big endian)
