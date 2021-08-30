@@ -32,9 +32,11 @@ Simple and Fast hexdumping for Ruby.
   * `int32_be` / `int_be` / `long_be` - signed 32bit integer (big endian)
   * `int32_ne` / `int_ne` / `long_ne` - signed 32bit integer (network endian)
   * `uint32` / `uint` / `ulong` - unsigned 32bit integer
-  * `uint32_le` / `uint_le` / `ulong_le` - unsigned 32bit integer (little endian)
+  * `uint32_le` / `uint_le` / `ulong_le` - unsigned 32bit integer
+    (little endian)
   * `uint32_be` / `uint_be` / `ulong_be` - unsigned 32bit integer (big endian)
-  * `uint32_ne` / `uint_ne` / `ulong_ne` - unsigned 32bit integer (network endian)
+  * `uint32_ne` / `uint_ne` / `ulong_ne` - unsigned 32bit integer
+    (network endian)
   * `int64` / `longlong` - signed 64bit integer
   * `int64_le` / `longlong_le` - signed 64bit integer (little endian)
   * `int64_be` / `longlong_be` - signed 64bit integer (big endian)
