@@ -183,7 +183,7 @@ module Hexdump
     #
     # @note
     #   **Caution:** this method appends each line of the hexdump to a String,
-    #   that String can grow quite large and consume a lot of memory.
+    #   and that String can grow quite large and consume a lot of memory.
     #
     # @example
     #   obj.hexdump
