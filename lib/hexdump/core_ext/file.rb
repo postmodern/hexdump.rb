@@ -72,6 +72,7 @@ class File
   #
   # @example
   #   File.hexdump("/bin/ls")
+  #   # 00000000  7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00  |.ELF............|
   #   # ...
   #
   def self.hexdump(path,**kwargs,&block)
