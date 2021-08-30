@@ -65,7 +65,7 @@ module Hexdump
     # @option kwargs [16, 10, 8, 2] :index_base (16)
     #   Control the base that the index is displayed in.
     #
-    # @option kwargs [Boolean] :chars (true)
+    # @option kwargs [Boolean] :chars_column (true)
     #   Controls whether to display the characters column.
     #
     # @option kwargs [:ascii, :utf8, Encoding, nil] :encoding
@@ -142,7 +142,7 @@ module Hexdump
     # @option kwargs [Integer, nil] :index_offset
     #   The offset to start the index at.
     #
-    # @option kwargs [Boolean] :chars (true)
+    # @option kwargs [Boolean] :chars_column (true)
     #   Controls whether to display the characters column.
     #
     # @option kwargs [:ascii, :utf8, Encoding, nil] :encoding

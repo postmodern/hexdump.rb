@@ -59,7 +59,7 @@ module Hexdump
     # @option kwargs [Integer, nil] :index_offset
     #   The offset to start the index at.
     #
-    # @option kwargs [Boolean] :chars (true)
+    # @option kwargs [Boolean] :chars_column (true)
     #   Controls whether to display the characters column.
     #
     # @option kwargs [:ascii, :utf8, Encoding, nil] :encoding
