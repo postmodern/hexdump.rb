@@ -38,12 +38,12 @@ Benchmark.bm(42) do |b|
     Hexdump.hexdump(data, group_columns: 4, output: output)
   end
 
-  b.report('Hexdump.hexdump(data, encoding: :utf8)') do
-    Hexdump.hexdump(data, encoding: :utf8, output: output)
-  end
-
   b.report('Hexdump.hexdump(data, group_chars: 4)') do
     Hexdump.hexdump(data, group_chars: 4, output: output)
+  end
+
+  b.report('Hexdump.hexdump(data, encoding: :utf8)') do
+    Hexdump.hexdump(data, encoding: :utf8, output: output)
   end
 
   types.each do |type|
