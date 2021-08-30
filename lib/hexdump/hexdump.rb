@@ -742,7 +742,7 @@ module Hexdump
     # @return [nil]
     #
     # @raise [ArgumentError]
-    #   The output value does not support the `#print` method.
+    #   The output value does not support the `#<<` method.
     #
     def hexdump(data, output: $stdout)
       unless output.respond_to?(:<<)
