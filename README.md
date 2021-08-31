@@ -1,6 +1,7 @@
 # hexdump.rb
 
 [![CI](https://github.com/postmodern/hexdump.rb/actions/workflows/ruby.yml/badge.svg)](https://github.com/postmodern/hexdump.rb/actions/workflows/ruby.yml)
+[![Gem Version](https://badge.fury.io/rb/hexdump.svg)](https://badge.fury.io/rb/hexdump)
 
 * [Source](https://github.com/postmodern/hexdump.rb)
 * [Issues](https://github.com/postmodern/hexdump.rb/issues)
