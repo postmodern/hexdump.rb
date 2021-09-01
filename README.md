@@ -9,7 +9,7 @@
 
 ## Description
 
-Simple and Fast hexdumping for Ruby.
+Fully Featured and Fast hexdumping for Ruby.
 
 ## Features
 

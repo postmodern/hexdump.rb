@@ -1,6 +1,6 @@
 name: hexdump
 summary: Hexdump Strings and IO objects.
-description: Simple and Fast hexdumping for Ruby.
+description: Fully Featured and Fast hexdumping for Ruby.
 license: MIT
 authors: Postmodern
 email: postmodern.mod3@gmail.com
