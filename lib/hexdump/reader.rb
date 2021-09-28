@@ -32,7 +32,8 @@ module Hexdump
     #   The type to decode the data as.
     #
     # @param [Integer, nil] offset
-    #   Controls whether to offset N number of bytes before starting to read data.
+    #   Controls whether to offset N number of bytes before starting to read
+    #   data.
     #
     # @param [Integer, nil] length
     #   Controls control many bytes to read.
