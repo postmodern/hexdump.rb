@@ -104,8 +104,6 @@ module Hexdump
         raise(ArgumentError,"the given data must respond to #each_byte")
       end
 
-      count = 0
-
       if @type.size == 1
         each_byte(data) do |b|
           yield b.chr
