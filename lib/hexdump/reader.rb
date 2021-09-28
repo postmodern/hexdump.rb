@@ -134,7 +134,7 @@ module Hexdump
 
             yield buffer
           else
-            # yield the reamining partial buffer
+            # yield the remaining partial buffer
             yield buffer[0,index]
           end
         end
