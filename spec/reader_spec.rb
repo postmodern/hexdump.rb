@@ -220,7 +220,7 @@ describe Hexdump::Reader do
       let(:bytes) { [0x41, 0x42, 0x43, 0x44] }
       let(:raw)   { bytes.map(&:chr) }
       let(:data)  { raw.join }
-      let(:type)  { Hexdump::TYPES[:int8] }
+      let(:type)  { Hexdump::TYPES[:uint8] }
 
       subject { described_class.new(type) }
 
