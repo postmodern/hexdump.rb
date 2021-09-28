@@ -489,7 +489,7 @@ describe Hexdump::Reader do
         end
 
         context "but there is not enough bytes to decode a value" do
-          let(:data) { "\x01".encode(Encoding::BINARY) }
+          let(:data) { "\x11".encode(Encoding::BINARY) }
 
           it "must yield the remaining bytes and nil" do
             expect { |b|
@@ -503,7 +503,7 @@ describe Hexdump::Reader do
             it "must yield the zero-padded data and partially decoded int" do
               expect { |b|
                 subject.each_int(data,&b)
-              }.to yield_with_args("#{data}\x00",0x01)
+              }.to yield_with_args("#{data}\x00",0x11)
             end
           end
         end
@@ -523,7 +523,7 @@ describe Hexdump::Reader do
         end
 
         context "but there is not enough bytes to decode a value" do
-          let(:data) { "\x01".encode(Encoding::BINARY) }
+          let(:data) { "\x11".encode(Encoding::BINARY) }
 
           it "must yield the remaining bytes and nil" do
             expect { |b|
@@ -537,7 +537,7 @@ describe Hexdump::Reader do
             it "must yield the zero-padded data and partially decoded int" do
               expect { |b|
                 subject.each_int(data,&b)
-              }.to yield_with_args("#{data}\x00",0x0100)
+              }.to yield_with_args("#{data}\x00",0x1100)
             end
           end
         end
@@ -561,7 +561,7 @@ describe Hexdump::Reader do
         end
 
         context "but there is not enough bytes to decode a value" do
-          let(:data) { "\x01\x02\x03".encode(Encoding::BINARY) }
+          let(:data) { "\x11\x22\x33".encode(Encoding::BINARY) }
 
           it "must yield the remaining bytes and nil" do
             expect { |b|
@@ -575,7 +575,7 @@ describe Hexdump::Reader do
             it "must yield the zero-padded data and partially decoded int" do
               expect { |b|
                 subject.each_int(data,&b)
-              }.to yield_with_args("#{data}\x00",0x00030201)
+              }.to yield_with_args("#{data}\x00",0x00332211)
             end
           end
         end
@@ -595,7 +595,7 @@ describe Hexdump::Reader do
         end
 
         context "but there is not enough bytes to decode a value" do
-          let(:data) { "\x01\x02\x03".encode(Encoding::BINARY) }
+          let(:data) { "\x11\x22\x33".encode(Encoding::BINARY) }
 
           it "must yield the remaining bytes and nil" do
             expect { |b|
@@ -609,7 +609,7 @@ describe Hexdump::Reader do
             it "must yield the zero-padded data and partially decoded int" do
               expect { |b|
                 subject.each_int(data,&b)
-              }.to yield_with_args("#{data}\x00",0x01020300)
+              }.to yield_with_args("#{data}\x00",0x11223300)
             end
           end
         end
@@ -633,7 +633,7 @@ describe Hexdump::Reader do
         end
 
         context "but there is not enough bytes to decode a value" do
-          let(:data) { "\x01\x02\x03\x04\x05\x06\x07".encode(Encoding::BINARY) }
+          let(:data) { "\x11\x22\x33\x44\x55\x66\x77".encode(Encoding::BINARY) }
 
           it "must yield the remaining bytes and nil" do
             expect { |b|
@@ -647,7 +647,7 @@ describe Hexdump::Reader do
             it "must yield the zero-padded data and partially decoded int" do
               expect { |b|
                 subject.each_int(data,&b)
-              }.to yield_with_args("#{data}\x00",0x0007060504030201)
+              }.to yield_with_args("#{data}\x00",0x0077665544332211)
             end
           end
         end
@@ -667,7 +667,7 @@ describe Hexdump::Reader do
         end
 
         context "but there is not enough bytes to decode a value" do
-          let(:data) { "\x01\x02\x03\x04\x05\x06\x07".encode(Encoding::BINARY) }
+          let(:data) { "\x11\x22\x33\x44\x55\x66\x77".encode(Encoding::BINARY) }
 
           it "must yield nil and the remaining bytes" do
             expect { |b|
@@ -681,7 +681,7 @@ describe Hexdump::Reader do
             it "must yield the zero-padded data and partially decoded int" do
               expect { |b|
                 subject.each_int(data,&b)
-              }.to yield_with_args("#{data}\x00",0x0102030405060700)
+              }.to yield_with_args("#{data}\x00",0x1122334455667700)
             end
           end
         end
