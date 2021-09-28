@@ -726,7 +726,7 @@ describe Hexdump::Reader do
           context "but #zero_pad? is true" do
             subject { described_class.new(type, zero_pad: true) }
 
-            it "must yield the zero-padded data and partially decoded int" do
+            it "must yield the zero-padded data and partially decoded float" do
               expect { |b|
                 subject.each_float(data,&b)
               }.to yield_with_args("#{data}\x00",2.7622535458617227e-40)
@@ -760,7 +760,7 @@ describe Hexdump::Reader do
           context "but #zero_pad? is true" do
             subject { described_class.new(type, zero_pad: true) }
 
-            it "must yield the zero-padded data and partially decoded int" do
+            it "must yield the zero-padded data and partially decoded float" do
               expect { |b|
                 subject.each_float(data,&b)
               }.to yield_with_args("#{data}\x00",2.387938139551892e-38)
@@ -798,7 +798,7 @@ describe Hexdump::Reader do
           context "but #zero_pad? is true" do
             subject { described_class.new(type, zero_pad: true) }
 
-            it "must yield the zero-padded data and partially decoded int" do
+            it "must yield the zero-padded data and partially decoded float" do
               expect { |b|
                 subject.each_float(data,&b)
               }.to yield_with_args("#{data}\x00",9.76739841864353e-309)
@@ -832,7 +832,7 @@ describe Hexdump::Reader do
           context "but #zero_pad? is true" do
             subject { described_class.new(type, zero_pad: true) }
 
-            it "must yield the zero-padded data and partially decoded int" do
+            it "must yield the zero-padded data and partially decoded float" do
               expect { |b|
                 subject.each_float(data,&b)
               }.to yield_with_args("#{data}\x00",8.207880399131826e-304)
