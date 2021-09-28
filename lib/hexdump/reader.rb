@@ -174,24 +174,24 @@ module Hexdump
                         when :little then 'S<'
                         when :big    then 'S>'
                         else
-                          raise(TypeError,"unsupported endian #{@type.endian} for #{@type.name}")
+                          raise(TypeError,"unsupported endian #{@type.endian} for #{@type.inspect}")
                         end
                       when 4
                         case @type.endian
                         when :little then 'L<'
                         when :big    then 'L>'
                         else
-                          raise(TypeError,"unsupported endian #{@type.endian} for #{@type.name}")
+                          raise(TypeError,"unsupported endian #{@type.endian} for #{@type.inspect}")
                         end
                       when 8
                         case @type.endian
                         when :little then 'Q<'
                         when :big    then 'Q>'
                         else
-                          raise(TypeError,"unsupported endian #{@type.endian} for #{@type.name}")
+                          raise(TypeError,"unsupported endian #{@type.endian} for #{@type.inspect}")
                         end
                       else
-                        raise(TypeError,"unsupported type size #{@type.size} for #{@type.name}")
+                        raise(TypeError,"unsupported type size #{@type.size} for #{@type.inspect}")
                       end
 
         each_slice(data) do |slice|
@@ -222,24 +222,24 @@ module Hexdump
                       when :little then 's<'
                       when :big    then 's>'
                       else
-                        raise(TypeError,"unsupported endian #{@type.endian} for #{@type.name}")
+                        raise(TypeError,"unsupported endian #{@type.endian} for #{@type.inspect}")
                       end
                     when 4
                       case @type.endian
                       when :little then 'l<'
                       when :big    then 'l>'
                       else
-                        raise(TypeError,"unsupported endian #{@type.endian} for #{@type.name}")
+                        raise(TypeError,"unsupported endian #{@type.endian} for #{@type.inspect}")
                       end
                     when 8
                       case @type.endian
                       when :little then 'q<'
                       when :big    then 'q>'
                       else
-                        raise(TypeError,"unsupported endian #{@type.endian} for #{@type.name}")
+                        raise(TypeError,"unsupported endian #{@type.endian} for #{@type.inspect}")
                       end
                     else
-                      raise(TypeError,"unsupported type size #{@type.size} for #{@type.name}")
+                      raise(TypeError,"unsupported type size #{@type.size} for #{@type.inspect}")
                     end
 
       each_slice(data) do |slice|
@@ -267,17 +267,17 @@ module Hexdump
                       when 4 then 'e'
                       when 8 then 'E'
                       else
-                        raise(TypeError,"unsupported type size #{@type.size} for #{@type.name}")
+                        raise(TypeError,"unsupported type size #{@type.size} for #{@type.inspect}")
                       end
                     when :big
                       case @type.size
                       when 4 then 'g'
                       when 8 then 'G'
                       else
-                        raise(TypeError,"unsupported type size #{@type.size} for #{@type.name}")
+                        raise(TypeError,"unsupported type size #{@type.size} for #{@type.inspect}")
                       end
                     else
-                      raise(TypeError,"unsupported endian #{@type.endian} for #{@type.name}")
+                      raise(TypeError,"unsupported endian #{@type.endian} for #{@type.inspect}")
                     end
 
       each_slice(data) do |slice|
