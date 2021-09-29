@@ -32,6 +32,11 @@ module Hexdump
         super("%#{@base.width}s")
       end
 
+      #
+      # The string width associated with the numeric base.
+      #
+      # @return [Integer]
+      #
       def width
         @base.width
       end
