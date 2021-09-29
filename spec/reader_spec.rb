@@ -53,10 +53,12 @@ describe Hexdump::Reader do
     end
   end
 
+  let(:type) { Hexdump::TYPES[:byte] }
+
+  subject { described_class.new(type) }
+
   describe "#each_byte" do
     let(:type)  { Hexdump::TYPES[:uint8] }
-
-    subject { described_class.new(type) }
 
     let(:chars) { %w[A B C D] }
     let(:data)  { chars.join  }
@@ -107,8 +109,6 @@ describe Hexdump::Reader do
       let(:chars) { %w[A B C D]           }
       let(:data)  { "ABCD"                }
 
-      subject { described_class.new(type) }
-
       it "must yield each consequetize character" do
         expect { |b|
           subject.each_slice(data,&b)
@@ -146,8 +146,6 @@ describe Hexdump::Reader do
       let(:type)   { Hexdump::TYPES[:int16] }
       let(:slices) { %w[AA BB CC DD EE FF]  }
       let(:data)   { "AABBCCDDEEFF"         }
-
-      subject { described_class.new(type) }
 
       it "must yield each slice of the String" do
         expect { |b|
@@ -222,8 +220,6 @@ describe Hexdump::Reader do
       let(:data)  { raw.join }
       let(:type)  { Hexdump::TYPES[:uint8] }
 
-      subject { described_class.new(type) }
-
       it "must yield each byte" do
         expect { |b|
           subject.each_uint(data,&b)
@@ -238,8 +234,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:uint16_le] }
         let(:raw)   { uints.map { |uint| [uint].pack('S<') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in little-endian order" do
           expect { |b|
@@ -272,8 +266,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:uint16_be] }
         let(:raw)   { uints.map { |uint| [uint].pack('S>') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in big-endian order" do
           expect { |b|
@@ -311,8 +303,6 @@ describe Hexdump::Reader do
         let(:raw)   { uints.map { |uint| [uint].pack('L<') } }
         let(:data)  { raw.join }
 
-        subject { described_class.new(type) }
-
         it "must decode the bytes in little-endian order" do
           expect { |b|
             subject.each_uint(data,&b)
@@ -344,8 +334,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:uint32_be] }
         let(:raw)   { uints.map { |uint| [uint].pack('L>') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in big-endian order" do
           expect { |b|
@@ -383,8 +371,6 @@ describe Hexdump::Reader do
         let(:raw)   { uints.map { |uint| [uint].pack('Q<') } }
         let(:data)  { raw.join }
 
-        subject { described_class.new(type) }
-
         it "must decode the bytes in little-endian order" do
           expect { |b|
             subject.each_uint(data,&b)
@@ -416,8 +402,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:uint64_be] }
         let(:raw)   { uints.map { |uint| [uint].pack('Q>') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in big-endian order" do
           expect { |b|
@@ -463,8 +447,6 @@ describe Hexdump::Reader do
       let(:raw)   { ints.map { |int| [int].pack('c') } }
       let(:data)  { raw.join }
 
-      subject { described_class.new(type) }
-
       it "must decode the bytes" do
         expect { |b|
           subject.each_int(data,&b)
@@ -479,8 +461,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:int16_le] }
         let(:raw)   { ints.map { |int| [int].pack('s<') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in little-endian order" do
           expect { |b|
@@ -513,8 +493,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:int16_be] }
         let(:raw)   { ints.map { |int| [int].pack('s>') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in big-endian order" do
           expect { |b|
@@ -552,8 +530,6 @@ describe Hexdump::Reader do
         let(:raw)   { ints.map { |int| [int].pack('l<') } }
         let(:data)  { raw.join }
 
-        subject { described_class.new(type) }
-
         it "must decode the bytes in little-endian order" do
           expect { |b|
             subject.each_int(data,&b)
@@ -585,8 +561,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:int32_be] }
         let(:raw)   { ints.map { |int| [int].pack('l>') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in big-endian order" do
           expect { |b|
@@ -624,8 +598,6 @@ describe Hexdump::Reader do
         let(:raw)   { ints.map { |int| [int].pack('q<') } }
         let(:data)  { raw.join }
 
-        subject { described_class.new(type) }
-
         it "must decode the bytes in little-endian order" do
           expect { |b|
             subject.each_int(data,&b)
@@ -657,8 +629,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:int64_be] }
         let(:raw)   { ints.map { |int| [int].pack('q>') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in big-endian order" do
           expect { |b|
@@ -698,6 +668,8 @@ describe Hexdump::Reader do
   end
 
   describe "#each_float" do
+    let(:type)  { Hexdump::TYPES[:float] }
+
     context "when the type has size of 4" do
       let(:floats) { [1.0, -3.0, 5.0, -7.0, 9.0] }
 
@@ -705,8 +677,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:float_le] }
         let(:raw)   { floats.map { |float| [float].pack('e') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in little-endian order" do
           expect { |b|
@@ -739,8 +709,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:float_be] }
         let(:raw)   { floats.map { |float| [float].pack('g') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in big-endian order" do
           expect { |b|
@@ -778,8 +746,6 @@ describe Hexdump::Reader do
         let(:raw)   { floats.map { |float| [float].pack('E') } }
         let(:data)  { raw.join }
 
-        subject { described_class.new(type) }
-
         it "must decode the bytes in little-endian order" do
           expect { |b|
             subject.each_float(data,&b)
@@ -811,8 +777,6 @@ describe Hexdump::Reader do
         let(:type)  { Hexdump::TYPES[:double_be] }
         let(:raw)   { floats.map { |float| [float].pack('G') } }
         let(:data)  { raw.join }
-
-        subject { described_class.new(type) }
 
         it "must decode the bytes in big-endian order" do
           expect { |b|
@@ -852,6 +816,45 @@ describe Hexdump::Reader do
   end
 
   describe "#each" do
+    context "when #type is a UInt" do
+      let(:type)  { Hexdump::TYPES[:uint32] }
+      let(:uints) { [1, 2, 3] }
+      let(:raw)   { uints.map { |uint| [uint].pack('L') } }
+      let(:data)  { raw.join }
+
+      it "must yield decoded integers" do
+        expect { |b|
+          subject.each(data,&b)
+        }.to yield_successive_args(*raw.zip(uints))
+      end
+    end
+
+    context "when #type is a Int" do
+      let(:type) { Hexdump::TYPES[:int32] }
+      let(:ints) { [1, 2, 3] }
+      let(:raw)  { ints.map { |int| [int].pack('l') } }
+      let(:data) { raw.join }
+
+      it "must yield decoded integers" do
+        expect { |b|
+          subject.each(data,&b)
+        }.to yield_successive_args(*raw.zip(ints))
+      end
+    end
+
+    context "when #type is a Float" do
+      let(:type)   { Hexdump::TYPES[:float] }
+      let(:floats) { [1.0, 2.0, 3.0] }
+      let(:raw)    { floats.map { |float| [float].pack('e') } }
+      let(:data)   { raw.join }
+
+      it "must yield decoded integers" do
+        expect { |b|
+          subject.each(data,&b)
+        }.to yield_successive_args(*raw.zip(floats))
+      end
+    end
+
     context "when the given data does not define #each_byte" do
       it do
         expect {
