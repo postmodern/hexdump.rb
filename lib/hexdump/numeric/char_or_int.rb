@@ -9,7 +9,7 @@ module Hexdump
     #
     class CharOrInt < FormatString
 
-      # @return [Base::Hexadecimal, Base::Decimal, Base::Octal, Base::Binary]
+      # @return [Hexadecimal, Decimal, Octal, Binary]
       attr_reader :base
 
       # @return [Encoding, nil]
@@ -18,7 +18,7 @@ module Hexdump
       #
       # Initializes the character format.
       #
-      # @param [Base::Hexadecimal, Base::Decimal, Base::Octal, Base::Binary] base
+      # @param [Hexadecimal, Decimal, Octal, Binary] base
       #   The numeric base format to fallback to if a value does not map to a
       #   character.
       #
