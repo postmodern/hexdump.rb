@@ -747,7 +747,7 @@ module Hexdump
         raise(ArgumentError,"output must support the #<< method")
       end
 
-      ansi = theme? && $stdout.tty?
+      ansi = theme? && output.tty?
 
       each_line(data, ansi: ansi) do |line|
         output << line
