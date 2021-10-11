@@ -590,7 +590,7 @@ module Hexdump
     # @yieldparam [Array<String>, nil] numeric
     #   The numeric representation of the row.
     #
-    # @yieldparam [Array<String>, nil] chars
+    # @yieldparam [String, nil] chars
     #   The printable representation of the row.
     #
     # @return [String, Enumerator]
