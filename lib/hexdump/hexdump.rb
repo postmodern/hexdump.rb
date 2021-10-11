@@ -487,8 +487,8 @@ module Hexdump
     # @yieldparam [Array<Integer>, Array<Float>] values
     #   The decoded values.
     #
-    # @yieldparam [String] chars
-    #   A raw characters that were read.
+    # @yieldparam [Array<String>, nil] chars
+    #   The underlying raw characters that were read.
     #
     # @return [Integer, Enumerator]
     #   If a block is given, then the final number of bytes read is returned.
