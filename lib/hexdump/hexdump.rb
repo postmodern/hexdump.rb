@@ -582,7 +582,7 @@ module Hexdump
     #   The given block will be passed the hexdump break-down of each
     #   row.
     #
-    # @yieldparam [Integer, '*'] index
+    # @yieldparam [String] index
     #   The index of the hexdumped row.
     #   If the index is `'*'`, then it indicates the beginning of repeating
     #   rows of data.
