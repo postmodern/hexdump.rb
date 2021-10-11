@@ -734,7 +734,7 @@ module Hexdump
     # @param [#each_byte] data
     #   The data to be hexdumped.
     #
-    # @param [#print] output
+    # @param [#<<] output
     #   The output to dump the hexdump to.
     #
     # @return [nil]
