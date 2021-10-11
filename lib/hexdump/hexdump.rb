@@ -93,7 +93,7 @@ module Hexdump
     # @param [Integer] index_offset
     #   The offset to start the index at.
     #
-    # @param [Boolean] chars
+    # @param [Boolean] chars_column
     #   Controls whether to display the characters column.
     #
     # @param [:ascii, :utf8, Encoding, nil] encoding
