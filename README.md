@@ -67,6 +67,12 @@ Fully Featured and Fast hexdumping for Ruby.
 * Makes {String}, {StringIO}, {IO}, {File} objects hexdumpable.
 * Fast-ish.
 
+## Requirements
+
+* [Ruby] >= 2.0.0
+
+[Ruby]: https://www.ruby-lang.org/
+
 ## Install
 
 ```shell
