@@ -8,6 +8,7 @@ group :development do
   gem 'rspec',          '~> 3.0'
   gem 'simplecov',      '~> 0.20'
   gem 'kramdown'
+  gem 'redcarpet',       platform: :mri
   gem 'yard',           '~> 0.9'
   gem 'yard-spellcheck', require: false
 end
