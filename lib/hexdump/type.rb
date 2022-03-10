@@ -20,12 +20,16 @@ module Hexdump
     # Initializes the type.
     #
     # @param [Symbol] name
+    #   The type's name.
     #
     # @param [:little, :big, nil] endian
+    #   The endianness of the type. `nil` indicates the type has no endianness.
     #
     # @param [1, 2, 4, 8] size
+    #   The type's size in bytes.
     #
     # @param [Boolean] signed
+    #   Indicates whether the type is signed or unsigned.
     #
     # @raise [ArgumentError]
     #   Invalid `endian:` or `size:` values.
