@@ -76,15 +76,15 @@ module Hexdump
   TYPES[:uint_be] = TYPES[:uint32_be]
   TYPES[:uint_ne] = TYPES[:uint32_ne]
 
-  TYPES[:long]    = TYPES[:int32]
-  TYPES[:long_le] = TYPES[:int32_le]
-  TYPES[:long_be] = TYPES[:int32_be]
-  TYPES[:long_ne] = TYPES[:int32_ne]
+  TYPES[:long]    = TYPES[:int64]
+  TYPES[:long_le] = TYPES[:int64_le]
+  TYPES[:long_be] = TYPES[:int64_be]
+  TYPES[:long_ne] = TYPES[:int64_ne]
 
-  TYPES[:ulong]    = TYPES[:uint32]
-  TYPES[:ulong_le] = TYPES[:uint32_le]
-  TYPES[:ulong_be] = TYPES[:uint32_be]
-  TYPES[:ulong_ne] = TYPES[:uint32_ne]
+  TYPES[:ulong]    = TYPES[:uint64]
+  TYPES[:ulong_le] = TYPES[:uint64_le]
+  TYPES[:ulong_be] = TYPES[:uint64_be]
+  TYPES[:ulong_ne] = TYPES[:uint64_ne]
 
   TYPES[:long_long]    = TYPES[:int64]
   TYPES[:long_long_le] = TYPES[:int64_le]
