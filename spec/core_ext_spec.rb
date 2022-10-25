@@ -19,6 +19,6 @@ describe "Hexdump core_ext" do
   end
 
   it "should include Hexdump::ModuleMethods into ::Kernel" do
-    expect(::Kernel).to include(Hexdump::ModuleMethods)
+    expect(self.class).to include(Hexdump::ModuleMethods)
   end
 end
