@@ -253,7 +253,7 @@ Hexdump.hexdump("ABCD" * 7, type: :uint32_be)
 ### Int Type
 
 ```ruby
-Hexdump.hexdump([65535, -1].pack("LL"), type: :int32_be, base: 10)
+Hexdump.hexdump([65535, -1].pack("LL"), type: :int32, base: 10)
 # 00000000       65535         -1                          |........|
 # 00000008
 ```
