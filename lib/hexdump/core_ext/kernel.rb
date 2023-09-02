@@ -1,3 +1,5 @@
 require 'hexdump/module_methods'
 
-include Hexdump::ModuleMethods
+module Kernel
+  include Hexdump::ModuleMethods
+end
