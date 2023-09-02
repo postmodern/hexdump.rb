@@ -9,7 +9,7 @@ class File
   #   The path of the file.
   #
   # @param [Hash{Symbol => Object}] kwargs
-  #   Additional keyword arguments for {Format#initialize}.
+  #   Additional keyword arguments for {Hexdump::Hexdump#initialize}.
   #
   # @option kwargs [#print] :output ($stdout)
   #   The output to print the hexdump to.

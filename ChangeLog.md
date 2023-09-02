@@ -68,10 +68,10 @@
 
 * Require Ruby >= 2.0.0.
 * Added support for Ruby 3.0.
-* {Hexdump.dump}, {Hexdump#dump}, and {Hexdump::Dumper#initialize} now accept
+* {Hexdump.dump}, {Hexdump#dump}, and `Hexdump::Dumper#initialize` now accept
   keyword arguments.
-* {Hexdump::Dumper#each} now returns the total number of bytes read.
-* {Hexdump::Dumper#dump} now prints the final number of bytes read on the last
+* `Hexdump::Dumper#each` now returns the total number of bytes read.
+* `Hexdump::Dumper#dump` now prints the final number of bytes read on the last
   line.
 * Micro-optimizations to improve performance on JRuby and TruffleRuby.
 
@@ -102,7 +102,7 @@
 
 ### 0.2.0 / 2011-06-11
 
-* Added {Hexdump::Dumper}.
+* Added `Hexdump::Dumper`.
 * Added support for hexdumping 1, 2, 4, 8 byte words.
 * Added support for hexdumping Little and Big Endian words.
 * Optimized the hexdump algorithm to not use Arrays, use a lookup table

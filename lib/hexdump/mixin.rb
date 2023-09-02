@@ -27,9 +27,6 @@ module Hexdump
     # @param [#print] output ($stdout)
     #   The output to print the hexdump to.
     #
-    # @param [Integer] offset
-    #   The offset to start the index at.
-    #
     # @param [Hash{Symbol => Object}] kwargs
     #   Additional keyword arguments for {Hexdump#initialize}.
     #
@@ -113,9 +110,6 @@ module Hexdump
 
     #
     # Outputs the hexdump to a String.
-    #
-    # @param [Integer] offset
-    #   The offset to start the index at.
     #
     # @param [Hash{Symbol => Object}] kwargs
     #   Additional keyword arguments for {Hexdump#initialize}.

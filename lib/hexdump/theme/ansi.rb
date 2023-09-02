@@ -52,7 +52,8 @@ module Hexdump
       #
       # Initializes an ANSI control sequence.
       #
-      # @param [Symbol, Array<Symbol>] style
+      # @param [Symbol, Array<Symbol>] parameters
+      #   The ANSI styling parameters. See {PARAMETERS}.
       #
       def initialize(parameters)
         @parameters = parameters
