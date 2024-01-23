@@ -1,4 +1,4 @@
-require 'hexdump/theme/rule'
+require_relative 'theme/rule'
 
 module Hexdump
   #

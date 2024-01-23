@@ -1,4 +1,4 @@
-require 'hexdump/core_ext/io'
+require_relative 'io'
 
 class File
 

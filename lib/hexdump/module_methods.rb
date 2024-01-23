@@ -1,4 +1,4 @@
-require 'hexdump/hexdump'
+require_relative 'hexdump'
 
 module Hexdump
   #

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require 'hexdump/types'
-require 'hexdump/reader'
-require 'hexdump/numeric'
-require 'hexdump/chars'
-require 'hexdump/theme'
+require_relative 'types'
+require_relative 'reader'
+require_relative 'numeric'
+require_relative 'chars'
+require_relative 'theme'
 
 module Hexdump
   #

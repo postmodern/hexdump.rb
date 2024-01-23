@@ -1,4 +1,4 @@
-require 'hexdump/theme/ansi'
+require_relative 'ansi'
 
 require 'strscan'
 

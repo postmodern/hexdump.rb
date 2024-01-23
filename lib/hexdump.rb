@@ -1,6 +1,6 @@
-require 'hexdump/module_methods'
-require 'hexdump/core_ext'
-require 'hexdump/version'
+require_relative 'hexdump/module_methods'
+require_relative 'hexdump/core_ext'
+require_relative 'hexdump/version'
 
 module Hexdump
   extend ModuleMethods

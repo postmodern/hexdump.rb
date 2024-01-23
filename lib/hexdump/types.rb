@@ -1,4 +1,4 @@
-require 'hexdump/type'
+require_relative 'type'
 
 module Hexdump
   #

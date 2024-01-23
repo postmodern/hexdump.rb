@@ -1,4 +1,4 @@
-require 'hexdump/mixin'
+require_relative '../mixin'
 
 class IO
 

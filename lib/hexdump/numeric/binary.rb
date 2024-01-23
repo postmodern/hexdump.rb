@@ -1,5 +1,5 @@
-require 'hexdump/numeric/exceptions'
-require 'hexdump/format_string'
+require_relative 'exceptions'
+require_relative '../format_string'
 
 module Hexdump
   module Numeric

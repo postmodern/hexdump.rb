@@ -1,4 +1,4 @@
-require 'hexdump/format_string'
+require_relative '../format_string'
 
 module Hexdump
   module Numeric

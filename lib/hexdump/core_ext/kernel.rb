@@ -1,4 +1,4 @@
-require 'hexdump/module_methods'
+require_relative '../module_methods'
 
 module Kernel
   include Hexdump::ModuleMethods
