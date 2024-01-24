@@ -1,3 +1,10 @@
+### 1.0.1 / 2024-01-23
+
+* Switched to using `require_relative` to improve load-times.
+* Correctly alias `:long`/`:ulong` to `:int32`/`:uint32`.
+* Disable ANSI styling in {Hexdump#hexdump} if the output is not a TTY.
+* Removed the old `hexdump/extensions` file in favor of `hexdump/core_ext`.
+
 ### 1.0.0 / 2021-08-31
 
 * Added the ability to hexdump typed data. Available `type:`s are :
