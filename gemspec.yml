@@ -17,4 +17,4 @@ metadata:
 required_ruby_version: ">= 2.0.0"
 
 development_dependencies:
-  bundler: ~> 2.0
+  bundler: ">= 2.0.0"
